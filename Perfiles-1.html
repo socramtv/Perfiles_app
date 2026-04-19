@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Taller</title>
+    <meta name="description" content="Calculadora de cortes para perfiles de aluminio">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Taller">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface2: #263348;
+            --border: #334155;
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --primary-glow: rgba(245,158,11,0.25);
+            --accent: #06b6d4;
+            --accent-glow: rgba(6,182,212,0.2);
+            --danger: #ef4444;
+            --success: #10b981;
+            --whatsapp: #25D366;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 16px 12px 80px;
+            background-image:
+                radial-gradient(ellipse at 20% 0%, rgba(245,158,11,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(6,182,212,0.06) 0%, transparent 50%);
+        }
+
+        /* ── HEADER ── */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+        .logo-text {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            line-height: 1;
+            color: var(--text);
+        }
+        .logo-sub {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ── INSTALL BTN ── */
+        #btnInstall {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #0f172a;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: pulse-install 2.5s infinite;
+        }
+        #btnInstall.visible { display: flex; }
+        #btnInstall:hover { transform: scale(1.05); box-shadow: 0 6px 18px var(--primary-glow); }
+        @keyframes pulse-install {
+            0%,100% { box-shadow: 0 4px 12px var(--primary-glow); }
+            50% { box-shadow: 0 4px 24px rgba(245,158,11,0.5); }
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 14px;
+        }
+
+        /* ── SERIE SELECTOR ── */
+        .serie-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: block;
+        }
+        .select-wrapper {
+            position: relative;
+        }
+        .select-wrapper::after {
+            content: "▼";
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.65rem;
+            color: var(--primary);
+            pointer-events: none;
+        }
+        #serie {
+            width: 100%;
+            padding: 13px 40px 13px 14px;
+            background: var(--surface2);
+            border: 1.5px solid var(--primary);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            transition: box-shadow 0.2s;
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+        #serie:focus {
+            box-shadow: 0 0 0 4px rgba(245,158,11,0.35);
+        }
+        #serie option { background: #1e293b; color: var(--text); font-weight: 500; }
+
+        /* ── FORM ── */
+        .field-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            display: block;
+        }
+        .field-group { margin-bottom: 12px; }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--surface2);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+        }
+        select:focus, input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+        select option { background: var(--surface); }
+
+        /* ── MEDIDAS ROW ── */
+        .medidas-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .medidas-row .field-group { margin-bottom: 0; }
+
+        .input-unit {
+            position: relative;
+        }
+        .input-unit input { padding-right: 46px; }
+        .input-unit::after {
+            content: "mm";
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-dim);
+            letter-spacing: 0.5px;
+        }
+
+        /* ── CALC BUTTON ── */
+        .btn-calc {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            color: #0f172a;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            cursor: pointer;
+            margin-top: 14px;
+            box-shadow: 0 6px 20px var(--primary-glow);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn-calc:active { transform: scale(0.97); }
+        .btn-calc:hover { box-shadow: 0 8px 28px rgba(245,158,11,0.4); }
+
+        /* ── RESULTS ── */
+        .results-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .results-header {
+            background: linear-gradient(135deg, #1a2540, #0f1929);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+        .results-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: var(--primary);
+        }
+        .results-dims {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+        .results-body { padding: 4px 0; }
+        .res-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 16px;
+            border-bottom: 1px solid rgba(51,65,85,0.5);
+            transition: background 0.15s;
+        }
+        .res-row:last-child { border-bottom: none; }
+        .res-row:hover { background: rgba(245,158,11,0.04); }
+        .res-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .res-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+        .res-val {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.35rem;
+            letter-spacing: 1px;
+            color: var(--primary);
+        }
+        .res-nota {
+            padding: 10px 16px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border-top: 1px solid rgba(6,182,212,0.2);
+            background: rgba(6,182,212,0.05);
+        }
+
+        /* ── ACTION BTNS ── */
+        .action-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .btn-action {
+            padding: 13px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            letter-spacing: 0.5px;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+        .btn-action:active { transform: scale(0.96); opacity: 0.85; }
+        .btn-ws {
+            background: linear-gradient(135deg, #25D366, #128c4a);
+            color: white;
+        }
+        .btn-print {
+            background: var(--surface2);
+            border: 1.5px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        /* ── COLLAPSIBLE DATOS TÉCNICOS ── */
+        .toggle-btn {
+            width: 100%;
+            background: var(--surface2);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-muted);
+            padding: 13px 16px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            margin-bottom: 0;
+        }
+        .toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .toggle-btn .t-left { display: flex; align-items: center; gap: 8px; }
+        .toggle-arrow {
+            font-size: 0.7rem;
+            transition: transform 0.25s;
+            color: var(--text-dim);
+        }
+        .toggle-arrow.open { transform: rotate(180deg); }
+
+        .info-panel {
+            display: none;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            padding: 14px 16px;
+            margin-top: -2px;
+        }
+        .info-panel.show { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(51,65,85,0.4);
+            font-size: 0.9rem;
+        }
+        .info-item:last-child { border-bottom: none; }
+        .info-item b { color: var(--accent); font-weight: 700; }
+        .info-item span { color: var(--text-muted); }
+
+        /* ── TAG BADGE ── */
+        .ver-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(245,158,11,0.12);
+            border: 1px solid rgba(245,158,11,0.3);
+            border-radius: 20px;
+            font-size: 0.65rem;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* ── DIVIDER ── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 16px 0;
+        }
+
+        /* ── PRINT ── */
+        @media print {
+            body { background: white; padding: 0; }
+            .app-header, .card, .action-row, .toggle-btn, .info-panel, #btnInstall { display: none !important; }
+            .results-card { border: 2px solid black; border-radius: 0; }
+            .results-header { background: #1e293b !important; }
+            .res-val { color: black !important; }
+        }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--success);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 20px rgba(16,185,129,0.3);
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+    <div class="app-logo">
+        <div class="logo-icon">⚙️</div>
+        <div>
+            <div class="logo-text">TALLER</div>
+            <div class="logo-sub">Calculadora de Cortes</div>
+        </div>
+    </div>
+    <button id="btnInstall" onclick="instalarPWA()">
+        <span>📲</span> Instalar
+    </button>
+</div>
+
+<!-- CARD: SERIE -->
+<div class="card">
+    <span class="serie-label">▸ Serie / Perfil</span>
+    <div class="select-wrapper">
+        <select id="serie" onchange="actualizarInterfaz()">
+            <option value="giralda">🪟 Giralda (Corredera)</option>
+            <option value="giralda_persiana">🪟 Giralda c/ Persiana</option>
+            <option value="giralda_4hojas">🪟 Giralda 4 Hojas</option>
+            <option value="40x20">🚪 Abatible 40×20</option>
+            <option value="40x40">🚪 Abatible 40×40</option>
+            <option value="mezquita">🚪 Mezquita / SAMM 447</option>
+            <option value="mosquitera">🪲 Mosquitera Enrollable</option>
+            <option value="mobiliario">🪑 Perfil Mobiliario</option>
+        </select>
+    </div>
+</div>
+
+<!-- CARD: OPCIONES + MEDIDAS -->
+<div id="seccionMedidas">
+    <div class="card" id="cardOpciones" style="display:none; padding-bottom: 8px;">
+        <div id="divTubular" class="field-group" style="display:none;">
+            <label class="field-label">Marco inferior tubular</label>
+            <select id="marcoTubular">
+                <option value="no">No — Estándar (−5,2)</option>
+                <option value="si">Sí — Tubular (−6,2)</option>
+            </select>
+        </div>
+        <div id="divHojas" class="field-group" style="display:none;">
+            <label class="field-label">Número de Hojas</label>
+            <select id="numHojas">
+                <option value="1">1 Hoja</option>
+                <option value="2">2 Hojas (con Inversor)</option>
+            </select>
+        </div>
+        <div id="divExtra" class="field-group" style="display:none; margin-bottom:0;">
+            <label class="field-label" id="labelExtra">Variante de Marco</label>
+            <select id="selectExtra"></select>
+        </div>
+    </div>
+
+    <div class="card">
+        <span class="serie-label">▸ Medidas del Hueco</span>
+        <div class="medidas-row">
+            <div class="field-group">
+                <label class="field-label">Ancho total</label>
+                <div class="input-unit">
+                    <input type="number" id="ancho" placeholder="0" inputmode="numeric">
+                </div>
+            </div>
+            <div class="field-group">
+                <label class="field-label">Alto total</label>
+                <div class="input-unit">
+                    <input type="number" id="alto" placeholder="0" inputmode="numeric">
+                </div>
+            </div>
+        </div>
+        <button class="btn-calc" onclick="calcular()">⚡ CALCULAR CORTES</button>
+    </div>
+</div>
+
+<!-- RESULTADOS -->
+<div id="resultadosContenedor" style="display:none;">
+    <div class="results-card" id="resultados"></div>
+    <div class="action-row">
+        <button class="btn-action btn-ws" onclick="compartirWS()">
+            <span>💬</span> WhatsApp
+        </button>
+        <button class="btn-action btn-print" onclick="window.print()">
+            <span>🖨️</span> Imprimir
+        </button>
+    </div>
+    <div class="divider"></div>
+</div>
+
+<!-- DATOS TÉCNICOS -->
+<button class="toggle-btn" id="btnMobil" onclick="toggleInfo()">
+    <span class="t-left"><span id="iconInfo">🔧</span> <span id="txtBtn">DATOS TÉCNICOS</span></span>
+    <span class="toggle-arrow" id="arrow">▼</span>
+</button>
+<div class="info-panel" id="mobilContent">
+    <div id="infoCaja"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+    let ultimosCortes = [];
+    let ultimaSerieStr = "";
+    let deferredPrompt = null;
+
+    // ── PWA ──
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('btnInstall').classList.add('visible');
+    });
+    window.addEventListener('appinstalled', () => {
+        document.getElementById('btnInstall').classList.remove('visible');
+        showToast('✅ App instalada correctamente');
+    });
+    async function instalarPWA() {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        if (outcome === 'accepted') {
+            document.getElementById('btnInstall').classList.remove('visible');
+        }
+    }
+
+    // ── TOAST ──
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ── INFO TOGGLE ──
+    function toggleInfo() {
+        const panel = document.getElementById('mobilContent');
+        const arrow = document.getElementById('arrow');
+        panel.classList.toggle('show');
+        arrow.classList.toggle('open');
+    }
+
+    function buildInfo(items) {
+        return items.map(([key, val]) =>
+            `<div class="info-item"><span>▸</span><b>${key}:</b><span>${val}</span></div>`
+        ).join('');
+    }
+
+    // ── INTERFAZ ──
+    function actualizarInterfaz() {
+        const s = document.getElementById('serie').value;
+        const divExtra   = document.getElementById('divExtra');
+        const divHojas   = document.getElementById('divHojas');
+        const divTubular = document.getElementById('divTubular');
+        const cardOpc    = document.getElementById('cardOpciones');
+        const seccion    = document.getElementById('seccionMedidas');
+        const infoCaja   = document.getElementById('infoCaja');
+        const txtBtn     = document.getElementById('txtBtn');
+        const iconInfo   = document.getElementById('iconInfo');
+
+        seccion.style.display = "block";
+        divExtra.style.display   = "none";
+        divTubular.style.display = "none";
+        divHojas.style.display   = "none";
+        cardOpc.style.display    = "none";
+        document.getElementById("resultadosContenedor").style.display = "none";
+
+        const showCard = (parts) => {
+            if (parts.tubular || parts.hojas || parts.extra) cardOpc.style.display = "block";
+            if (parts.tubular) divTubular.style.display = "block";
+            if (parts.hojas)   divHojas.style.display   = "block";
+            if (parts.extra) {
+                divExtra.style.display = "block";
+                document.getElementById('labelExtra').innerText = parts.extraLabel || "Variante de Marco";
+                document.getElementById('selectExtra').innerHTML = parts.extraOpts;
+            }
+        };
+
+        if (s === "mobiliario") {
+            seccion.style.display = "none";
+            txtBtn.innerText = "DATOS MOBILIARIO"; iconInfo.innerText = "🪑";
+            infoCaja.innerHTML = buildInfo([["Escuadra","2,15 × 5,1"],["Bisagra","2,05 × 12"]]);
+        } else if (s === "mosquitera") {
+            txtBtn.innerText = "INFO MOSQUITERA"; iconInfo.innerText = "🪲";
+            infoCaja.innerHTML = buildInfo([["Ancho","-20 mm fija"],["Alto","Cabezal auto por altura"]]);
+        } else if (s === "40x20") {
+            showCard({ hojas: true, extra: true, extraOpts: '<option value="estandar">Marco Cerrado</option><option value="abierto">Marco Abierto</option>' });
+            txtBtn.innerText = "DATOS 40×20"; iconInfo.innerText = "🚪";
+            infoCaja.innerHTML = buildInfo([["Cerradura","Entrada 25"],["Bombín","30/30"]]);
+        } else if (s === "40x40") {
+            showCard({ hojas: true, extra: true, extraOpts: '<option value="estandar">Marco Cerrado</option><option value="abierto">Marco Abierto</option>' });
+            txtBtn.innerText = "DATOS 40×40"; iconInfo.innerText = "🚪";
+            infoCaja.innerHTML = buildInfo([["Cerradura","Entrada 25"]]);
+        } else if (s === "mezquita") {
+            showCard({ hojas: true, extra: true, extraOpts: '<option value="estandar">Marco Cerrado</option><option value="abierto">Marco Abierto</option>' });
+            txtBtn.innerText = "DATOS MEZQUITA"; iconInfo.innerText = "🚪";
+            infoCaja.innerHTML = buildInfo([["Cerradura","Entrada 30"],["Bombín","30/40"]]);
+        } else if (s.includes("giralda")) {
+            showCard({ tubular: true });
+            txtBtn.innerText = "DATOS GIRALDA"; iconInfo.innerText = "🪟";
+            infoCaja.innerHTML = buildInfo([["Mecanizado","15×2 para cierre embutido"]]);
+        }
+    }
+
+    // ── CALCULAR ──
+    function calcular() {
+        const serieEl = document.getElementById('serie');
+        const s       = serieEl.value;
+        const A       = parseFloat(document.getElementById('ancho').value) || 0;
+        const H       = parseFloat(document.getElementById('alto').value) || 0;
+        const nHojas  = document.getElementById('numHojas').value;
+        const tubular = document.getElementById('marcoTubular').value;
+        const extra   = document.getElementById('selectExtra') ? document.getElementById('selectExtra').value : null;
+
+        if (A === 0 || H === 0) { showToast("⚠️ Introduce ancho y alto"); return; }
+
+        let c = []; let notas = "";
+        // Get clean name (strip emoji prefix)
+        ultimaSerieStr = serieEl.options[serieEl.selectedIndex].text.replace(/^\S+\s/, '');
+
+        if (s.includes("giralda")) {
+            let dH = (s === "giralda_persiana") ? 88 : 27;
+            let dRuleta = (s === "giralda_persiana") ? 72 : 12;
+            let dAltoHoja = (tubular === "si") ? 62 : 52;
+            if (s === "giralda_4hojas") dRuleta = -16;
+            c.push(
+                ["Marco Lat.", H],
+                ["Marco S/I", A - dH],
+                ["Hoja V.", H - dAltoHoja],
+                ["Hoja H.", (s === "giralda_4hojas") ? (A + 16) / 4 : (A - dRuleta) / 2]
+            );
+        } else if (s === "40x20") {
+            const dH = (extra === 'abierto') ? 29 : 43;
+            c.push(["Hoja Alto", H - dH], ["Hoja Ancho", (nHojas === "1") ? A - 43 : (A - 50) / 2]);
+            if (nHojas === "2") c.push(["Inversor", H - 92]);
+        } else if (s === "40x40") {
+            const dH = (extra === 'abierto') ? 49 : 83;
+            c.push(["Hoja Alto", H - dH], ["Hoja Ancho", (nHojas === "1") ? A - 83 : (A - 90) / 2]);
+            if (nHojas === "2") c.push(["Inversor", H - 132]);
+        } else if (s === "mezquita") {
+            const dH = (extra === 'abierto') ? 30 : 44;
+            c.push(["Hoja Alto", H - dH], ["Hoja Ancho", (nHojas === "1") ? A - 44 : (A - 50) / 2]);
+            if (nHojas === "2") c.push(["Inversor", H - 106]);
+        } else if (s === "mosquitera") {
+            const dH = (H >= 1450) ? 45 : 35;
+            c.push(["Ancho Mosquitera", A - 20], ["Alto Guías", H - dH]);
+            notas = `Cabezal: ${H >= 1450 ? "GRANDE" : "PEQUEÑO"}`;
+        }
+
+        ultimosCortes = c;
+        document.getElementById("resultadosContenedor").style.display = "block";
+
+        document.getElementById('resultados').innerHTML = `
+            <div class="results-header">
+                <span class="results-title">${ultimaSerieStr}</span>
+                <span class="results-dims">${A} × ${H} mm</span>
+            </div>
+            <div class="results-body">
+                ${c.map(i => `
+                    <div class="res-row">
+                        <span class="res-name"><span class="res-dot"></span>${i[0]}</span>
+                        <span class="res-val">${i[1].toFixed(1)}<small style="font-size:0.7rem;color:var(--text-dim);margin-left:3px;font-family:'Rajdhani',sans-serif;font-weight:600;">mm</small></span>
+                    </div>`).join('')}
+                ${notas ? `<div class="res-nota">ℹ️ ${notas}</div>` : ''}
+            </div>`;
+
+        showToast("✅ Cortes calculados");
+        document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ── WHATSAPP ──
+    function compartirWS() {
+        const A = document.getElementById('ancho').value;
+        const H = document.getElementById('alto').value;
+        let t = `⚙️ *CORTE: ${ultimaSerieStr.trim()}*\n📏 Hueco: ${A}×${H} mm\n${"─".repeat(26)}\n`;
+        ultimosCortes.forEach(i => t += `• ${i[0]}: *${i[1].toFixed(1)} mm*\n`);
+        window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(t), "_blank");
+    }
+
+    // ── INIT ──
+    actualizarInterfaz();
+</script>
+
+<!-- SERVICE WORKER -->
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        const swCode = `
+            const CACHE = 'taller-v1';
+            const ASSETS = [location.href];
+            self.addEventListener('install', e => {
+                e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+            });
+            self.addEventListener('fetch', e => {
+                e.respondWith(
+                    caches.match(e.request).then(r => r || fetch(e.request))
+                );
+            });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+    });
+}
+</script>
+
+<!-- MANIFEST INLINE -->
+<script>
+    const manifest = {
+        name: "Calculadora Taller",
+        short_name: "Taller",
+        description: "Calculadora de cortes para perfiles de aluminio",
+        start_url: ".",
+        display: "standalone",
+        background_color: "#0f172a",
+        theme_color: "#0f172a",
+        icons: [{
+            src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f172a'/><text y='.9em' font-size='75' x='12'>⚙️</text></svg>",
+            sizes: "192x192",
+            type: "image/svg+xml"
+        }]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const manifestUrl = URL.createObjectURL(blob);
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = manifestUrl;
+    document.head.appendChild(link);
+</script>
+
+</body>
+</html>
