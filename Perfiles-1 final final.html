@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Taller</title>
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Taller">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+    --bg:#0f172a;--surf:#1e293b;--surf2:#263348;--border:#334155;
+    --gold:#f59e0b;--goldd:#d97706;--glow:rgba(245,158,11,.22);
+    --cyan:#06b6d4;--green:#10b981;--ws:#25D366;
+    --text:#f1f5f9;--muted:#94a3b8;--dim:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+    font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);
+    min-height:100vh;padding:14px 11px 80px;
+    background-image:
+        radial-gradient(ellipse at 15% 0%,rgba(245,158,11,.07) 0%,transparent 55%),
+        radial-gradient(ellipse at 85% 100%,rgba(6,182,212,.05) 0%,transparent 55%);
+}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.hdr-logo{display:flex;align-items:center;gap:10px}
+.hdr-icon{
+    width:44px;height:44px;border-radius:12px;
+    background:linear-gradient(135deg,var(--gold),var(--goldd));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 14px var(--glow);
+}
+.hdr-icon svg{width:24px;height:24px;fill:none;stroke:#0f172a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hdr-name{font-family:'Bebas Neue',cursive;font-size:1.65rem;letter-spacing:2px;line-height:1}
+.hdr-sub{font-size:.67rem;color:var(--dim);letter-spacing:1.3px;text-transform:uppercase}
+
+/* INSTALL */
+#btnInstall{
+    display:none;align-items:center;gap:6px;
+    background:linear-gradient(135deg,var(--gold),var(--goldd));
+    color:#0f172a;border:none;padding:8px 15px;border-radius:20px;
+    font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.84rem;cursor:pointer;
+    box-shadow:0 4px 12px var(--glow);transition:transform .2s;
+    animation:pulse 2.5s infinite;
+}
+#btnInstall.show{display:flex}
+#btnInstall svg{width:15px;height:15px;fill:none;stroke:#0f172a;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+@keyframes pulse{0%,100%{box-shadow:0 4px 12px var(--glow)}50%{box-shadow:0 4px 22px rgba(245,158,11,.5)}}
+
+/* CARD */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:17px 15px;margin-bottom:12px}
+
+/* LABELS */
+.slabel{display:flex;align-items:center;gap:5px;font-size:.67rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:9px}
+.slabel svg{width:11px;height:11px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.flabel{display:block;font-size:.67rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.fgroup{margin-bottom:11px}.fgroup:last-child{margin-bottom:0}
+
+/* SELECTS / INPUTS */
+select,input[type=number]{
+    width:100%;padding:11px 14px;background:var(--surf2);border:1.5px solid var(--border);
+    border-radius:10px;color:var(--text);font-family:'Rajdhani',sans-serif;
+    font-size:1rem;font-weight:600;outline:none;-webkit-appearance:none;appearance:none;
+    transition:border-color .2s,box-shadow .2s;
+}
+select:focus,input[type=number]:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--glow)}
+select option{background:#1e293b}
+.sw{position:relative}
+.sw::after{content:"▼";position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:.6rem;color:var(--gold);pointer-events:none}
+#serie{border-color:var(--gold);box-shadow:0 0 0 3px var(--glow);padding-right:36px}
+
+/* MEDIDAS */
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mrow .fgroup{margin-bottom:0}
+.iu{position:relative}
+.iu input{padding-right:42px}
+.iu::after{content:"mm";position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:.7rem;font-weight:700;color:var(--dim);pointer-events:none}
+
+/* CALC BTN */
+.btn-calc{
+    width:100%;padding:15px;
+    background:linear-gradient(135deg,var(--gold),var(--goldd));
+    border:none;border-radius:12px;color:#0f172a;
+    font-family:'Bebas Neue',cursive;font-size:1.28rem;letter-spacing:3px;
+    cursor:pointer;margin-top:13px;box-shadow:0 6px 20px var(--glow);
+    transition:transform .15s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-calc svg{width:20px;height:20px;fill:none;stroke:#0f172a;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.btn-calc:active{transform:scale(.97)}
+
+/* RESULTS */
+.res-card{
+    background:var(--surf);border:1px solid var(--border);border-radius:16px;
+    overflow:hidden;margin-bottom:12px;animation:slideIn .28s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.res-hdr{
+    background:linear-gradient(135deg,#1a2742,#0f1929);
+    padding:11px 15px;display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--border);
+}
+.res-hdr-title{font-family:'Bebas Neue',cursive;font-size:1.05rem;letter-spacing:2px;color:var(--gold)}
+.res-hdr-dims{font-size:.8rem;color:var(--dim);font-weight:600}
+
+.res-row{
+    display:grid;grid-template-columns:42px 28px 1fr auto;
+    align-items:center;padding:10px 15px;gap:5px;
+    border-bottom:1px solid rgba(51,65,85,.5);transition:background .15s;
+}
+.res-row:last-child{border-bottom:none}
+.res-row:hover{background:rgba(245,158,11,.04)}
+
+.qty-badge{
+    background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--gold);
+    border-radius:6px;font-family:'Bebas Neue',cursive;font-size:.95rem;letter-spacing:1px;
+    text-align:center;padding:2px 4px;
+}
+.piece-icon{display:flex;align-items:center;justify-content:center}
+.piece-icon svg{width:18px;height:18px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.piece-name{font-weight:600;font-size:.93rem;color:var(--muted)}
+.res-val{font-family:'Bebas Neue',cursive;font-size:1.38rem;letter-spacing:1px;color:var(--gold);white-space:nowrap;text-align:right}
+.res-val small{font-size:.62rem;color:var(--dim);margin-left:2px;font-family:'Rajdhani',sans-serif;font-weight:600}
+
+.res-nota{
+    padding:10px 15px;font-size:.84rem;color:var(--cyan);font-weight:600;
+    border-top:1px solid rgba(6,182,212,.2);background:rgba(6,182,212,.05);line-height:1.8;
+}
+.res-cierre{
+    padding:10px 15px;font-size:.84rem;color:#7dd3fc;font-weight:600;
+    border-top:1px solid rgba(14,165,233,.2);background:rgba(14,165,233,.07);
+    display:flex;align-items:flex-start;gap:8px;
+}
+.res-cierre svg{width:15px;height:15px;flex-shrink:0;margin-top:2px;stroke:#7dd3fc;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ACTION BTNS */
+.act-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.btn-act{
+    padding:13px;border:none;border-radius:12px;
+    font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
+    letter-spacing:.5px;transition:transform .15s,opacity .15s;
+}
+.btn-act:active{transform:scale(.96);opacity:.85}
+.btn-act svg{width:17px;height:17px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-ws{background:linear-gradient(135deg,#25D366,#128c4a);color:#fff}
+.btn-ws svg{stroke:#fff}
+.btn-print{background:var(--surf2);border:1.5px solid var(--border);color:var(--muted)}
+.btn-print svg{stroke:var(--muted)}
+
+/* TOGGLE */
+.toggle-btn{
+    width:100%;background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;
+    color:var(--muted);padding:12px 15px;
+    font-family:'Rajdhani',sans-serif;font-size:.88rem;font-weight:700;
+    letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+    display:flex;align-items:center;justify-content:space-between;transition:all .2s;
+}
+.toggle-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.tleft{display:flex;align-items:center;gap:8px}
+.tleft svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tarrow{font-size:.6rem;color:var(--dim);transition:transform .25s}
+.tarrow.open{transform:rotate(180deg)}
+.info-panel{
+    display:none;background:var(--surf);border:1.5px solid var(--border);
+    border-top:none;border-radius:0 0 12px 12px;padding:12px 15px;margin-top:-2px;
+}
+.info-panel.show{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.irow{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(51,65,85,.4);font-size:.9rem}
+.irow:last-child{border-bottom:none}
+.irow svg{width:13px;height:13px;flex-shrink:0;stroke:var(--cyan);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.irow b{color:var(--cyan);font-weight:700}
+.irow span{color:var(--muted)}
+
+/* TOAST */
+.toast{
+    position:fixed;bottom:20px;left:50%;
+    transform:translateX(-50%) translateY(70px);
+    background:var(--green);color:#fff;padding:9px 20px;border-radius:20px;
+    font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;
+    box-shadow:0 6px 20px rgba(16,185,129,.3);transition:transform .3s ease;z-index:999;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* PRINT */
+@media print{
+    body{background:white;padding:0}
+    .hdr,.card,.act-row,.toggle-btn,.info-panel,#btnInstall{display:none!important}
+    .res-card{border:2px solid #000;border-radius:0;animation:none}
+    .res-hdr{background:#334155!important;-webkit-print-color-adjust:exact}
+    .res-val{color:#000!important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+    <div class="hdr-logo">
+        <div class="hdr-icon">
+            <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <div>
+            <div class="hdr-name">TALLER</div>
+            <div class="hdr-sub">Calculadora de Cortes</div>
+        </div>
+    </div>
+    <button id="btnInstall" onclick="instalarPWA()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Instalar
+    </button>
+</div>
+
+<!-- SERIE -->
+<div class="card">
+    <div class="slabel">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Serie / Perfil
+    </div>
+    <div class="sw">
+        <select id="serie" onchange="actualizarInterfaz()">
+            <option value="giralda">Giralda — Corredera</option>
+            <option value="giralda_persiana">Giralda — Con Persiana</option>
+            <option value="giralda_4hojas">Giralda — 4 Hojas</option>
+            <option value="40x20">Abatible 40×20</option>
+            <option value="40x40">Abatible 40×40</option>
+            <option value="mezquita">Mezquita / SAMM 447</option>
+            <option value="mosquitera">Mosquitera Enrollable</option>
+            <option value="mobiliario">Perfil Mobiliario</option>
+        </select>
+    </div>
+</div>
+
+<!-- OPCIONES + MEDIDAS -->
+<div id="seccionMedidas">
+
+    <div class="card" id="cardOpc" style="display:none">
+        <div id="divTubular" class="fgroup" style="display:none">
+            <label class="flabel">Marco inferior tubular</label>
+            <div class="sw"><select id="marcoTubular">
+                <option value="no">No — Estándar (−5,2)</option>
+                <option value="si">Sí — Tubular (−6,2)</option>
+            </select></div>
+        </div>
+        <div id="divHojas" class="fgroup" style="display:none">
+            <label class="flabel">Número de hojas</label>
+            <div class="sw"><select id="numHojas" onchange="actualizarInterfaz()">
+                <option value="1">1 Hoja</option>
+                <option value="2">2 Hojas — con Inversor</option>
+            </select></div>
+        </div>
+        <div id="divExtra" class="fgroup" style="display:none">
+            <label class="flabel" id="labelExtra">Variante de marco</label>
+            <div class="sw"><select id="selectExtra"></select></div>
+        </div>
+        <div id="divCierre" class="fgroup" style="display:none">
+            <label class="flabel">Tipo de cierre</label>
+            <div class="sw"><select id="tipoCierre">
+                <option value="estandar">Cierre Estándar</option>
+                <option value="oscilo">Cierre Oscilobatiente</option>
+            </select></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="slabel">
+            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            Medidas del hueco
+        </div>
+        <div class="mrow">
+            <div class="fgroup">
+                <label class="flabel">Ancho total</label>
+                <div class="iu"><input type="number" id="ancho" placeholder="0" inputmode="numeric"></div>
+            </div>
+            <div class="fgroup">
+                <label class="flabel">Alto total</label>
+                <div class="iu"><input type="number" id="alto" placeholder="0" inputmode="numeric"></div>
+            </div>
+        </div>
+        <button class="btn-calc" onclick="calcular()">
+            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            CALCULAR CORTES
+        </button>
+    </div>
+</div>
+
+<!-- RESULTADOS -->
+<div id="resultadosContenedor" style="display:none">
+    <div class="res-card" id="resultados"></div>
+    <div class="act-row">
+        <button class="btn-act btn-ws" onclick="compartirWS()">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp
+        </button>
+        <button class="btn-act btn-print" onclick="window.print()">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimir
+        </button>
+    </div>
+</div>
+
+<!-- DATOS TÉCNICOS -->
+<button class="toggle-btn" onclick="toggleInfo()">
+    <span class="tleft">
+        <svg id="iconInfo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="txtBtn">DATOS TÉCNICOS</span>
+    </span>
+    <span class="tarrow" id="arrow">▼</span>
+</button>
+<div class="info-panel" id="infoPanel">
+    <div id="infoCaja"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* SVG icons por tipo de pieza */
+const ICONS = {
+    marco:    `<svg viewBox="0 0 24 24" stroke="var(--cyan)"><rect x="3" y="3" width="18" height="18" rx="1"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>`,
+    hoja:     `<svg viewBox="0 0 24 24" stroke="var(--gold)"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="9" cy="12" r="1.3" fill="var(--gold)" stroke="none"/></svg>`,
+    ruleta:   `<svg viewBox="0 0 24 24" stroke="#a78bfa"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+    inversor: `<svg viewBox="0 0 24 24" stroke="#fb923c"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>`,
+    guia:     `<svg viewBox="0 0 24 24" stroke="#34d399"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`,
+    cabezal:  `<svg viewBox="0 0 24 24" stroke="#60a5fa"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M12 7v10M7 7v10M17 7v10"/></svg>`,
+    default:  `<svg viewBox="0 0 24 24" stroke="var(--muted)"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>`,
+};
+function getIcon(name) {
+    const n = name.toLowerCase();
+    if(n.includes('marco'))   return ICONS.marco;
+    if(n.includes('hoja'))    return ICONS.hoja;
+    if(n.includes('ruleta'))  return ICONS.ruleta;
+    if(n.includes('inversor'))return ICONS.inversor;
+    if(n.includes('guía')||n.includes('guia')) return ICONS.guia;
+    if(n.includes('cabezal')) return ICONS.cabezal;
+    return ICONS.default;
+}
+
+let ultimosCortes=[], ultimaSerieStr='', deferredPrompt=null;
+
+/* PWA */
+window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault(); deferredPrompt=e;
+    document.getElementById('btnInstall').classList.add('show');
+});
+window.addEventListener('appinstalled',()=>{
+    document.getElementById('btnInstall').classList.remove('show');
+    showToast('✓ App instalada');
+});
+async function instalarPWA(){
+    if(!deferredPrompt)return;
+    deferredPrompt.prompt();
+    const{outcome}=await deferredPrompt.userChoice;
+    deferredPrompt=null;
+    if(outcome==='accepted') document.getElementById('btnInstall').classList.remove('show');
+}
+
+function showToast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+function toggleInfo(){
+    document.getElementById('infoPanel').classList.toggle('show');
+    document.getElementById('arrow').classList.toggle('open');
+}
+
+function buildInfo(rows){
+    return rows.map(([k,v])=>`
+        <div class="irow">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            <b>${k}:</b><span>${v}</span>
+        </div>`).join('');
+}
+
+function actualizarInterfaz(){
+    const s  = document.getElementById('serie').value;
+    const nH = document.getElementById('numHojas').value;
+    ['divExtra','divHojas','divTubular','divCierre'].forEach(id=>document.getElementById(id).style.display='none');
+    document.getElementById('cardOpc').style.display='none';
+    document.getElementById('seccionMedidas').style.display='block';
+    document.getElementById('resultadosContenedor').style.display='none';
+    document.getElementById('infoCaja').innerHTML='';
+    document.getElementById('txtBtn').innerText='DATOS TÉCNICOS';
+
+    const showOpc=(...ids)=>{
+        document.getElementById('cardOpc').style.display='block';
+        ids.forEach(id=>document.getElementById(id).style.display='block');
+    };
+
+    if(s==='40x20'||s==='40x40'||s==='mezquita'){
+        showOpc('divHojas','divExtra');
+        document.getElementById('labelExtra').innerText='Variante de marco';
+        document.getElementById('selectExtra').innerHTML=
+            '<option value="estandar">Marco Cerrado</option><option value="abierto">Marco Abierto</option>';
+        if(s==='mezquita'&&nH==='2') document.getElementById('divCierre').style.display='block';
+        const labels={'40x20':'DATOS 40×20','40x40':'DATOS 40×40','mezquita':'DATOS MEZQUITA'};
+        document.getElementById('txtBtn').innerText=labels[s]||'DATOS TÉCNICOS';
+        const infos={
+            '40x20':[['Cerradura','Entrada 25'],['Bombín','30/30']],
+            '40x40':[['Cerradura','Entrada 25']],
+            'mezquita':[['Cerradura','Entrada 30'],['Bombín','30/40']],
+        };
+        document.getElementById('infoCaja').innerHTML=buildInfo(infos[s]||[]);
+    }
+    if(s==='mobiliario'){
+        document.getElementById('seccionMedidas').style.display='none';
+        document.getElementById('txtBtn').innerText='DATOS MOBILIARIO';
+        document.getElementById('infoCaja').innerHTML=buildInfo([['Escuadra','2,15 × 5,1'],['Bisagra','2,05 × 12']]);
+    } else if(s.includes('giralda')){
+        showOpc('divTubular');
+        document.getElementById('txtBtn').innerText='DATOS GIRALDA';
+        document.getElementById('infoCaja').innerHTML=buildInfo([['Mecanizado','15×2 para cierre embutido']]);
+    } else if(s==='mosquitera'){
+        document.getElementById('txtBtn').innerText='INFO MOSQUITERA';
+        document.getElementById('infoCaja').innerHTML=buildInfo([['Ancho','-20 mm fija'],['Alto','Cabezal auto por altura']]);
+    }
+}
+
+function calcular(){
+    const serieEl   = document.getElementById('serie');
+    const s         = serieEl.value;
+    const A         = parseFloat(document.getElementById('ancho').value)||0;
+    const H         = parseFloat(document.getElementById('alto').value)||0;
+    const nHojas    = document.getElementById('numHojas').value;
+    const tubular   = document.getElementById('marcoTubular').value;
+    const extra     = document.getElementById('selectExtra')?.value||'estandar';
+    const tipoCierre= document.getElementById('tipoCierre').value;
+    if(!A||!H){showToast('⚠ Introduce ancho y alto');return;}
+
+    let c=[], notas='', datosCierre='';
+    ultimaSerieStr=serieEl.options[serieEl.selectedIndex].text;
+
+    if(s.includes('giralda')){
+        const dH       = s==='giralda_persiana'?88:27;
+        const dRuleta  = s==='giralda_4hojas'?-16:(s==='giralda_persiana'?72:12);
+        const dAltoHoja= tubular==='si'?62:52;
+        c.push(['2','Marco Lateral',   H]);
+        c.push(['1','Marco Superior',  A-dH]);
+        c.push(['1','Marco Inferior',  A-dH]);
+        c.push(['2','Hoja Central',    H-dAltoHoja]);
+        c.push(['2','Hoja Lateral',    H-dAltoHoja]);
+        c.push(['4','Ruleta (Horiz.)', s==='giralda_4hojas'?(A+16)/4:(A-dRuleta)/2]);
+        datosCierre='Cierre embutido — Mecanizado 15×2';
+    }
+    else if(s==='40x20'||s==='40x40'||s==='mezquita'){
+        let dHm,dAnm;
+        if(s==='40x20'){dHm=(extra==='abierto')?29:43;dAnm=43;datosCierre='Cerradura Ent. 25  ·  Bombín 30/30';}
+        if(s==='40x40'){dHm=(extra==='abierto')?49:83;dAnm=83;datosCierre='Cerradura Ent. 25';}
+        if(s==='mezquita'){dHm=(extra==='abierto')?30:44;dAnm=44;datosCierre='Cerradura Ent. 30  ·  Bombín 30/40';}
+        const aH =H-dHm;
+        const anH=nHojas==='1'?A-dAnm:(A-(s==='40x40'?90:50))/2;
+        c.push(['2','Marco Lateral',  H]);
+        c.push([extra==='abierto'?'1':'2','Marco Horiz.',A]);
+        c.push([nHojas==='1'?'2':'4','Hoja Vertical',aH]);
+        c.push([nHojas==='1'?'2':'4','Hoja Horiz.',anH]);
+        if(nHojas==='2'){
+            const dInv=s==='40x20'?92:(s==='40x40'?132:106);
+            c.push(['1','Inversor',H-dInv]);
+            if(s==='mezquita'){
+                const p1=(aH/2)+30,p2=(aH/2)-351;
+                const r1=(aH/2)-225,r2=tipoCierre==='oscilo'?(aH/2)-185:(aH/2)-153;
+                notas=`Falleba Pasiva: <b>${p1.toFixed(1)}</b> / <b>${p2.toFixed(1)}</b> mm<br>Falleba Principal: <b>${r1.toFixed(1)}</b> / <b>${r2.toFixed(1)}</b> mm`;
+            }
+        }
+    }
+    else if(s==='mosquitera'){
+        const desc=H<1450?35:45;
+        c.push(['1','Cabezal',A-20]);
+        c.push(['2','Guías',H-desc]);
+        datosCierre=`Auto-Cabezal: ${H<1450?'Pequeño':'Grande'}`;
+    }
+
+    ultimosCortes=c;
+    document.getElementById('resultadosContenedor').style.display='block';
+    document.getElementById('resultados').innerHTML=`
+        <div class="res-hdr">
+            <span class="res-hdr-title">${ultimaSerieStr}</span>
+            <span class="res-hdr-dims">${A} × ${H} mm</span>
+        </div>
+        ${c.map(i=>`
+            <div class="res-row">
+                <span class="qty-badge">${i[0]}×</span>
+                <span class="piece-icon">${getIcon(i[1])}</span>
+                <span class="piece-name">${i[1]}</span>
+                <span class="res-val">${parseFloat(i[2]).toFixed(1)}<small>mm</small></span>
+            </div>`).join('')}
+        ${notas?`<div class="res-nota">${notas}</div>`:''}
+        ${datosCierre?`<div class="res-cierre">
+            <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            ${datosCierre}</div>`:''}
+    `;
+    showToast('✓ Cortes calculados');
+    document.getElementById('resultadosContenedor').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function compartirWS(){
+    if(!ultimosCortes.length){showToast('Primero calcula los cortes');return;}
+    const A=document.getElementById('ancho').value;
+    const H=document.getElementById('alto').value;
+    let t=`🔧 *${ultimaSerieStr}*\n📐 Hueco: ${A}×${H} mm\n${'─'.repeat(24)}\n`;
+    ultimosCortes.forEach(i=>t+=`${i[0]}× ${i[1]}: *${parseFloat(i[2]).toFixed(1)} mm*\n`);
+    window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+}
+
+actualizarInterfaz();
+</script>
+
+<!-- SERVICE WORKER -->
+<script>
+if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+        const code=`const C='taller-v2';
+self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.add('/'))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+        navigator.serviceWorker.register(
+            URL.createObjectURL(new Blob([code],{type:'application/javascript'}))
+        ).catch(()=>{});
+    });
+}
+</script>
+
+<!-- MANIFEST -->
+<script>
+(()=>{
+    const m={name:'Calculadora Taller',short_name:'Taller',start_url:'.',display:'standalone',
+        background_color:'#0f172a',theme_color:'#0f172a',
+        icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f172a'/%3E%3Ctext y='.9em' font-size='78' x='10'%3E⚙️%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
+    const l=document.createElement('link');
+    l.rel='manifest';
+    l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));
+    document.head.appendChild(l);
+})();
+</script>
+</body>
+</html>
