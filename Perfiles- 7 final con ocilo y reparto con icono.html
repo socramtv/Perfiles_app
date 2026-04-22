@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Taller</title>
+<meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Taller">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+    --bg:#0f172a;--surf:#1e293b;--surf2:#263348;--border:#334155;
+    --gold:#f59e0b;--goldd:#d97706;--glow:rgba(245,158,11,.22);
+    --cyan:#06b6d4;--green:#10b981;--red:#ef4444;--purple:#a78bfa;
+    --text:#f1f5f9;--muted:#94a3b8;--dim:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:14px 11px 80px;
+    background-image:radial-gradient(ellipse at 15% 0%,rgba(245,158,11,.07) 0%,transparent 55%),radial-gradient(ellipse at 85% 100%,rgba(6,182,212,.05) 0%,transparent 55%)}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.hdr-logo{display:flex;align-items:center;gap:10px}
+.hdr-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--goldd));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px var(--glow)}
+.hdr-icon svg{width:24px;height:24px;fill:none;stroke:#0f172a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hdr-name{font-family:'Bebas Neue',cursive;font-size:1.65rem;letter-spacing:2px;line-height:1}
+.hdr-sub{font-size:.67rem;color:var(--dim);letter-spacing:1.3px;text-transform:uppercase}
+.hdr-btns{display:flex;align-items:center;gap:6px}
+
+/* HEADER BTNS */
+.hdr-btn{display:flex;align-items:center;gap:4px;border:none;border-radius:20px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;padding:7px 10px;transition:all .2s;letter-spacing:.2px;white-space:nowrap}
+.hdr-btn svg{width:13px;height:13px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+#btnInstall{display:none}
+#btnInstall .btn-txt{display:none}
+.hdr-btns{display:flex;align-items:center;gap:5px}
+.btn-hdr-sec{background:var(--surf2);color:var(--muted);border:1.5px solid var(--border)}
+.btn-hdr-sec svg{stroke:var(--muted)}
+.btn-hdr-sec:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-hdr-sec:hover svg{stroke:var(--cyan)}
+#btnCalc2{border-color:rgba(167,139,250,.4);color:var(--purple)}
+#btnCalc2 svg{stroke:var(--purple)}
+#btnCalc2:hover{border-color:var(--purple);background:rgba(167,139,250,.1)}
+@keyframes pulse{0%,100%{box-shadow:0 4px 12px var(--glow)}50%{box-shadow:0 4px 22px rgba(245,158,11,.5)}}
+
+/* CARD */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:17px 15px;margin-bottom:12px}
+
+/* LABELS */
+.slabel{display:flex;align-items:center;gap:5px;font-size:.67rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:9px}
+.slabel svg{width:11px;height:11px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.flabel{display:block;font-size:.67rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.fgroup{margin-bottom:11px}.fgroup:last-child{margin-bottom:0}
+
+/* INPUTS */
+select,input[type=number],input[type=text]{width:100%;padding:11px 14px;background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .2s,box-shadow .2s}
+select:focus,input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--glow)}
+select option{background:#1e293b}
+.sw{position:relative}
+.sw::after{content:"▼";position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:.6rem;color:var(--gold);pointer-events:none}
+#serie{border-color:var(--gold);box-shadow:0 0 0 3px var(--glow);padding-right:36px}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mrow .fgroup{margin-bottom:0}
+.iu{position:relative}
+.iu input{padding-right:42px}
+.iu::after{content:"mm";position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:.7rem;font-weight:700;color:var(--dim);pointer-events:none}
+
+/* CALC BTN */
+.btn-calc{width:100%;padding:15px;background:linear-gradient(135deg,var(--gold),var(--goldd));border:none;border-radius:12px;color:#0f172a;font-family:'Bebas Neue',cursive;font-size:1.28rem;letter-spacing:3px;cursor:pointer;margin-top:13px;box-shadow:0 6px 20px var(--glow);transition:transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-calc svg{width:20px;height:20px;fill:none;stroke:#0f172a;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.btn-calc:active{transform:scale(.97)}
+
+/* RESULTS */
+.res-card{background:var(--surf);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px;animation:slideIn .28s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.res-hdr{background:linear-gradient(135deg,#1a2742,#0f1929);padding:11px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.res-hdr-title{font-family:'Bebas Neue',cursive;font-size:1.05rem;letter-spacing:2px;color:var(--gold)}
+.res-hdr-dims{font-size:.8rem;color:var(--dim);font-weight:600}
+.res-row{display:grid;grid-template-columns:42px 28px 1fr auto;align-items:center;padding:10px 15px;gap:5px;border-bottom:1px solid rgba(51,65,85,.5);transition:background .15s}
+.res-row:last-child{border-bottom:none}
+.res-row:hover{background:rgba(245,158,11,.04)}
+.qty-badge{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--gold);border-radius:6px;font-family:'Bebas Neue',cursive;font-size:.95rem;letter-spacing:1px;text-align:center;padding:2px 4px}
+.piece-icon{display:flex;align-items:center;justify-content:center}
+.piece-icon svg{width:18px;height:18px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.piece-name{font-weight:600;font-size:.93rem;color:var(--muted)}
+.res-val{font-family:'Bebas Neue',cursive;font-size:1.38rem;letter-spacing:1px;color:var(--gold);white-space:nowrap;text-align:right}
+.res-val small{font-size:.62rem;color:var(--dim);margin-left:2px;font-family:'Rajdhani',sans-serif;font-weight:600}
+.res-nota{padding:10px 15px;font-size:.84rem;color:var(--cyan);font-weight:600;border-top:1px solid rgba(6,182,212,.2);background:rgba(6,182,212,.05);line-height:1.9}
+.res-cierre{padding:10px 15px;font-size:.84rem;color:#7dd3fc;font-weight:600;border-top:1px solid rgba(14,165,233,.2);background:rgba(14,165,233,.07);display:flex;align-items:flex-start;gap:8px}
+.res-cierre svg{width:15px;height:15px;flex-shrink:0;margin-top:2px;stroke:#7dd3fc;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ACTION */
+.act-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.btn-act{padding:13px;border:none;border-radius:12px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:.5px;transition:transform .15s,opacity .15s}
+.btn-act:active{transform:scale(.96);opacity:.85}
+.btn-act svg{width:17px;height:17px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-ws{background:linear-gradient(135deg,#25D366,#128c4a);color:#fff}.btn-ws svg{stroke:#fff}
+.btn-print{background:var(--surf2);border:1.5px solid var(--border);color:var(--muted)}.btn-print svg{stroke:var(--muted)}
+
+/* TOGGLE */
+.toggle-btn{width:100%;background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;color:var(--muted);padding:12px 15px;font-family:'Rajdhani',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .2s}
+.toggle-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.tleft{display:flex;align-items:center;gap:8px}
+.tleft svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tarrow{font-size:.6rem;color:var(--dim);transition:transform .25s}
+.tarrow.open{transform:rotate(180deg)}
+.info-panel{display:none;background:var(--surf);border:1.5px solid var(--border);border-top:none;border-radius:0 0 12px 12px;padding:12px 15px;margin-top:-2px}
+.info-panel.show{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.irow{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(51,65,85,.4);font-size:.9rem}
+.irow:last-child{border-bottom:none}
+.irow svg{width:13px;height:13px;flex-shrink:0;stroke:var(--cyan);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.irow b{color:var(--cyan);font-weight:700}.irow span{color:var(--muted)}
+
+/* MODAL SHARED */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:flex-end;justify-content:center}
+.modal-bg.show{display:flex;animation:bgIn .2s ease}
+@keyframes bgIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surf);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:500px;padding:20px 18px 36px;animation:modalUp .25s ease;max-height:90vh;overflow-y:auto}
+@keyframes modalUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.modal-title{font-family:'Bebas Neue',cursive;font-size:1.25rem;letter-spacing:2px;color:var(--gold);display:flex;align-items:center;gap:8px}
+.modal-title svg{width:17px;height:17px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.modal-close{background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;color:var(--muted);width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .15s}
+.modal-close:hover{border-color:var(--red);color:var(--red)}
+
+/* CFG MODAL */
+.cfg-section{margin-bottom:18px}
+.cfg-stitle{font-size:.63rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(6,182,212,.2);display:flex;align-items:center;gap:6px}
+.cfg-stitle svg{width:12px;height:12px;fill:none;stroke:var(--cyan);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cfg-f{display:flex;flex-direction:column;gap:4px}
+.cfg-f label{font-size:.63rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim)}
+.cfg-f input{padding:9px 40px 9px 11px;font-size:.95rem;text-align:right}
+.cfg-full{grid-column:1/-1}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.btn-modal{padding:12px;border:none;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.5px;transition:transform .15s}
+.btn-modal svg{width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-save{background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a}.btn-save svg{stroke:#0f172a}
+.btn-reset{background:var(--surf2);border:1.5px solid var(--border);color:var(--muted)}.btn-reset svg{stroke:var(--muted)}
+.btn-modal:active{transform:scale(.97)}
+
+/* MINI CALC MODAL */
+.calc2-display{background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px;text-align:right}
+.calc2-expr{font-size:.8rem;color:var(--dim);min-height:18px;letter-spacing:.5px;font-weight:600;margin-bottom:4px;word-break:break-all}
+.calc2-result{font-family:'Bebas Neue',cursive;font-size:2.4rem;letter-spacing:2px;color:var(--gold);line-height:1}
+.calc2-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.c2btn{padding:15px 8px;border:none;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;cursor:pointer;transition:transform .1s,opacity .15s;display:flex;align-items:center;justify-content:center}
+.c2btn:active{transform:scale(.93);opacity:.8}
+.c2-num{background:var(--surf2);border:1.5px solid var(--border);color:var(--text)}
+.c2-op{background:rgba(245,158,11,.15);border:1.5px solid rgba(245,158,11,.35);color:var(--gold)}
+.c2-eq{background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a;font-size:1.3rem}
+.c2-del{background:rgba(239,68,68,.12);border:1.5px solid rgba(239,68,68,.3);color:var(--red)}
+.c2-clr{background:rgba(239,68,68,.18);border:1.5px solid rgba(239,68,68,.4);color:var(--red);font-size:.85rem}
+.c2-pct{background:rgba(6,182,212,.12);border:1.5px solid rgba(6,182,212,.3);color:var(--cyan);font-size:.85rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--green);color:#fff;padding:9px 20px;border-radius:20px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;box-shadow:0 6px 20px rgba(16,185,129,.3);transition:transform .3s ease;z-index:200}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media print{
+    body{background:white;padding:0}
+    .hdr,.card,.act-row,.toggle-btn,.info-panel,.modal-bg{display:none!important}
+    .res-card{border:2px solid #000;border-radius:0;animation:none}
+    .res-hdr{background:#334155!important;-webkit-print-color-adjust:exact}
+    .res-val{color:#000!important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+    <div class="hdr-logo">
+<div class="hdr-icon">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100" height="100" rx="20" fill="#0f172a"/>
+        
+        <path d="M25,25 h50 v50 h-50 z" fill="none" stroke="#00b4d8" stroke-width="6"/>
+        <path d="M50,25 v50 M25,50 h50" fill="none" stroke="#00b4d8" stroke-width="4"/>
+        
+        <path d="M30,60 l15,-15 l10,10 l25,-25" fill="none" stroke="#e63946" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        
+        <path d="M72,30 l8,0 l0,8" fill="none" stroke="#e63946" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</div>
+
+        <div>
+            <div class="hdr-name">TALLER</div>
+            <div class="hdr-sub">Calculadora de Cortes</div>
+        </div>
+    </div>
+    <div class="hdr-btns">
+        <button id="btnCalc2" class="hdr-btn btn-hdr-sec" onclick="abrirCalc2()">
+            <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/></svg>
+            Calc
+        </button>
+        <button id="btnReparto" class="hdr-btn btn-hdr-sec" onclick="abrirReparto()" style="border-color:rgba(52,211,153,.4);color:#34d399">
+            <svg viewBox="0 0 24 24" style="stroke:#34d399"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            Reparto
+        </button>
+        <button id="btnAjustes" class="hdr-btn btn-hdr-sec" onclick="abrirAjustes()">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Ajustes
+        </button>
+        <button id="btnInstall" class="hdr-btn" onclick="instalarPWA()" style="display:none">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span class="btn-txt">Instalar</span>
+        </button>
+    </div>
+</div>
+
+<!-- SERIE -->
+<div class="card">
+    <div class="slabel">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Serie / Perfil
+    </div>
+    <div class="sw">
+        <select id="serie" onchange="actualizarInterfaz()">
+            <option value="giralda">Giralda — Corredera</option>
+            <option value="giralda_persiana">Giralda — Con Persiana</option>
+            <option value="giralda_4hojas">Giralda — 4 Hojas</option>
+            <option value="40x20">Abatible 40×20</option>
+            <option value="40x40">Abatible 40×40</option>
+            <option value="mezquita">Mezquita / SAMM 447</option>
+            <option value="mosquitera">Mosquitera Enrollable</option>
+            <option value="mobiliario">Perfil Mobiliario</option>
+        </select>
+    </div>
+</div>
+
+<!-- OPCIONES -->
+<div id="seccionMedidas">
+    <div class="card" id="cardOpc" style="display:none">
+
+        <div id="divTubular" class="fgroup" style="display:none">
+            <label class="flabel">Marco inferior tubular</label>
+            <div class="sw"><select id="marcoTubular">
+                <option value="no">No — Estándar</option>
+                <option value="si">Sí — Tubular</option>
+            </select></div>
+        </div>
+
+        <div id="divHojas" class="fgroup" style="display:none">
+            <label class="flabel">Número de hojas</label>
+            <div class="sw"><select id="numHojas" onchange="actualizarInterfaz()">
+                <option value="1">1 Hoja</option>
+                <option value="2">2 Hojas</option>
+                <option value="4" id="opt4hojas" style="display:none">4 Hojas</option>
+            </select></div>
+        </div>
+
+        <div id="divTancha" class="fgroup" style="display:none">
+            <label class="flabel">Travesaño — 4 Hojas</label>
+            <div style="background:rgba(167,139,250,.1);border:1.5px solid rgba(167,139,250,.3);border-radius:10px;padding:10px 14px;font-size:.9rem;color:var(--purple);font-weight:600;letter-spacing:.3px">
+                T Ancha activa  ·  Fórmula: (A − cfg_tancha) ÷ 4
+            </div>
+        </div>
+
+        <div id="divExtra" class="fgroup" style="display:none">
+            <label class="flabel" id="labelExtra">Variante de marco</label>
+            <div class="sw"><select id="selectExtra"></select></div>
+        </div>
+
+        <div id="divCierre" class="fgroup" style="display:none">
+            <label class="flabel">Tipo de cierre</label>
+            <div class="sw"><select id="tipoCierre" onchange="actualizarInterfaz()">
+                <option value="estandar">Cierre Estándar</option>
+                <option value="oscilo">Cierre Oscilobatiente</option>
+            </select></div>
+        </div>
+
+        <div id="divCompas" class="fgroup" style="display:none">
+            <label class="flabel">Compás oscilobatiente</label>
+            <div style="background:rgba(167,139,250,.08);border:1.5px solid rgba(167,139,250,.3);border-radius:10px;padding:9px 13px;font-size:.85rem;color:var(--purple);font-weight:600;letter-spacing:.3px">
+                Se calculará automáticamente según el ancho de hoja
+            </div>
+        </div>
+
+        <div id="divMobHojas" class="fgroup" style="display:none">
+            <label class="flabel">Número de hojas</label>
+            <div class="sw"><select id="numHojasMob">
+                <option value="1">1 Hoja</option>
+                <option value="2">2 Hojas</option>
+            </select></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="slabel">
+            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            Medidas del hueco
+        </div>
+        <div class="mrow">
+            <div class="fgroup">
+                <label class="flabel">Ancho total</label>
+                <div class="iu"><input type="number" id="ancho" placeholder="0" inputmode="numeric"></div>
+            </div>
+            <div class="fgroup">
+                <label class="flabel">Alto total</label>
+                <div class="iu"><input type="number" id="alto" placeholder="0" inputmode="numeric"></div>
+            </div>
+        </div>
+        <button class="btn-calc" onclick="calcular()">
+            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            CALCULAR CORTES
+        </button>
+    </div>
+</div>
+
+<!-- RESULTADOS -->
+<div id="resultadosContenedor" style="display:none">
+    <div class="res-card" id="resultados"></div>
+    <div class="act-row">
+        <button class="btn-act btn-ws" onclick="compartirWS()">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp
+        </button>
+        <button class="btn-act btn-print" onclick="window.print()">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimir
+        </button>
+    </div>
+    <button id="btnInstallMain" onclick="instalarPWA()" style="display:none;width:100%;margin-bottom:14px;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;letter-spacing:.5px;box-shadow:0 4px 16px var(--glow);animation:pulse 2.5s infinite;flex-align:center;align-items:center;justify-content:center;gap:8px">
+        <svg style="display:inline;vertical-align:middle;margin-right:6px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        📲 INSTALAR APP EN EL DISPOSITIVO
+    </button>
+</div>
+
+<!-- DATOS TÉCNICOS -->
+<button class="toggle-btn" onclick="toggleInfo()">
+    <span class="tleft">
+        <svg id="iconInfo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="txtBtn">DATOS TÉCNICOS</span>
+    </span>
+    <span class="tarrow" id="arrow">▼</span>
+</button>
+<div class="info-panel" id="infoPanel"><div id="infoCaja"></div></div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ MODAL AJUSTES ══ -->
+<div class="modal-bg" id="modalAjustesBg" onclick="cerrarModalBg(event,'modalAjustesBg')">
+<div class="modal">
+    <div class="modal-hdr">
+        <div class="modal-title">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            AJUSTES DE DESCUENTOS
+        </div>
+        <button class="modal-close" onclick="cerrarAjustes()">✕</button>
+    </div>
+
+    <!-- GIRALDA -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>Giralda</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Marco S/I desc. std</label><div class="iu"><input type="number" id="cfg_gir_dH_std" value="27"></div></div>
+            <div class="cfg-f"><label>Marco S/I desc. persiana</label><div class="iu"><input type="number" id="cfg_gir_dH_per" value="88"></div></div>
+            <div class="cfg-f"><label>Hoja Alto desc. std</label><div class="iu"><input type="number" id="cfg_gir_dHoja_std" value="52"></div></div>
+            <div class="cfg-f"><label>Hoja Alto desc. tubular</label><div class="iu"><input type="number" id="cfg_gir_dHoja_tub" value="62"></div></div>
+            <div class="cfg-f"><label>Ruleta desc. std</label><div class="iu"><input type="number" id="cfg_gir_dRuleta_std" value="12"></div></div>
+            <div class="cfg-f"><label>Ruleta desc. persiana</label><div class="iu"><input type="number" id="cfg_gir_dRuleta_per" value="72"></div></div>
+            <div class="cfg-f"><label>Ruleta desc. 4 hojas</label><div class="iu"><input type="number" id="cfg_gir_dRuleta_4h" value="16"></div></div>
+        </div>
+    </div>
+
+    <!-- 40x20 -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="9" cy="12" r="1.3" fill="var(--cyan)" stroke="none"/></svg>Abatible 40×20</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja Alto (cerrado)</label><div class="iu"><input type="number" id="cfg_20_dH_cerr" value="43"></div></div>
+            <div class="cfg-f"><label>Hoja Alto (abierto)</label><div class="iu"><input type="number" id="cfg_20_dH_ab" value="29"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 1H</label><div class="iu"><input type="number" id="cfg_20_dAn" value="43"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 2H</label><div class="iu"><input type="number" id="cfg_20_dAn2" value="50"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 4H</label><div class="iu"><input type="number" id="cfg_20_dAn4" value="50"></div></div>
+            <div class="cfg-f"><label>T Ancha desc. (÷4)</label><div class="iu"><input type="number" id="cfg_20_tancha" value="8.9"></div></div>
+            <div class="cfg-f"><label>Inversor desc.</label><div class="iu"><input type="number" id="cfg_20_inv" value="92"></div></div>
+        </div>
+    </div>
+
+    <!-- 40x40 -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="15" cy="12" r="1.3" fill="var(--cyan)" stroke="none"/></svg>Abatible 40×40</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja Alto (cerrado)</label><div class="iu"><input type="number" id="cfg_40_dH_cerr" value="83"></div></div>
+            <div class="cfg-f"><label>Hoja Alto (abierto)</label><div class="iu"><input type="number" id="cfg_40_dH_ab" value="49"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 1H</label><div class="iu"><input type="number" id="cfg_40_dAn" value="83"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 2H</label><div class="iu"><input type="number" id="cfg_40_dAn2" value="90"></div></div>
+            <div class="cfg-f cfg-full"><label>Inversor desc.</label><div class="iu"><input type="number" id="cfg_40_inv" value="132"></div></div>
+        </div>
+    </div>
+
+    <!-- MEZQUITA -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Mezquita / SAMM 447</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja Alto (cerrado)</label><div class="iu"><input type="number" id="cfg_mez_dH_cerr" value="44"></div></div>
+            <div class="cfg-f"><label>Hoja Alto (abierto)</label><div class="iu"><input type="number" id="cfg_mez_dH_ab" value="30"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 1H</label><div class="iu"><input type="number" id="cfg_mez_dAn" value="44"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 2H</label><div class="iu"><input type="number" id="cfg_mez_dAn2" value="50"></div></div>
+            <div class="cfg-f cfg-full"><label>Inversor desc.</label><div class="iu"><input type="number" id="cfg_mez_inv" value="106"></div></div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15)">
+            <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Fallebas — 2 hojas</div>
+            <div class="cfg-grid">
+                <div class="cfg-f"><label>Pasiva + (aH/2 +X)</label><div class="iu"><input type="number" id="cfg_mez_fp_mas" value="30"></div></div>
+                <div class="cfg-f"><label>Pasiva - (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez_fp_men" value="351"></div></div>
+                <div class="cfg-f"><label>Princ. base (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez_fpr_base" value="225"></div></div>
+                <div class="cfg-f"><label>Princ. std (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez_fpr_std" value="153"></div></div>
+                <div class="cfg-f cfg-full"><label>Princ. oscilo (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez_fpr_osc" value="185"></div></div>
+            </div>
+            <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin:10px 0 8px">Falleba — 1 hoja (solo principal)</div>
+            <div class="cfg-grid">
+                <div class="cfg-f"><label>Princ. base (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez1_fpr_base" value="225"></div></div>
+                <div class="cfg-f"><label>Princ. std (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez1_fpr_std" value="153"></div></div>
+                <div class="cfg-f cfg-full"><label>Princ. oscilo (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez1_fpr_osc" value="185"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOSQUITERA -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 8h18M3 13h18M8 3v18M13 3v18"/></svg>Mosquitera</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Ancho desc.</label><div class="iu"><input type="number" id="cfg_mos_dAn" value="20"></div></div>
+            <div class="cfg-f"><label>Alto guías (pequeño)</label><div class="iu"><input type="number" id="cfg_mos_dH_peq" value="35"></div></div>
+            <div class="cfg-f"><label>Alto guías (grande)</label><div class="iu"><input type="number" id="cfg_mos_dH_gran" value="45"></div></div>
+            <div class="cfg-f"><label>Umbral grande (mm)</label><div class="iu"><input type="number" id="cfg_mos_umbral" value="1450"></div></div>
+        </div>
+    </div>
+
+    <!-- OSCILOBATIENTE -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Oscilobatiente — Compás</div>
+        <div style="margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid rgba(6,182,212,.15)">
+            <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Descuento ancho hoja (ancho hoja − X)</div>
+            <div class="cfg-grid">
+                <div class="cfg-f"><label>Micro (fijo: −309)</label><div class="iu"><input type="number" id="cfg_osc_micro_desc" value="309"></div></div>
+                <div class="cfg-f"><label>Compás Mini</label><div class="iu"><input type="number" id="cfg_osc_cmini_desc" value="30"></div></div>
+                <div class="cfg-f"><label>Compás Pequeño</label><div class="iu"><input type="number" id="cfg_osc_cpeq_desc" value="30"></div></div>
+                <div class="cfg-f"><label>Compás Grande (fijo: −495)</label><div class="iu"><input type="number" id="cfg_osc_cgran_desc" value="495"></div></div>
+            </div>
+        </div>
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Rangos válidos (ancho hoja mm)</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Micro — mín</label><div class="iu"><input type="number" id="cfg_osc_micro_min" value="345"></div></div>
+            <div class="cfg-f"><label>Micro — máx</label><div class="iu"><input type="number" id="cfg_osc_micro_max" value="700"></div></div>
+            <div class="cfg-f"><label>Compás Mini — mín</label><div class="iu"><input type="number" id="cfg_osc_cmini_min" value="372"></div></div>
+            <div class="cfg-f"><label>Compás Mini — máx</label><div class="iu"><input type="number" id="cfg_osc_cmini_max" value="700"></div></div>
+            <div class="cfg-f"><label>Compás Peq. — mín</label><div class="iu"><input type="number" id="cfg_osc_cpeq_min" value="442"></div></div>
+            <div class="cfg-f"><label>Compás Peq. — máx</label><div class="iu"><input type="number" id="cfg_osc_cpeq_max" value="750"></div></div>
+            <div class="cfg-f"><label>Compás Grande — mín</label><div class="iu"><input type="number" id="cfg_osc_cgran_min" value="570"></div></div>
+            <div class="cfg-f"><label>Compás Grande — máx</label><div class="iu"><input type="number" id="cfg_osc_cgran_max" value="1200"></div></div>
+        </div>
+    </div>
+
+    <!-- MOBILIARIO -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>Perfil Mobiliario</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Alto desc. (1 y 2 H)</label><div class="iu"><input type="number" id="cfg_mob_dH" value="10"></div></div>
+            <div class="cfg-f"><label>Ancho desc. 1H</label><div class="iu"><input type="number" id="cfg_mob_dAn1" value="20"></div></div>
+            <div class="cfg-f cfg-full"><label>Ancho desc. 2H (antes ÷2)</label><div class="iu"><input type="number" id="cfg_mob_dAn2" value="33"></div></div>
+        </div>
+    </div>
+
+    <div class="modal-btns">
+        <button class="btn-modal btn-save" onclick="guardarAjustes()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar
+        </button>
+        <button class="btn-modal btn-reset" onclick="resetAjustes()">
+            <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            Restablecer
+        </button>
+    </div>
+</div>
+</div>
+
+<!-- ══ MODAL MINI CALCULADORA ══ -->
+<div class="modal-bg" id="modalCalc2Bg" onclick="cerrarModalBg(event,'modalCalc2Bg')">
+<div class="modal" style="padding-bottom:28px">
+    <div class="modal-hdr">
+        <div class="modal-title">
+            <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/></svg>
+            MINI CALCULADORA
+        </div>
+        <button class="modal-close" onclick="cerrarCalc2()">✕</button>
+    </div>
+    <div class="calc2-display">
+        <div class="calc2-expr" id="c2expr"></div>
+        <div class="calc2-result" id="c2res">0</div>
+    </div>
+    <div class="calc2-grid">
+        <button class="c2btn c2-clr" onclick="c2clear()">AC</button>
+        <button class="c2btn c2-del" onclick="c2del()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+        </button>
+        <button class="c2btn c2-pct" onclick="c2input('%')">%</button>
+        <button class="c2btn c2-op" onclick="c2input('÷')">÷</button>
+
+        <button class="c2btn c2-num" onclick="c2input('7')">7</button>
+        <button class="c2btn c2-num" onclick="c2input('8')">8</button>
+        <button class="c2btn c2-num" onclick="c2input('9')">9</button>
+        <button class="c2btn c2-op" onclick="c2input('×')">×</button>
+
+        <button class="c2btn c2-num" onclick="c2input('4')">4</button>
+        <button class="c2btn c2-num" onclick="c2input('5')">5</button>
+        <button class="c2btn c2-num" onclick="c2input('6')">6</button>
+        <button class="c2btn c2-op" onclick="c2input('−')">−</button>
+
+        <button class="c2btn c2-num" onclick="c2input('1')">1</button>
+        <button class="c2btn c2-num" onclick="c2input('2')">2</button>
+        <button class="c2btn c2-num" onclick="c2input('3')">3</button>
+        <button class="c2btn c2-op" onclick="c2input('+')">+</button>
+
+        <button class="c2btn c2-num" onclick="c2input('±')" style="font-size:.9rem">+/−</button>
+        <button class="c2btn c2-num" onclick="c2input('0')">0</button>
+        <button class="c2btn c2-num" onclick="c2input('.')">.</button>
+        <button class="c2btn c2-eq" onclick="c2equal()">=</button>
+    </div>
+</div>
+</div>
+
+<!-- ══ MODAL REPARTO ══ -->
+<div class="modal-bg" id="modalRepartoBg" onclick="cerrarModalBg(event,'modalRepartoBg')">
+<div class="modal" style="padding-bottom:28px">
+    <div class="modal-hdr">
+        <div class="modal-title">
+            <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            CALCULADORA DE REPARTO
+        </div>
+        <button class="modal-close" onclick="cerrarReparto()">✕</button>
+    </div>
+
+    <!-- INPUTS -->
+    <div class="cfg-grid" style="margin-bottom:12px">
+        <div class="cfg-f cfg-full">
+            <label>Longitud total</label>
+            <div class="iu"><input type="number" id="rp_total" placeholder="0" inputmode="numeric" oninput="calcReparto()"></div>
+        </div>
+        <div class="cfg-f">
+            <label>Nº travesaños</label>
+            <div class="iu" style="--iu-unit:'ud'">
+                <input type="number" id="rp_num" placeholder="0" inputmode="numeric" oninput="calcReparto()" style="padding-right:32px">
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:.7rem;font-weight:700;color:var(--dim);pointer-events:none">ud</span>
+            </div>
+        </div>
+        <div class="cfg-f">
+            <label>Ancho travesaño</label>
+            <div class="iu"><input type="number" id="rp_ancho" placeholder="0" inputmode="numeric" oninput="calcReparto()"></div>
+        </div>
+    </div>
+
+    <!-- RESULTADO ESPACIO -->
+    <div id="rp_resBox" style="display:none">
+        <div style="background:linear-gradient(135deg,#1a2742,#0f1929);border:1px solid var(--border);border-radius:12px;padding:12px 15px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim)">Espacio entre</span>
+            <span style="font-family:'Bebas Neue',cursive;font-size:1.8rem;letter-spacing:2px;color:var(--gold)" id="rp_espacio">—</span>
+        </div>
+
+        <!-- LISTA DE EJES -->
+        <div style="background:var(--surf2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+            <div style="padding:8px 14px;border-bottom:1px solid var(--border);font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);display:flex;justify-content:space-between">
+                <span>Travesaño</span><span>Eje desde origen</span>
+            </div>
+            <div id="rp_lista" style="max-height:280px;overflow-y:auto"></div>
+        </div>
+
+        <!-- WS REPARTO -->
+        <button class="btn-act btn-ws" style="width:100%;margin-top:12px" onclick="compartirRepartoWS()">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            Enviar por WhatsApp
+        </button>
+    </div>
+
+    <!-- ERROR -->
+    <div id="rp_error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px 14px;color:var(--red);font-weight:700;font-size:.9rem;text-align:center">
+        ✗ El material no cabe en la longitud indicada
+    </div>
+</div>
+</div>
+
+<script>
+/* ══ SVG ICONS ══ */
+const ICONS={
+    marco:   `<svg viewBox="0 0 24 24" stroke="var(--cyan)"><rect x="3" y="3" width="18" height="18" rx="1"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>`,
+    hoja:    `<svg viewBox="0 0 24 24" stroke="var(--gold)"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="9" cy="12" r="1.3" fill="var(--gold)" stroke="none"/></svg>`,
+    ruleta:  `<svg viewBox="0 0 24 24" stroke="#a78bfa"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+    inversor:`<svg viewBox="0 0 24 24" stroke="#fb923c"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>`,
+    guia:    `<svg viewBox="0 0 24 24" stroke="#34d399"><line x1="3" y1="5" x2="3" y2="19"/><line x1="21" y1="5" x2="21" y2="19"/><line x1="3" y1="8" x2="21" y2="8"/><line x1="3" y1="16" x2="21" y2="16"/><line x1="8" y1="5" x2="8" y2="8"/><line x1="8" y1="16" x2="8" y2="19"/><line x1="16" y1="5" x2="16" y2="8"/><line x1="16" y1="16" x2="16" y2="19"/></svg>`,
+    cabezal: `<svg viewBox="0 0 24 24" stroke="#60a5fa"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M12 7v10M7 7v10M17 7v10"/></svg>`,
+    pieza:   `<svg viewBox="0 0 24 24" stroke="var(--muted)"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>`,
+};
+function getIcon(n){
+    const k=n.toLowerCase();
+    if(k.includes('marco'))    return ICONS.marco;
+    if(k.includes('hoja'))     return ICONS.hoja;
+    if(k.includes('ruleta'))   return ICONS.ruleta;
+    if(k.includes('inversor')) return ICONS.inversor;
+    if(k.includes('guía')||k.includes('guia')) return ICONS.guia;
+    if(k.includes('cabezal'))  return ICONS.cabezal;
+    return ICONS.pieza;
+}
+
+/* ══ CFG ══ */
+const DEFAULTS={
+    gir_dH_std:27, gir_dH_per:88,
+    gir_dHoja_std:52, gir_dHoja_tub:62,
+    gir_dRuleta_std:12, gir_dRuleta_per:72, gir_dRuleta_4h:16,
+    '20_dH_cerr':43,'20_dH_ab':29,'20_dAn':43,'20_dAn2':50,'20_dAn4':50,'20_tancha':8.9,'20_inv':92,
+    '40_dH_cerr':83,'40_dH_ab':49,'40_dAn':83,'40_dAn2':90,'40_inv':132,
+    mez_dH_cerr:44,mez_dH_ab:30,mez_dAn:44,mez_dAn2:50,mez_inv:106,
+    mez_fp_mas:30,mez_fp_men:351,mez_fpr_base:225,mez_fpr_std:153,mez_fpr_osc:185,
+    mez1_fpr_base:225,mez1_fpr_std:153,mez1_fpr_osc:185,
+    mos_dAn:20,mos_dH_peq:35,mos_dH_gran:45,mos_umbral:1450,
+    mob_dH:10,mob_dAn1:20,mob_dAn2:33,
+    // Oscilobatiente compás — descuento ancho hoja por tipo
+    osc_micro_desc:309,    // Micro: ancho - 309
+    osc_cmini_desc:30,     // Compás Mini: provisional
+    osc_cpeq_desc:30,      // Compás Pequeño: provisional
+    osc_cgran_desc:495,    // Compás Grande: ancho - 495
+    // Rangos compás (min/max ancho hoja mm)
+    osc_micro_min:345,   osc_micro_max:700,
+    osc_cmini_min:372,   osc_cmini_max:700,
+    osc_cpeq_min:442,    osc_cpeq_max:750,
+    osc_cgran_min:570,   osc_cgran_max:1200,
+};
+const CFG_VERSION='v8';
+let CFG={};
+function loadCFG(){
+    const saved=localStorage.getItem('taller_cfg');
+    const ver=localStorage.getItem('taller_cfg_ver');
+    // Si la versión no coincide, forzar defaults frescos
+    if(!saved||ver!==CFG_VERSION){CFG={...DEFAULTS};saveCFG();return}
+    CFG={...DEFAULTS,...JSON.parse(saved)};
+}
+function saveCFG(){localStorage.setItem('taller_cfg',JSON.stringify(CFG));localStorage.setItem('taller_cfg_ver',CFG_VERSION)}
+function g(k){return CFG[k]??DEFAULTS[k]}
+
+/* ══ AJUSTES ══ */
+function abrirAjustes(){
+    loadCFG();
+    Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('cfg_'+k);if(el)el.value=CFG[k]});
+    document.getElementById('modalAjustesBg').classList.add('show');
+    document.body.style.overflow='hidden';
+}
+function cerrarAjustes(){document.getElementById('modalAjustesBg').classList.remove('show');document.body.style.overflow=''}
+function guardarAjustes(){
+    Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('cfg_'+k);if(el)CFG[k]=parseFloat(el.value)});
+    saveCFG();cerrarAjustes();showToast('✓ Ajustes guardados');
+}
+function resetAjustes(){
+    CFG={...DEFAULTS};
+    Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('cfg_'+k);if(el)el.value=DEFAULTS[k]});
+    saveCFG();showToast('✓ Valores por defecto restaurados');
+}
+
+/* ══ MINI CALC ══ */
+let c2expr='',c2lastEq=false;
+function abrirCalc2(){document.getElementById('modalCalc2Bg').classList.add('show');document.body.style.overflow='hidden'}
+function cerrarCalc2(){document.getElementById('modalCalc2Bg').classList.remove('show');document.body.style.overflow=''}
+
+/* ══ REPARTO ══ */
+let ultimoReparto=null;
+function abrirReparto(){
+    document.getElementById('modalRepartoBg').classList.add('show');
+    document.body.style.overflow='hidden';
+    calcReparto();
+}
+function cerrarReparto(){document.getElementById('modalRepartoBg').classList.remove('show');document.body.style.overflow=''}
+
+function calcReparto(){
+    const L=parseFloat(document.getElementById('rp_total').value)||0;
+    const N=parseFloat(document.getElementById('rp_num').value)||0;
+    const W=parseFloat(document.getElementById('rp_ancho').value)||0;
+    const resBox=document.getElementById('rp_resBox');
+    const errBox=document.getElementById('rp_error');
+    resBox.style.display='none'; errBox.style.display='none';
+    if(L<=0||N<=0) return;
+    const huecos=N+1;
+    const S=(L-(N*W))/huecos;
+    if(S<=0){ errBox.style.display='block'; ultimoReparto=null; return; }
+    document.getElementById('rp_espacio').textContent=S.toFixed(2)+' mm';
+    // Generar ejes
+    let html=''; const ejes=[];
+    for(let i=1;i<=N;i++){
+        const eje=(i*S)+((i-0.5)*W);
+        ejes.push({n:i,eje});
+        const isEven=i%2===0;
+        html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid rgba(51,65,85,.4);background:${isEven?'rgba(6,182,212,.03)':'transparent'}">
+            <span style="font-size:.9rem;font-weight:600;color:var(--muted)">
+                <span style="display:inline-block;width:22px;height:22px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:5px;text-align:center;line-height:22px;font-family:'Bebas Neue',cursive;color:var(--gold);font-size:.85rem;margin-right:6px">${i}</span>
+                Travesaño ${i}
+            </span>
+            <span style="font-family:'Bebas Neue',cursive;font-size:1.25rem;letter-spacing:1px;color:var(--cyan)">${eje.toFixed(2)}<small style="font-size:.6rem;color:var(--dim);margin-left:2px;font-family:'Rajdhani',sans-serif;font-weight:600">mm</small></span>
+        </div>`;
+    }
+    document.getElementById('rp_lista').innerHTML=html||'';
+    ultimoReparto={L,N,W,S,ejes};
+    resBox.style.display='block';
+}
+
+function compartirRepartoWS(){
+    if(!ultimoReparto) return;
+    const{L,N,W,S,ejes}=ultimoReparto;
+    let t=`📐 *REPARTO DE TRAVESAÑOS*\n`;
+    t+=`Total: ${L} mm  ·  ${N} ud  ·  Ancho: ${W} mm\n`;
+    t+=`Espacio entre: *${S.toFixed(2)} mm*\n${'─'.repeat(24)}\n`;
+    ejes.forEach(e=>t+=`T${e.n}: *${e.eje.toFixed(2)} mm*\n`);
+    window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+}
+function c2update(){
+    document.getElementById('c2expr').textContent=c2expr;
+    try{
+        const safe=c2expr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');
+        const v=Function('"use strict";return ('+safe+')')();
+        document.getElementById('c2res').textContent=isFinite(v)?+v.toFixed(4):'—';
+    }catch{document.getElementById('c2res').textContent=c2expr?'…':'0'}
+}
+function c2input(k){
+    if(c2lastEq&&!'÷×−+'.includes(k)){c2expr='';c2lastEq=false}
+    if(k==='±'){
+        // negate last number
+        c2expr=c2expr.replace(/([\d.]+)$/,n=>String(-parseFloat(n)));
+    } else if(k==='%'){
+        c2expr=c2expr.replace(/([\d.]+)$/,n=>String(parseFloat(n)/100));
+    } else {
+        c2expr+=k;
+    }
+    c2update();
+}
+function c2del(){c2expr=c2expr.slice(0,-1);c2lastEq=false;c2update()}
+function c2clear(){c2expr='';c2lastEq=false;c2update()}
+function c2equal(){
+    try{
+        const safe=c2expr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');
+        const v=Function('"use strict";return ('+safe+')')();
+        c2expr=isFinite(v)?String(+v.toFixed(6)):c2expr;
+        c2lastEq=true;
+    }catch{}
+    c2update();
+}
+
+/* ══ MODAL SHARED ══ */
+function cerrarModalBg(e,id){if(e.target.id===id){document.getElementById(id).classList.remove('show');document.body.style.overflow=''}}
+
+/* ══ PWA ══ */
+let deferredPrompt=null;
+function showInstallBtn(v){
+    const b=document.getElementById('btnInstallMain');
+    if(b) b.style.display=v?'flex':'none';
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;showInstallBtn(true)});
+window.addEventListener('appinstalled',()=>{showInstallBtn(false);showToast('✓ App instalada')});
+async function instalarPWA(){if(!deferredPrompt)return;deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;deferredPrompt=null;if(outcome==='accepted')showInstallBtn(false)}
+
+/* ══ TOAST ══ */
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
+
+/* ══ INFO TOGGLE ══ */
+function toggleInfo(){document.getElementById('infoPanel').classList.toggle('show');document.getElementById('arrow').classList.toggle('open')}
+function buildInfo(rows){return rows.map(([k,v])=>`<div class="irow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg><b>${k}:</b><span>${v}</span></div>`).join('')}
+
+/* ══ ACTUALIZAR INTERFAZ ══ */
+function actualizarInterfaz(){
+    const s=document.getElementById('serie').value;
+    const nH=document.getElementById('numHojas').value;
+    ['divExtra','divHojas','divTubular','divCierre','divTancha','divMobHojas','divCompas'].forEach(id=>document.getElementById(id).style.display='none');
+    document.getElementById('cardOpc').style.display='none';
+    document.getElementById('seccionMedidas').style.display='block';
+    document.getElementById('resultadosContenedor').style.display='none';
+    document.getElementById('infoCaja').innerHTML='';
+    document.getElementById('txtBtn').innerText='DATOS TÉCNICOS';
+    document.getElementById('opt4hojas').style.display=(s==='40x20')?'':'none';
+    if(s!=='40x20'&&nH==='4') document.getElementById('numHojas').value='1';
+
+    // show/hide compas selector based on current cierre value
+    const tipoCierreVal=document.getElementById('tipoCierre').value;
+
+    const showOpc=(...ids)=>{document.getElementById('cardOpc').style.display='block';ids.forEach(id=>document.getElementById(id).style.display='block')};
+
+    if(s==='40x20'||s==='40x40'||s==='mezquita'){
+        showOpc('divHojas','divExtra');
+        document.getElementById('labelExtra').innerText='Variante de marco';
+        document.getElementById('selectExtra').innerHTML='<option value="estandar">Marco Cerrado</option><option value="abierto">Marco Abierto</option>';
+        if(s==='40x20'&&nH==='4'){document.getElementById('divTancha').style.display='block';document.getElementById('cardOpc').style.display='block'}
+        if(s==='mezquita'){
+            document.getElementById('divCierre').style.display='block';
+            document.getElementById('cardOpc').style.display='block';
+            if(tipoCierreVal==='oscilo'){
+                document.getElementById('divCompas').style.display='block';
+                document.getElementById('cardOpc').style.display='block';
+            }
+        }
+        const labels={'40x20':'DATOS 40×20','40x40':'DATOS 40×40','mezquita':'DATOS MEZQUITA'};
+        document.getElementById('txtBtn').innerText=labels[s];
+        const infos={'40x20':[['Cerradura','Entrada 25'],['Bombín','30/30']],'40x40':[['Cerradura','Entrada 25']],'mezquita':[['Cerradura','Entrada 30'],['Bombín','30/40']]};
+        document.getElementById('infoCaja').innerHTML=buildInfo(infos[s]);
+    }
+    if(s==='mobiliario'){showOpc('divMobHojas');document.getElementById('txtBtn').innerText='DATOS MOBILIARIO';document.getElementById('infoCaja').innerHTML=buildInfo([['Escuadra','2,15 × 5,1'],['Bisagra','2,05 × 12']])}
+    else if(s.includes('giralda')){showOpc('divTubular');document.getElementById('txtBtn').innerText='DATOS GIRALDA';document.getElementById('infoCaja').innerHTML=buildInfo([['Mecanizado','15×2 para cierre embutido']])}
+    else if(s==='mosquitera'){document.getElementById('txtBtn').innerText='INFO MOSQUITERA';document.getElementById('infoCaja').innerHTML=buildInfo([['Ancho','-20 mm fija'],['Alto','Cabezal auto por altura']])}
+}
+
+/* ══ CALCULAR ══ */
+let ultimosCortes=[],ultimaSerieStr='';
+
+function calcular(){
+    loadCFG();
+    const serieEl=document.getElementById('serie');
+    const s=serieEl.value;
+    const A=parseFloat(document.getElementById('ancho').value)||0;
+    const H=parseFloat(document.getElementById('alto').value)||0;
+    const nHojas=document.getElementById('numHojas').value;
+    const nHojasMob=document.getElementById('numHojasMob').value;
+    const tubular=document.getElementById('marcoTubular').value;
+    const extra=document.getElementById('selectExtra')?.value||'estandar';
+    const tipoCierre=document.getElementById('tipoCierre').value;
+    const tipoT='ancha'; // 4 hojas siempre usa T Ancha
+    if(!A||!H){showToast('⚠ Introduce ancho y alto');return}
+
+    let c=[],notas='',datosCierre='';
+    ultimaSerieStr=serieEl.options[serieEl.selectedIndex].text;
+
+    /* GIRALDA
+       Marco Lateral    = H
+       Marco Sup/Inf    = A − cfg_gir_dH_std  (o _per)
+       Hoja (alto)      = H − cfg_gir_dHoja_std (o _tub)
+       Ruleta (ancho)   = (A − cfg_gir_dRuleta_std) / 2   [4hojas: (A − cfg_gir_dRuleta_4h) / 4]
+    */
+    if(s.includes('giralda')){
+        const dH       = s==='giralda_persiana'?g('gir_dH_per'):g('gir_dH_std');
+        const dAltoH   = tubular==='si'?g('gir_dHoja_tub'):g('gir_dHoja_std');
+        const dRuleta  = s==='giralda_4hojas'?g('gir_dRuleta_4h'):(s==='giralda_persiana'?g('gir_dRuleta_per'):g('gir_dRuleta_std'));
+        c.push(['2','Marco Lateral',  H]);
+        c.push(['1','Marco Superior', A-dH]);
+        c.push(['1','Marco Inferior', A-dH]);
+        // Hojas: 2 central + 2 lateral en corredera/persiana; 4+4 en 4 hojas
+        const qtdHojas = s==='giralda_4hojas'?'4':'2';
+        c.push([qtdHojas,'Hoja Central',   H-dAltoH]);
+        c.push([qtdHojas,'Hoja Lateral',   H-dAltoH]);
+        // Ruleta: 4 uds en corredera estándar/persiana, 8 uds en 4 hojas
+        const qtdRuleta = s==='giralda_4hojas'?'8':'4';
+        const valRuleta = s==='giralda_4hojas'?(A-dRuleta)/4:(A-dRuleta)/2;
+        c.push([qtdRuleta,'Ruleta (Horiz.)', valRuleta]);
+        datosCierre='Cierre embutido — Mecanizado 15×2';
+    }
+
+    /* 40x20 */
+    else if(s==='40x20'){
+        const dHm=extra==='abierto'?g('20_dH_ab'):g('20_dH_cerr');
+        datosCierre='Cerradura Ent. 25  ·  Bombín 30/30';
+        const aH=H-dHm;
+        if(nHojas==='4'){
+            // 40x20 4 hojas: siempre T Ancha
+            const dAn4=g('20_tancha');
+            c.push(['2','Marco Lateral',H]);
+            c.push(['2','Marco Horiz.', A]);
+            c.push(['8','Hoja Vertical',aH]);
+            c.push(['8','Hoja Horiz.',  (A-dAn4)/4]);
+            c.push(['2','Inversor',     H-g('20_inv')]);
+            datosCierre+='  ·  T Ancha';
+        } else {
+            const anH=nHojas==='1'?A-g('20_dAn'):(A-g('20_dAn2'))/2;
+            c.push(['2','Marco Lateral', H]);
+            c.push([extra==='abierto'?'1':'2','Marco Horiz.',A]);
+            c.push([nHojas==='1'?'2':'4','Hoja Vertical',aH]);
+            c.push([nHojas==='1'?'2':'4','Hoja Horiz.',anH]);
+            if(nHojas==='2') c.push(['1','Inversor',H-g('20_inv')]);
+        }
+    }
+
+    /* 40x40 */
+    else if(s==='40x40'){
+        const dHm=extra==='abierto'?g('40_dH_ab'):g('40_dH_cerr');
+        const aH=H-dHm;
+        const anH=nHojas==='1'?A-g('40_dAn'):(A-g('40_dAn2'))/2;
+        datosCierre='Cerradura Ent. 25';
+        c.push(['2','Marco Lateral', H]);
+        c.push([extra==='abierto'?'1':'2','Marco Horiz.',A]);
+        c.push([nHojas==='1'?'2':'4','Hoja Vertical',aH]);
+        c.push([nHojas==='1'?'2':'4','Hoja Horiz.',anH]);
+        if(nHojas==='2') c.push(['1','Inversor',H-g('40_inv')]);
+    }
+
+    /* MEZQUITA */
+    else if(s==='mezquita'){
+        const tipoCompas='auto'; // calculado automáticamente
+        const dHm=extra==='abierto'?g('mez_dH_ab'):g('mez_dH_cerr');
+        const aH=H-dHm;
+        const anH=nHojas==='1'?A-g('mez_dAn'):(A-g('mez_dAn2'))/2;
+        datosCierre='Cerradura Ent. 30  ·  Bombín 30/40';
+        c.push(['2','Marco Lateral', H]);
+        c.push([extra==='abierto'?'1':'2','Marco Horiz.',A]);
+        c.push([nHojas==='1'?'2':'4','Hoja Vertical',aH]);
+        c.push([nHojas==='1'?'2':'4','Hoja Horiz.',anH]);
+        if(nHojas==='2'){
+            c.push(['1','Inversor',H-g('mez_inv')]);
+            const p1=(aH/2)+g('mez_fp_mas'), p2=(aH/2)-g('mez_fp_men');
+            const r1=(aH/2)-g('mez_fpr_base'), r2=tipoCierre==='oscilo'?(aH/2)-g('mez_fpr_osc'):(aH/2)-g('mez_fpr_std');
+            notas=`Falleba Pasiva: <b>${p1.toFixed(1)}</b> / <b>${p2.toFixed(1)}</b> mm<br>Falleba Principal: <b>${r1.toFixed(1)}</b> / <b>${r2.toFixed(1)}</b> mm`;
+        } else {
+            const r1=(aH/2)-g('mez1_fpr_base'), r2=tipoCierre==='oscilo'?(aH/2)-g('mez1_fpr_osc'):(aH/2)-g('mez1_fpr_std');
+            notas=`Falleba Principal: <b>${r1.toFixed(1)}</b> / <b>${r2.toFixed(1)}</b> mm`;
+        }
+        if(tipoCierre==='oscilo'){
+            datosCierre+='  ·  Oscilobatiente';
+            const compasAll=[
+                {key:'micro',      label:'Micro',           desc:g('osc_micro_desc'), min:g('osc_micro_min'), max:g('osc_micro_max')},
+                {key:'compas_mini',label:'Compás Mini',      desc:g('osc_cmini_desc'), min:g('osc_cmini_min'), max:g('osc_cmini_max')},
+                {key:'compas_peq', label:'Compás Pequeño',   desc:g('osc_cpeq_desc'),  min:g('osc_cpeq_min'),  max:g('osc_cpeq_max')},
+                {key:'compas_gran',label:'Compás Grande',    desc:g('osc_cgran_desc'), min:g('osc_cgran_min'), max:g('osc_cgran_max')},
+            ];
+            // anH = ancho de hoja original; validar rango sobre anH
+            // anchoHoja (resultado compás) = anH - desc
+            const compatibles = compasAll.filter(cd => anH >= cd.min && anH <= cd.max);
+            const incompatibles = compasAll.filter(cd => !(anH >= cd.min && anH <= cd.max));
+
+            let oscLines = '';
+            if(compatibles.length){
+                oscLines += compatibles.map(cd => {
+                    const res = anH - cd.desc;
+                    return `<span style="color:#4ade80">✓ <b>${cd.label}</b> — medida compás: <b>${res.toFixed(1)} mm</b> <span style="font-weight:400;opacity:.7">(hoja ${anH.toFixed(1)} mm en rango ${cd.min}–${cd.max})</span></span>`;
+                }).join('<br>');
+            }
+            if(incompatibles.length){
+                oscLines += (compatibles.length ? '<br>' : '') + incompatibles.map(cd =>
+                    `<span style="color:#f87171;opacity:.6">✗ ${cd.label} <span style="font-weight:400">(rango ${cd.min}–${cd.max} mm)</span></span>`
+                ).join('<br>');
+            }
+            if(!compatibles.length){
+                oscLines = `<span style="color:#f87171"><b>✗ Hoja ${anH.toFixed(1)} mm no entra en ningún compás</b></span><br>` + oscLines;
+            }
+            notas += `<br>${oscLines}`;
+        }
+    }
+
+    /* MOSQUITERA */
+    else if(s==='mosquitera'){
+        const umbral=g('mos_umbral');
+        const desc=H<umbral?g('mos_dH_peq'):g('mos_dH_gran');
+        c.push(['1','Cabezal',A-g('mos_dAn')]);
+        c.push(['2','Guías',H-desc]);
+        datosCierre=`Auto-Cabezal: ${H<umbral?'Pequeño':'Grande'}`;
+    }
+
+    /* MOBILIARIO */
+    else if(s==='mobiliario'){
+        const altoH=H-g('mob_dH');
+        if(nHojasMob==='1'){c.push(['2','Hoja Alto',altoH]);c.push(['2','Hoja Ancho',A-g('mob_dAn1')])}
+        else{c.push(['4','Hoja Alto',altoH]);c.push(['4','Hoja Ancho',(A-g('mob_dAn2'))/2])}
+        datosCierre='Escuadra: 2,15 × 5,1  ·  Bisagra: 2,05 × 12';
+    }
+
+    ultimosCortes=c;
+    document.getElementById('resultadosContenedor').style.display='block';
+    document.getElementById('resultados').innerHTML=`
+        <div class="res-hdr">
+            <span class="res-hdr-title">${ultimaSerieStr}</span>
+            <span class="res-hdr-dims">${A} × ${H} mm</span>
+        </div>
+        ${c.map(i=>`<div class="res-row">
+            <span class="qty-badge">${i[0]}×</span>
+            <span class="piece-icon">${getIcon(i[1])}</span>
+            <span class="piece-name">${i[1]}</span>
+            <span class="res-val">${parseFloat(i[2]).toFixed(1)}<small>mm</small></span>
+        </div>`).join('')}
+        ${notas?`<div class="res-nota">${notas}</div>`:''}
+        ${datosCierre?`<div class="res-cierre"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>${datosCierre}</div>`:''}
+    `;
+    showToast('✓ Cortes calculados');
+    document.getElementById('resultadosContenedor').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ══ WHATSAPP ══ */
+function compartirWS(){
+    if(!ultimosCortes.length){showToast('Primero calcula los cortes');return}
+    const A=document.getElementById('ancho').value,H=document.getElementById('alto').value;
+    let t=`🔧 *${ultimaSerieStr}*\n📐 Hueco: ${A}×${H} mm\n${'─'.repeat(24)}\n`;
+    ultimosCortes.forEach(i=>t+=`${i[0]}× ${i[1]}: *${parseFloat(i[2]).toFixed(1)} mm*\n`);
+    window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+}
+
+loadCFG();
+actualizarInterfaz();
+</script>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{
+    const code=`const C='taller-v4';
+self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.add('/'))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([code],{type:'application/javascript'}))).catch(()=>{});
+})}
+</script>
+<script>
+(() => {
+    const m = {
+        name: 'Calculadora Taller',
+        short_name: 'Taller',
+        start_url: '.',
+        display: 'standalone',
+        background_color: '#0f172a',
+        theme_color: '#0f172a',
+        icons: [{
+            src: "https://raw.githubusercontent.com/socramtv/Perfiles_app/refs/heads/main/icon-192.png",
+            sizes: '192x192',
+            type: 'image/png'
+        }]
+    };
+    const l = document.createElement('link');
+    l.rel = 'manifest';
+    l.href = URL.createObjectURL(new Blob([JSON.stringify(m)], { type: 'application/json' }));
+    document.head.appendChild(l);
+})();
+</script>
+
+</body>
+</html>
