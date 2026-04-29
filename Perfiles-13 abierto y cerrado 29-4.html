@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Taller</title>
+<meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Taller">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/socramtv/Perfiles_app/refs/heads/main/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/socramtv/Perfiles_app/refs/heads/main/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+    --bg:#0f172a;--surf:#1e293b;--surf2:#263348;--border:#334155;
+    --gold:#f59e0b;--goldd:#d97706;--glow:rgba(245,158,11,.22);
+    --cyan:#06b6d4;--green:#10b981;--red:#ef4444;--purple:#a78bfa;
+    --text:#f1f5f9;--muted:#94a3b8;--dim:#64748b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:14px 11px 80px;
+    background-image:radial-gradient(ellipse at 15% 0%,rgba(245,158,11,.07) 0%,transparent 55%),radial-gradient(ellipse at 85% 100%,rgba(6,182,212,.05) 0%,transparent 55%)}
+
+/* HEADER */
+.hdr{margin-bottom:14px}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.hdr-logo{display:flex;align-items:center;gap:10px}
+.hdr-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--goldd));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px var(--glow)}
+.hdr-icon svg{width:24px;height:24px;fill:none;stroke:#0f172a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hdr-name{font-family:'Bebas Neue',cursive;font-size:1.65rem;letter-spacing:2px;line-height:1}
+.hdr-sub{font-size:.67rem;color:var(--dim);letter-spacing:1.3px;text-transform:uppercase}
+.hdr-right{display:flex;align-items:center;gap:7px}
+.hdr-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+
+/* HEADER BTNS */
+.hdr-btn{display:flex;align-items:center;justify-content:center;gap:5px;border:none;border-radius:20px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;padding:9px 10px;transition:all .2s;letter-spacing:.3px;white-space:nowrap;width:100%}
+.hdr-btn svg{width:14px;height:14px;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.hdr-btn-sm{width:auto;padding:8px 12px;border-radius:20px} /* ajustes/instalar */
+#btnInstall{display:none}
+.btn-hdr-sec{background:var(--surf2);color:var(--muted);border:1.5px solid var(--border)}
+.btn-hdr-sec svg{stroke:var(--muted)}
+.btn-hdr-sec:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-hdr-sec:hover svg{stroke:var(--cyan)}
+@keyframes pulse{0%,100%{box-shadow:0 4px 12px var(--glow)}50%{box-shadow:0 4px 22px rgba(245,158,11,.5)}}
+
+/* CARD */
+.card{background:var(--surf);border:1px solid var(--border);border-radius:16px;padding:17px 15px;margin-bottom:12px}
+
+/* LABELS */
+.slabel{display:flex;align-items:center;gap:5px;font-size:.67rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:9px}
+.slabel svg{width:11px;height:11px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.flabel{display:block;font-size:.67rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.fgroup{margin-bottom:11px}.fgroup:last-child{margin-bottom:0}
+
+/* INPUTS */
+select,input[type=number],input[type=text]{width:100%;padding:11px 14px;background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:600;outline:none;-webkit-appearance:none;appearance:none;transition:border-color .2s,box-shadow .2s}
+select:focus,input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--glow)}
+select option{background:#1e293b}
+.sw{position:relative}
+.sw::after{content:"▼";position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:.6rem;color:var(--gold);pointer-events:none}
+#serie{border-color:var(--gold);box-shadow:0 0 0 3px var(--glow);padding-right:36px}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mrow .fgroup{margin-bottom:0}
+.iu{position:relative}
+.iu input{padding-right:42px}
+.iu::after{content:"mm";position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:.7rem;font-weight:700;color:var(--dim);pointer-events:none}
+
+/* CALC BTN */
+.btn-calc{width:100%;padding:15px;background:linear-gradient(135deg,var(--gold),var(--goldd));border:none;border-radius:12px;color:#0f172a;font-family:'Bebas Neue',cursive;font-size:1.28rem;letter-spacing:3px;cursor:pointer;margin-top:13px;box-shadow:0 6px 20px var(--glow);transition:transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-calc svg{width:20px;height:20px;fill:none;stroke:#0f172a;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.btn-calc:active{transform:scale(.97)}
+
+/* RESULTS */
+.res-card{background:var(--surf);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px;animation:slideIn .28s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.res-hdr{background:linear-gradient(135deg,#1a2742,#0f1929);padding:11px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.res-hdr-title{font-family:'Bebas Neue',cursive;font-size:1.05rem;letter-spacing:2px;color:var(--gold)}
+.res-hdr-dims{font-size:.8rem;color:var(--dim);font-weight:600}
+.res-row{display:grid;grid-template-columns:42px 28px 1fr auto;align-items:center;padding:10px 15px;gap:5px;border-bottom:1px solid rgba(51,65,85,.5);transition:background .15s}
+.res-row:last-child{border-bottom:none}
+.res-row:hover{background:rgba(245,158,11,.04)}
+.qty-badge{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--gold);border-radius:6px;font-family:'Bebas Neue',cursive;font-size:.95rem;letter-spacing:1px;text-align:center;padding:2px 4px}
+.piece-icon{display:flex;align-items:center;justify-content:center}
+.piece-icon svg{width:18px;height:18px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.piece-name{font-weight:600;font-size:.93rem;color:var(--muted)}
+.res-val{font-family:'Bebas Neue',cursive;font-size:1.38rem;letter-spacing:1px;color:var(--gold);white-space:nowrap;text-align:right}
+.res-val small{font-size:.62rem;color:var(--dim);margin-left:2px;font-family:'Rajdhani',sans-serif;font-weight:600}
+.res-nota{padding:10px 15px;font-size:.84rem;color:var(--cyan);font-weight:600;border-top:1px solid rgba(6,182,212,.2);background:rgba(6,182,212,.05);line-height:1.9}
+.res-cierre{padding:10px 15px;font-size:.84rem;color:#7dd3fc;font-weight:600;border-top:1px solid rgba(14,165,233,.2);background:rgba(14,165,233,.07);display:flex;align-items:flex-start;gap:8px}
+.res-cierre svg{width:15px;height:15px;flex-shrink:0;margin-top:2px;stroke:#7dd3fc;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ACTION */
+.act-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.btn-act{padding:13px;border:none;border-radius:12px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:.5px;transition:transform .15s,opacity .15s}
+.btn-act:active{transform:scale(.96);opacity:.85}
+.btn-act svg{width:17px;height:17px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-ws{background:linear-gradient(135deg,#25D366,#128c4a);color:#fff}.btn-ws svg{stroke:#fff}
+.btn-print{background:var(--surf2);border:1.5px solid var(--border);color:var(--muted)}.btn-print svg{stroke:var(--muted)}
+
+/* TOGGLE */
+.toggle-btn{width:100%;background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;color:var(--muted);padding:12px 15px;font-family:'Rajdhani',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .2s}
+.toggle-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.tleft{display:flex;align-items:center;gap:8px}
+.tleft svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tarrow{font-size:.6rem;color:var(--dim);transition:transform .25s}
+.tarrow.open{transform:rotate(180deg)}
+.info-panel{display:none;background:var(--surf);border:1.5px solid var(--border);border-top:none;border-radius:0 0 12px 12px;padding:12px 15px;margin-top:-2px}
+.info-panel.show{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.irow{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid rgba(51,65,85,.4);font-size:.9rem}
+.irow:last-child{border-bottom:none}
+.irow svg{width:13px;height:13px;flex-shrink:0;stroke:var(--cyan);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.irow b{color:var(--cyan);font-weight:700}.irow span{color:var(--muted)}
+
+/* MODAL SHARED */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:flex-end;justify-content:center}
+.modal-bg.show{display:flex;animation:bgIn .2s ease}
+@keyframes bgIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surf);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:500px;padding:20px 18px 36px;animation:modalUp .25s ease;max-height:90vh;overflow-y:auto}
+@keyframes modalUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.modal-title{font-family:'Bebas Neue',cursive;font-size:1.25rem;letter-spacing:2px;color:var(--gold);display:flex;align-items:center;gap:8px}
+.modal-title svg{width:17px;height:17px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.modal-close{background:var(--surf2);border:1.5px solid var(--border);border-radius:8px;color:var(--muted);width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .15s}
+.modal-close:hover{border-color:var(--red);color:var(--red)}
+
+/* CFG MODAL */
+.cfg-section{margin-bottom:18px}
+.cfg-stitle{font-size:.63rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(6,182,212,.2);display:flex;align-items:center;gap:6px}
+.cfg-stitle svg{width:12px;height:12px;fill:none;stroke:var(--cyan);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cfg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cfg-f{display:flex;flex-direction:column;gap:4px}
+.cfg-f label{font-size:.63rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--dim)}
+.cfg-f input{padding:9px 40px 9px 11px;font-size:.95rem;text-align:right}
+.cfg-full{grid-column:1/-1}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.btn-modal{padding:12px;border:none;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.5px;transition:transform .15s}
+.btn-modal svg{width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-save{background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a}.btn-save svg{stroke:#0f172a}
+.btn-reset{background:var(--surf2);border:1.5px solid var(--border);color:var(--muted)}.btn-reset svg{stroke:var(--muted)}
+.btn-modal:active{transform:scale(.97)}
+
+/* MINI CALC MODAL */
+.calc2-display{background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px;text-align:right}
+.calc2-expr{font-size:.8rem;color:var(--dim);min-height:18px;letter-spacing:.5px;font-weight:600;margin-bottom:4px;word-break:break-all}
+.calc2-result{font-family:'Bebas Neue',cursive;font-size:2.4rem;letter-spacing:2px;color:var(--gold);line-height:1}
+.calc2-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.c2btn{padding:15px 8px;border:none;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;cursor:pointer;transition:transform .1s,opacity .15s;display:flex;align-items:center;justify-content:center}
+.c2btn:active{transform:scale(.93);opacity:.8}
+.c2-num{background:var(--surf2);border:1.5px solid var(--border);color:var(--text)}
+.c2-op{background:rgba(245,158,11,.15);border:1.5px solid rgba(245,158,11,.35);color:var(--gold)}
+.c2-eq{background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a;font-size:1.3rem}
+.c2-del{background:rgba(239,68,68,.12);border:1.5px solid rgba(239,68,68,.3);color:var(--red)}
+.c2-clr{background:rgba(239,68,68,.18);border:1.5px solid rgba(239,68,68,.4);color:var(--red);font-size:.85rem}
+.c2-pct{background:rgba(6,182,212,.12);border:1.5px solid rgba(6,182,212,.3);color:var(--cyan);font-size:.85rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--green);color:#fff;padding:9px 20px;border-radius:20px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;box-shadow:0 6px 20px rgba(16,185,129,.3);transition:transform .3s ease;z-index:200}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media print{
+    body{background:white;padding:0}
+    .hdr,.card,.act-row,.toggle-btn,.info-panel,.modal-bg{display:none!important}
+    .res-card{border:2px solid #000;border-radius:0;animation:none}
+    .res-hdr{background:#334155!important;-webkit-print-color-adjust:exact}
+    .res-val{color:#000!important}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+    <!-- Fila 1: logo + ajustes + instalar -->
+    <div class="hdr-top">
+        <div class="hdr-logo">
+            <div class="hdr-icon">
+                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <div>
+                <div class="hdr-name">TALLER</div>
+                <div class="hdr-sub">Calculadora de Cortes</div>
+            </div>
+        </div>
+        <div class="hdr-right">
+            <button id="btnAjustes" class="hdr-btn btn-hdr-sec hdr-btn-sm" onclick="abrirAjustes()" style="width:auto">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                Ajustes
+            </button>
+            <button id="btnInstall" class="hdr-btn hdr-btn-sm" onclick="instalarPWA()" style="display:none;width:auto;background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a;box-shadow:0 4px 12px var(--glow);animation:pulse 2.5s infinite">
+                <svg viewBox="0 0 24 24" style="stroke:#0f172a"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </button>
+        </div>
+    </div>
+    <!-- Fila 2: Trabajos · Calc · Reparto · Falleba -->
+    <div class="hdr-btns" style="grid-template-columns:1fr 1fr 1fr 1fr">
+        <button class="hdr-btn" onclick="abrirTrabajos()" style="background:rgba(167,139,250,.12);border:1.5px solid rgba(167,139,250,.4);color:var(--purple)">
+            <svg viewBox="0 0 24 24" style="stroke:var(--purple)"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            Trabajos
+        </button>
+        <button id="btnCalc2" class="hdr-btn" onclick="abrirCalc2()" style="background:var(--surf2);border:1.5px solid var(--border);color:var(--muted)">
+            <svg viewBox="0 0 24 24" style="stroke:var(--muted)"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/></svg>
+            Calc
+        </button>
+        <button id="btnReparto" class="hdr-btn" onclick="abrirReparto()" style="background:rgba(52,211,153,.1);border:1.5px solid rgba(52,211,153,.4);color:#34d399">
+            <svg viewBox="0 0 24 24" style="stroke:#34d399"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            Reparto
+        </button>
+        <button class="hdr-btn" onclick="abrirFalleba()" style="background:rgba(251,146,60,.1);border:1.5px solid rgba(251,146,60,.4);color:#fb923c">
+            <svg viewBox="0 0 24 24" style="stroke:#fb923c"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Falleba
+        </button>
+    </div>
+</div>
+
+<!-- SERIE -->
+<div class="card">
+    <div class="slabel">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Serie / Perfil
+    </div>
+    <div class="sw">
+        <select id="serie" onchange="actualizarInterfaz()">
+            <option value="sam75">Correderas SAM 75</option>
+            <option value="qsys">QSystems — Q95 / Q67</option>
+            <option value="40x20">Abatible 40×20</option>
+            <option value="40x40">Abatible 40×40</option>
+            <option value="mezquita">Abatibles SAMM 447</option>
+            <option value="mosquitera">Mosquitera Enrollable</option>
+            <option value="mosquitera_cor">Mosquitera Corredera</option>
+            <option value="mobiliario">Perfil Mobiliario</option>
+        </select>
+    </div>
+</div>
+
+<!-- OPCIONES -->
+<div id="seccionMedidas">
+    <div class="card" id="cardOpc" style="display:none">
+
+        <div id="divTubular" class="fgroup" style="display:none">
+            <label class="flabel">Marco inferior tubular</label>
+            <div class="sw"><select id="marcoTubular">
+                <option value="no">No — Estándar</option>
+                <option value="si">Sí — Tubular</option>
+            </select></div>
+        </div>
+
+        <div id="divHojas" class="fgroup" style="display:none">
+            <label class="flabel">Número de hojas</label>
+            <div class="sw"><select id="numHojas" onchange="actualizarInterfaz()">
+                <option value="1">1 Hoja</option>
+                <option value="2">2 Hojas</option>
+                <option value="4" id="opt4hojas" style="display:none">4 Hojas</option>
+            </select></div>
+        </div>
+
+        <div id="divTancha" class="fgroup" style="display:none">
+            <label class="flabel">Travesaño — 4 Hojas</label>
+            <div style="background:rgba(167,139,250,.1);border:1.5px solid rgba(167,139,250,.3);border-radius:10px;padding:10px 14px;font-size:.9rem;color:var(--purple);font-weight:600;letter-spacing:.3px">
+                T Ancha activa  ·  Fórmula: (A − cfg_tancha) ÷ 4
+            </div>
+        </div>
+
+        <div id="divExtra" class="fgroup" style="display:none">
+            <label class="flabel" id="labelExtra">Variante de marco</label>
+            <div class="sw"><select id="selectExtra"></select></div>
+        </div>
+
+        <div id="divCierre" class="fgroup" style="display:none">
+            <label class="flabel">Tipo de cierre</label>
+            <div class="sw"><select id="tipoCierre" onchange="actualizarInterfaz()">
+                <option value="estandar">Cierre Estándar</option>
+                <option value="oscilo">Cierre Oscilobatiente</option>
+            </select></div>
+        </div>
+
+        <div id="divCompas" class="fgroup" style="display:none">
+            <label class="flabel">Compás oscilobatiente</label>
+            <div style="background:rgba(167,139,250,.08);border:1.5px solid rgba(167,139,250,.3);border-radius:10px;padding:9px 13px;font-size:.85rem;color:var(--purple);font-weight:600;letter-spacing:.3px">
+                Se calculará automáticamente según el ancho de hoja
+            </div>
+        </div>
+
+        <div id="divMobHojas" class="fgroup" style="display:none">
+            <label class="flabel">Número de hojas</label>
+            <div class="sw"><select id="numHojasMob">
+                <option value="1">1 Hoja</option>
+                <option value="2">2 Hojas</option>
+            </select></div>
+        </div>
+
+        <div id="divModelo" class="fgroup" style="display:none">
+            <label class="flabel">Modelo</label>
+            <div class="sw"><select id="modeloSAMM" onchange="actualizarInterfaz()">
+                <option value="v1h47">Ventana 1 Hoja 47</option>
+                <option value="v2h47">Ventana 2 Hojas 47</option>
+                <option value="v2h40">Ventana 2 Hojas 40</option>
+                <option value="v2hext47">Ventana 2 Hojas Exterior 47</option>
+                <option value="p2h40">Puerta 2 Hojas 40</option>
+                <option value="p2hext47">Puerta 2 Hojas Exterior 47</option>
+                <option value="pvai">Puerta Vaivén 2 Hojas</option>
+                <option value="velip47">Ventana Elíptica 47</option>
+                <option value="mall">Mallorquina 2 Hojas</option>
+            </select></div>
+        </div>
+
+        <div id="divModeloSAM75" class="fgroup" style="display:none">
+            <label class="flabel">Modelo SAM 75</label>
+            <div class="sw"><select id="modeloSAM75" onchange="actualizarInterfaz()">
+                <option value="g2h">Giralda 2 Hojas a Testa</option>
+                <option value="g2htub">Giralda 2 Hojas con Marco Guía</option>
+                <option value="g3h">Giralda 3 Hojas 3 Carriles</option>
+                <option value="g4h">Giralda 4 Hojas a Testa</option>
+            </select></div>
+        </div>
+
+        <div id="divModeloQSys" class="fgroup" style="display:none">
+            <label class="flabel">Modelo QSystems</label>
+            <div class="sw"><select id="modeloQSys" onchange="actualizarInterfaz()">
+                <option value="q95">Q95 — Corredera Inglete 2 Hojas</option>
+                <option value="q67">Q67 — Ventana 2 Hojas Apertura Interior</option>
+            </select></div>
+        </div>
+
+        <div id="divMarcoTipoSAMM" class="fgroup" style="display:none">
+            <label class="flabel">Tipo de marco</label>
+            <div class="sw"><select id="marcoTipoSAMM">
+                <option value="cerrado">Marco Cerrado</option>
+                <option value="abierto">Marco Abierto</option>
+            </select></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="slabel">
+            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            Medidas del hueco
+        </div>
+        <div class="mrow">
+            <div class="fgroup">
+                <label class="flabel">Ancho total</label>
+                <div class="iu"><input type="number" id="ancho" placeholder="0" inputmode="numeric"></div>
+            </div>
+            <div class="fgroup">
+                <label class="flabel">Alto total</label>
+                <div class="iu"><input type="number" id="alto" placeholder="0" inputmode="numeric"></div>
+            </div>
+        </div>
+        <button class="btn-calc" onclick="calcular()">
+            <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            CALCULAR CORTES
+        </button>
+    </div>
+</div>
+
+<!-- RESULTADOS -->
+<div id="resultadosContenedor" style="display:none">
+    <div class="res-card" id="resultados"></div>
+    <div class="act-row">
+        <button class="btn-act btn-ws" onclick="compartirWS()">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            WhatsApp
+        </button>
+        <button class="btn-act btn-print" onclick="window.print()">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimir
+        </button>
+    </div>
+    <!-- AÑADIR AL PRESUPUESTO -->
+    <button onclick="añadirVentana()" style="width:100%;margin-bottom:10px;padding:13px;border:none;border-radius:12px;background:rgba(6,182,212,.15);border:1.5px solid rgba(6,182,212,.4);color:var(--cyan);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s" onmouseover="this.style.background='rgba(6,182,212,.25)'" onmouseout="this.style.background='rgba(6,182,212,.15)'">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        AÑADIR AL RESUMEN
+    </button>
+    <button id="btnInstallMain" onclick="instalarPWA()" style="display:none;width:100%;margin-bottom:14px;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.92rem;cursor:pointer;letter-spacing:.5px;box-shadow:0 4px 16px var(--glow);animation:pulse 2.5s infinite;flex-align:center;align-items:center;justify-content:center;gap:8px">
+        <svg style="display:inline;vertical-align:middle;margin-right:6px" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        📲 INSTALAR APP EN EL DISPOSITIVO
+    </button>
+</div>
+
+<!-- PANEL RESUMEN ACUMULADO -->
+<div id="resumenPanel" style="display:none;margin-bottom:14px">
+    <div class="card" style="padding:14px 15px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <span style="font-family:'Bebas Neue',cursive;font-size:1.05rem;letter-spacing:2px;color:var(--cyan)">RESUMEN ACUMULADO</span>
+            <span id="resumenCount" style="background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3);color:var(--cyan);border-radius:6px;padding:2px 9px;font-family:'Bebas Neue',cursive;font-size:.9rem;letter-spacing:1px">0 ventanas</span>
+        </div>
+        <div id="resumenLista" style="margin-bottom:12px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <button onclick="abrirBarras()" style="padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                Ver barras
+            </button>
+            <button onclick="limpiarResumen()" style="padding:11px;border:1.5px solid var(--border);border-radius:10px;background:var(--surf2);color:var(--red);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                Limpiar
+            </button>
+        </div>
+        <button onclick="pedirNombreGuardar()" style="width:100%;padding:11px;border:none;border-radius:10px;background:rgba(167,139,250,.15);border:1.5px solid rgba(167,139,250,.35);color:var(--purple);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar como trabajo
+        </button>
+    </div>
+</div>
+
+<!-- DATOS TÉCNICOS -->
+<button class="toggle-btn" onclick="toggleInfo()">
+    <span class="tleft">
+        <svg id="iconInfo" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="txtBtn">DATOS TÉCNICOS</span>
+    </span>
+    <span class="tarrow" id="arrow">▼</span>
+</button>
+<div class="info-panel" id="infoPanel"><div id="infoCaja"></div></div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ MODAL AJUSTES ══ -->
+<div class="modal-bg" id="modalAjustesBg" onclick="cerrarModalBg(event,'modalAjustesBg')">
+<div class="modal">
+    <div class="modal-hdr">
+        <div class="modal-title">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            AJUSTES DE DESCUENTOS
+        </div>
+        <button class="modal-close" onclick="cerrarAjustes()">✕</button>
+    </div>
+
+    <!-- SAM 75 CORREDERAS -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>Correderas SAM 75</div>
+        <div class="cfg-grid" style="margin-bottom:10px">
+            <div class="cfg-f"><label>Hoja desc. estándar (H−X)</label><div class="iu"><input type="number" id="cfg_s75_hoja_std" value="52"></div></div>
+            <div class="cfg-f"><label>Hoja desc. tubular (H−X)</label><div class="iu"><input type="number" id="cfg_s75_hoja_tub" value="62"></div></div>
+        </div>
+
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Giralda 2H a Testa</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Guía desc. (A−X)</label><div class="iu"><input type="number" id="cfg_s75_g2h_guia" value="27"></div></div>
+            <div class="cfg-f"><label>Ruleta desc. (L/2−X)</label><div class="iu"><input type="number" id="cfg_s75_g2h_ruleta" value="6"></div></div>
+            <div class="cfg-f"><label>Vidrio Ancho (L/2−X)</label><div class="iu"><input type="number" id="cfg_s75_g2h_van" value="89.2"></div></div>
+            <div class="cfg-f"><label>Vidrio Alto (H−X)</label><div class="iu"><input type="number" id="cfg_s75_g2h_val" value="155"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Giralda 2H con Marco Guía</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Guía desc. (A−X)</label><div class="iu"><input type="number" id="cfg_s75_g2htub_guia" value="89"></div></div>
+            <div class="cfg-f"><label>Ruleta desc. (L/2−X)</label><div class="iu"><input type="number" id="cfg_s75_g2htub_ruleta" value="36"></div></div>
+            <div class="cfg-f"><label>Vidrio Ancho (L/2−X)</label><div class="iu"><input type="number" id="cfg_s75_g2htub_van" value="120.2"></div></div>
+            <div class="cfg-f"><label>Vidrio Alto (H−X)</label><div class="iu"><input type="number" id="cfg_s75_g2htub_val" value="165"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Giralda 3H 3 Carriles</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Guía desc. (A−X)</label><div class="iu"><input type="number" id="cfg_s75_g3h_guia" value="37"></div></div>
+            <div class="cfg-f"><label>Ruleta A (L/3+X)</label><div class="iu"><input type="number" id="cfg_s75_g3h_ruleta_a" value="8.5"></div></div>
+            <div class="cfg-f"><label>Ruleta B (L/3+X)</label><div class="iu"><input type="number" id="cfg_s75_g3h_ruleta_b" value="23.5"></div></div>
+            <div class="cfg-f"><label>Vidrio Ancho (L/3−X)</label><div class="iu"><input type="number" id="cfg_s75_g3h_van" value="77.3"></div></div>
+            <div class="cfg-f cfg-full"><label>Vidrio Alto (H−X)</label><div class="iu"><input type="number" id="cfg_s75_g3h_val" value="165"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Giralda 4H a Testa</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Guía desc. (A−X)</label><div class="iu"><input type="number" id="cfg_s75_g4h_guia" value="27"></div></div>
+            <div class="cfg-f"><label>Ruleta desc. (L/4+X)</label><div class="iu"><input type="number" id="cfg_s75_g4h_ruleta" value="4.2"></div></div>
+            <div class="cfg-f"><label>Unión 750022 (H−X)</label><div class="iu"><input type="number" id="cfg_s75_g4h_union" value="119"></div></div>
+            <div class="cfg-f"><label>Vidrio Ancho (L/4−X)</label><div class="iu"><input type="number" id="cfg_s75_g4h_van" value="82"></div></div>
+            <div class="cfg-f cfg-full"><label>Vidrio Alto (H−X)</label><div class="iu"><input type="number" id="cfg_s75_g4h_val" value="155"></div></div>
+        </div>
+    </div>
+
+    <!-- 40x20 -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="9" cy="12" r="1.3" fill="var(--cyan)" stroke="none"/></svg>Abatible 40×20</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja Alto (cerrado)</label><div class="iu"><input type="number" id="cfg_20_dH_cerr" value="43"></div></div>
+            <div class="cfg-f"><label>Hoja Alto (abierto)</label><div class="iu"><input type="number" id="cfg_20_dH_ab" value="29"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 1H</label><div class="iu"><input type="number" id="cfg_20_dAn" value="43"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 2H</label><div class="iu"><input type="number" id="cfg_20_dAn2" value="50"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 4H</label><div class="iu"><input type="number" id="cfg_20_dAn4" value="50"></div></div>
+            <div class="cfg-f"><label>T Ancha desc. (÷4)</label><div class="iu"><input type="number" id="cfg_20_tancha" value="8.9"></div></div>
+            <div class="cfg-f"><label>Inversor desc.</label><div class="iu"><input type="number" id="cfg_20_inv" value="92"></div></div>
+        </div>
+    </div>
+
+    <!-- 40x40 -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="15" cy="12" r="1.3" fill="var(--cyan)" stroke="none"/></svg>Abatible 40×40</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja Alto (cerrado)</label><div class="iu"><input type="number" id="cfg_40_dH_cerr" value="83"></div></div>
+            <div class="cfg-f"><label>Hoja Alto (abierto)</label><div class="iu"><input type="number" id="cfg_40_dH_ab" value="49"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 1H</label><div class="iu"><input type="number" id="cfg_40_dAn" value="83"></div></div>
+            <div class="cfg-f"><label>Hoja Ancho 2H</label><div class="iu"><input type="number" id="cfg_40_dAn2" value="90"></div></div>
+            <div class="cfg-f cfg-full"><label>Inversor desc.</label><div class="iu"><input type="number" id="cfg_40_inv" value="132"></div></div>
+        </div>
+    </div>
+
+    <!-- MEZQUITA SAMM 447 -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Abatibles SAMM 447</div>
+
+        <!-- Ventanas cerrado (comparten base) -->
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Ventana 1H 47 — Hoja (447022)</div>
+        <div class="cfg-grid">
+            <div class="cfg-f cfg-full"><label>Marco Abierto — extra desc. hoja alto (H−X−extra)</label><div class="iu"><input type="number" id="cfg_mez_ab_hoja_extra" value="30"></div></div>
+            <div class="cfg-f"><label>Hoja L (A−X)</label><div class="iu"><input type="number" id="cfg_mez_dH_cerr" value="44"></div></div>
+            <div class="cfg-f"><label>Hoja H (H−X)</label><div class="iu"><input type="number" id="cfg_mez_dAn" value="44"></div></div>
+            <div class="cfg-f"><label>Junquillo H (A−X)</label><div class="iu"><input type="number" id="cfg_mez_jh_cerr1" value="137.6"></div></div>
+            <div class="cfg-f"><label>Junquillo V (H−X)</label><div class="iu"><input type="number" id="cfg_mez_jv_cerr" value="177.6"></div></div>
+            <div class="cfg-f"><label>Vidrio A (A−X)</label><div class="iu"><input type="number" id="cfg_mez_van_1h" value="146"></div></div>
+            <div class="cfg-f"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_mez_val" value="146"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Ventana 2H 47/40/Ext — Hoja (447022/447322/447222)</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja L ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_mez_dAn2" value="24.8"></div></div>
+            <div class="cfg-f"><label>Hoja H (H−X)</label><div class="iu"><input type="number" id="cfg_mez_dH_ab" value="44"></div></div>
+            <div class="cfg-f"><label>Inversor (H−X)</label><div class="iu"><input type="number" id="cfg_mez_inv_cerr" value="106"></div></div>
+            <div class="cfg-f"><label>Junquillo H ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_mez_jh_cerr2" value="118.5"></div></div>
+            <div class="cfg-f"><label>Junquillo V (H−X)</label><div class="iu"><input type="number" id="cfg_mez_jv_ab" value="177.6"></div></div>
+            <div class="cfg-f"><label>Vidrio A ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_mez_van_2h" value="128"></div></div>
+            <div class="cfg-f cfg-full"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_mez_jh_ab" value="146"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Puerta 2H 40 — Hoja (447522)</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja L ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_p2h40_hl" value="24.8"></div></div>
+            <div class="cfg-f"><label>Hoja H (H−X)</label><div class="iu"><input type="number" id="cfg_p2h40_hh" value="30"></div></div>
+            <div class="cfg-f"><label>Zócalo ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_mez_zoc" value="162.5"></div></div>
+            <div class="cfg-f"><label>Inversor (H−X)</label><div class="iu"><input type="number" id="cfg_mez_inv_ab" value="92"></div></div>
+            <div class="cfg-f"><label>Junquillo H ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_p2h40_jh" value="162.5"></div></div>
+            <div class="cfg-f"><label>Junquillo V (H−X)</label><div class="iu"><input type="number" id="cfg_p2h40_jv" value="219"></div></div>
+            <div class="cfg-f"><label>Vidrio A ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_p2h40_van" value="172"></div></div>
+            <div class="cfg-f"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_p2h40_val" value="189"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Puerta 2H Exterior 47 — Hoja (447262)</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja L ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_p2hext_hl" value="47.5"></div></div>
+            <div class="cfg-f"><label>Hoja H (H−X)</label><div class="iu"><input type="number" id="cfg_p2hext_hh" value="49.7"></div></div>
+            <div class="cfg-f"><label>Zócalo ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_p2hext_zoc" value="185.2"></div></div>
+            <div class="cfg-f"><label>Inversor (H−X)</label><div class="iu"><input type="number" id="cfg_p2hext_inv" value="80.7"></div></div>
+            <div class="cfg-f"><label>Junquillo H ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_p2hext_jh" value="185.2"></div></div>
+            <div class="cfg-f"><label>Junquillo V (H−X)</label><div class="iu"><input type="number" id="cfg_p2hext_jv" value="238.5"></div></div>
+            <div class="cfg-f"><label>Vidrio A ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_p2hext_van" value="195"></div></div>
+            <div class="cfg-f"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_p2hext_val" value="208.5"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Puerta Vaivén — Hoja (44102)</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja L ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_pvai_hl" value="66.2"></div></div>
+            <div class="cfg-f"><label>Hoja H (H−X)</label><div class="iu"><input type="number" id="cfg_pvai_hh" value="67.7"></div></div>
+            <div class="cfg-f"><label>Junquillo H ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_pvai_jh" value="159.7"></div></div>
+            <div class="cfg-f"><label>Junquillo V (H−X)</label><div class="iu"><input type="number" id="cfg_pvai_jv" value="161.1"></div></div>
+            <div class="cfg-f"><label>Vidrio A ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_pvai_van" value="170"></div></div>
+            <div class="cfg-f"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_pvai_val" value="171.5"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Ventana Elíptica 47 — Hoja (447332)</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja L ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_velip_hl" value="27.5"></div></div>
+            <div class="cfg-f"><label>Hoja H (H−X)</label><div class="iu"><input type="number" id="cfg_velip_hh" value="49.4"></div></div>
+            <div class="cfg-f"><label>Inversor (H−X)</label><div class="iu"><input type="number" id="cfg_velip_inv" value="120.6"></div></div>
+            <div class="cfg-f"><label>Junquillo H ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_velip_jh" value="121.1"></div></div>
+            <div class="cfg-f"><label>Junquillo V (H−X)</label><div class="iu"><input type="number" id="cfg_velip_jv" value="183"></div></div>
+            <div class="cfg-f"><label>Vidrio A ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_velip_van" value="131.1"></div></div>
+            <div class="cfg-f"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_velip_val" value="153.2"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Mallorquina 2H — Hoja (447512)</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja L ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_mall_hl" value="24.8"></div></div>
+            <div class="cfg-f"><label>Hoja H (H−X)</label><div class="iu"><input type="number" id="cfg_mall_hh" value="44"></div></div>
+            <div class="cfg-f"><label>Inversor (H−X)</label><div class="iu"><input type="number" id="cfg_mall_inv" value="106"></div></div>
+            <div class="cfg-f"><label>Omega ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_mall_omega" value="142.4"></div></div>
+            <div class="cfg-f"><label>Lama Comp. ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_mall_lama_c" value="157.4"></div></div>
+            <div class="cfg-f"><label>Lama Ori. ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_mall_lama_o" value="157.4"></div></div>
+            <div class="cfg-f cfg-full"><label>Lamas N base (H−X)/paso</label><div class="iu"><input type="number" id="cfg_mall_lama_base" value="197.8"></div></div>
+            <div class="cfg-f cfg-full"><label>Paso entre lamas (mm)</label><div class="iu"><input type="number" id="cfg_mall_lama_paso" value="60"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15)">
+            <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Fallebas — 2 hojas</div>
+            <div class="cfg-grid">
+                <div class="cfg-f"><label>Pasiva + (aH/2 +X)</label><div class="iu"><input type="number" id="cfg_mez_fp_mas" value="30"></div></div>
+                <div class="cfg-f"><label>Pasiva - (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez_fp_men" value="351"></div></div>
+                <div class="cfg-f"><label>Princ. base (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez_fpr_base" value="225"></div></div>
+                <div class="cfg-f"><label>Princ. std (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez_fpr_std" value="153"></div></div>
+                <div class="cfg-f cfg-full"><label>Princ. oscilo (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez_fpr_osc" value="185"></div></div>
+            </div>
+            <div style="font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin:10px 0 8px">Falleba — 1 hoja (solo principal)</div>
+            <div class="cfg-grid">
+                <div class="cfg-f"><label>Princ. base (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez1_fpr_base" value="225"></div></div>
+                <div class="cfg-f"><label>Princ. std (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez1_fpr_std" value="153"></div></div>
+                <div class="cfg-f cfg-full"><label>Princ. oscilo (aH/2 -X)</label><div class="iu"><input type="number" id="cfg_mez1_fpr_osc" value="185"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QSYSTEMS -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>QSystems</div>
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Q95 — Corredera Inglete 2H</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Aislante L (A−X)</label><div class="iu"><input type="number" id="cfg_q95_ais_l" value="28.6"></div></div>
+            <div class="cfg-f"><label>Aislante H (H−X)</label><div class="iu"><input type="number" id="cfg_q95_ais_h" value="28.6"></div></div>
+            <div class="cfg-f"><label>Deslizador (A−X)</label><div class="iu"><input type="number" id="cfg_q95_desliz" value="80"></div></div>
+            <div class="cfg-f"><label>Hoja Perim. L (L/2+X)</label><div class="iu"><input type="number" id="cfg_q95_hoja_l" value="2.3"></div></div>
+            <div class="cfg-f"><label>Hoja Perim. H (H−X)</label><div class="iu"><input type="number" id="cfg_q95_hoja_h" value="65.9"></div></div>
+            <div class="cfg-f"><label>Cruce H (H−X)</label><div class="iu"><input type="number" id="cfg_q95_cruce" value="65.9"></div></div>
+            <div class="cfg-f"><label>Ais. Cruce (H−X)</label><div class="iu"><input type="number" id="cfg_q95_ais_cruce" value="65.9"></div></div>
+            <div class="cfg-f"><label>Vidrio A (L/2−X)</label><div class="iu"><input type="number" id="cfg_q95_van" value="118"></div></div>
+            <div class="cfg-f cfg-full"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_q95_val" value="187"></div></div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Q67 — Ventana 2H Apertura Interior</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja L (L/2−X)</label><div class="iu"><input type="number" id="cfg_q67_hoja_l" value="24.4"></div></div>
+            <div class="cfg-f"><label>Hoja H (H−X)</label><div class="iu"><input type="number" id="cfg_q67_hoja_h" value="42.8"></div></div>
+            <div class="cfg-f"><label>Inversor (H−X)</label><div class="iu"><input type="number" id="cfg_q67_inv" value="108.6"></div></div>
+            <div class="cfg-f"><label>Junquillo H (L/2−X)</label><div class="iu"><input type="number" id="cfg_q67_jh" value="116"></div></div>
+            <div class="cfg-f"><label>Junquillo V (H−X)</label><div class="iu"><input type="number" id="cfg_q67_jv" value="178.2"></div></div>
+            <div class="cfg-f"><label>Vidrio A (L/2−X)</label><div class="iu"><input type="number" id="cfg_q67_van" value="126"></div></div>
+            <div class="cfg-f cfg-full"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_q67_val" value="144.4"></div></div>
+        </div>
+    </div>
+
+    <!-- MOSQUITERA -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 8h18M3 13h18M8 3v18M13 3v18"/></svg>Mosquitera</div>
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Enrollable</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Ancho desc.</label><div class="iu"><input type="number" id="cfg_mos_dAn" value="20"></div></div>
+            <div class="cfg-f"><label>Alto guías (pequeño)</label><div class="iu"><input type="number" id="cfg_mos_dH_peq" value="35"></div></div>
+            <div class="cfg-f"><label>Alto guías (grande)</label><div class="iu"><input type="number" id="cfg_mos_dH_gran" value="45"></div></div>
+            <div class="cfg-f"><label>Umbral grande (mm)</label><div class="iu"><input type="number" id="cfg_mos_umbral" value="1450"></div></div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15)">
+            <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Corredera</div>
+            <div class="cfg-grid">
+                <div class="cfg-f"><label>Alto desc. (H−X)</label><div class="iu"><input type="number" id="cfg_mosc_dH" value="67"></div></div>
+                <div class="cfg-f"><label>Ancho desc. (A−X)</label><div class="iu"><input type="number" id="cfg_mosc_dAn" value="90"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OSCILOBATIENTE -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Oscilobatiente — Compás</div>
+        <div style="margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid rgba(6,182,212,.15)">
+            <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Descuento ancho hoja (ancho hoja − X)</div>
+            <div class="cfg-grid">
+                <div class="cfg-f"><label>Micro (fijo: −309)</label><div class="iu"><input type="number" id="cfg_osc_micro_desc" value="309"></div></div>
+                <div class="cfg-f"><label>Compás Mini</label><div class="iu"><input type="number" id="cfg_osc_cmini_desc" value="30"></div></div>
+                <div class="cfg-f"><label>Compás Pequeño</label><div class="iu"><input type="number" id="cfg_osc_cpeq_desc" value="30"></div></div>
+                <div class="cfg-f"><label>Compás Grande (fijo: −495)</label><div class="iu"><input type="number" id="cfg_osc_cgran_desc" value="495"></div></div>
+            </div>
+        </div>
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Rangos válidos (ancho hoja mm)</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Micro — mín</label><div class="iu"><input type="number" id="cfg_osc_micro_min" value="345"></div></div>
+            <div class="cfg-f"><label>Micro — máx</label><div class="iu"><input type="number" id="cfg_osc_micro_max" value="700"></div></div>
+            <div class="cfg-f"><label>Compás Mini — mín</label><div class="iu"><input type="number" id="cfg_osc_cmini_min" value="372"></div></div>
+            <div class="cfg-f"><label>Compás Mini — máx</label><div class="iu"><input type="number" id="cfg_osc_cmini_max" value="700"></div></div>
+            <div class="cfg-f"><label>Compás Peq. — mín</label><div class="iu"><input type="number" id="cfg_osc_cpeq_min" value="442"></div></div>
+            <div class="cfg-f"><label>Compás Peq. — máx</label><div class="iu"><input type="number" id="cfg_osc_cpeq_max" value="750"></div></div>
+            <div class="cfg-f"><label>Compás Grande — mín</label><div class="iu"><input type="number" id="cfg_osc_cgran_min" value="570"></div></div>
+            <div class="cfg-f"><label>Compás Grande — máx</label><div class="iu"><input type="number" id="cfg_osc_cgran_max" value="1200"></div></div>
+        </div>
+    </div>
+
+    <!-- MOBILIARIO -->
+    <div class="cfg-section">
+        <div class="cfg-stitle"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>Perfil Mobiliario</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Alto desc. (1 y 2 H)</label><div class="iu"><input type="number" id="cfg_mob_dH" value="10"></div></div>
+            <div class="cfg-f"><label>Ancho desc. 1H</label><div class="iu"><input type="number" id="cfg_mob_dAn1" value="20"></div></div>
+            <div class="cfg-f cfg-full"><label>Ancho desc. 2H (antes ÷2)</label><div class="iu"><input type="number" id="cfg_mob_dAn2" value="33"></div></div>
+        </div>
+    </div>
+
+    <div class="modal-btns">
+        <button class="btn-modal btn-save" onclick="guardarAjustes()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar
+        </button>
+        <button class="btn-modal btn-reset" onclick="resetAjustes()">
+            <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            Restablecer
+        </button>
+    </div>
+    <!-- EXPORT / IMPORT JSON -->
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px;text-align:center">Copia de seguridad de ajustes</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="btn-modal" onclick="exportarAjustes()" style="background:rgba(6,182,212,.1);border:1.5px solid rgba(6,182,212,.35);color:var(--cyan)">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exportar JSON
+            </button>
+            <button class="btn-modal" onclick="document.getElementById('importarAjustesInput').click()" style="background:rgba(167,139,250,.1);border:1.5px solid rgba(167,139,250,.35);color:var(--purple)">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Importar JSON
+            </button>
+        </div>
+        <input type="file" id="importarAjustesInput" accept=".json" style="display:none" onchange="importarAjustes(event)">
+    </div>
+</div>
+</div>
+
+<!-- ══ MODAL MINI CALCULADORA ══ -->
+<div class="modal-bg" id="modalCalc2Bg" onclick="cerrarModalBg(event,'modalCalc2Bg')">
+<div class="modal" style="padding-bottom:28px">
+    <div class="modal-hdr">
+        <div class="modal-title">
+            <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/></svg>
+            MINI CALCULADORA
+        </div>
+        <button class="modal-close" onclick="cerrarCalc2()">✕</button>
+    </div>
+    <div class="calc2-display">
+        <div class="calc2-expr" id="c2expr"></div>
+        <div class="calc2-result" id="c2res">0</div>
+    </div>
+    <div class="calc2-grid">
+        <button class="c2btn c2-clr" onclick="c2clear()">AC</button>
+        <button class="c2btn c2-del" onclick="c2del()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+        </button>
+        <button class="c2btn c2-pct" onclick="c2input('%')">%</button>
+        <button class="c2btn c2-op" onclick="c2input('÷')">÷</button>
+
+        <button class="c2btn c2-num" onclick="c2input('7')">7</button>
+        <button class="c2btn c2-num" onclick="c2input('8')">8</button>
+        <button class="c2btn c2-num" onclick="c2input('9')">9</button>
+        <button class="c2btn c2-op" onclick="c2input('×')">×</button>
+
+        <button class="c2btn c2-num" onclick="c2input('4')">4</button>
+        <button class="c2btn c2-num" onclick="c2input('5')">5</button>
+        <button class="c2btn c2-num" onclick="c2input('6')">6</button>
+        <button class="c2btn c2-op" onclick="c2input('−')">−</button>
+
+        <button class="c2btn c2-num" onclick="c2input('1')">1</button>
+        <button class="c2btn c2-num" onclick="c2input('2')">2</button>
+        <button class="c2btn c2-num" onclick="c2input('3')">3</button>
+        <button class="c2btn c2-op" onclick="c2input('+')">+</button>
+
+        <button class="c2btn c2-num" onclick="c2input('±')" style="font-size:.9rem">+/−</button>
+        <button class="c2btn c2-num" onclick="c2input('0')">0</button>
+        <button class="c2btn c2-num" onclick="c2input('.')">.</button>
+        <button class="c2btn c2-eq" onclick="c2equal()">=</button>
+    </div>
+</div>
+</div>
+
+<!-- ══ MODAL REPARTO ══ -->
+<div class="modal-bg" id="modalRepartoBg" onclick="cerrarModalBg(event,'modalRepartoBg')">
+<div class="modal" style="padding-bottom:28px">
+    <div class="modal-hdr">
+        <div class="modal-title" style="color:#34d399">
+            <svg viewBox="0 0 24 24" style="stroke:#34d399"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            CALCULADORAS
+        </div>
+        <button class="modal-close" onclick="cerrarReparto()">✕</button>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px">
+        <button id="rp_tab1" onclick="rpSetTab('reparto')" style="padding:10px 8px;border:none;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.84rem;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,#34d399,#059669);color:#fff;display:flex;align-items:center;justify-content:center;gap:6px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            Reparto
+        </button>
+        <button id="rp_tab2" onclick="rpSetTab('hojas')" style="padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.84rem;cursor:pointer;background:var(--surf2);color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+            Ancho Hoja
+        </button>
+    </div>
+
+    <!-- ── TAB REPARTO ── -->
+    <div id="rp_secReparto">
+        <div class="cfg-grid" style="margin-bottom:12px">
+            <div class="cfg-f cfg-full">
+                <label>Longitud total</label>
+                <div class="iu"><input type="number" id="rp_total" placeholder="0" inputmode="numeric" oninput="calcReparto()"></div>
+            </div>
+            <div class="cfg-f">
+                <label>Nº travesaños</label>
+                <div class="iu" style="position:relative">
+                    <input type="number" id="rp_num" placeholder="0" inputmode="numeric" oninput="calcReparto()" style="padding-right:32px">
+                    <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:.7rem;font-weight:700;color:var(--dim);pointer-events:none">ud</span>
+                </div>
+            </div>
+            <div class="cfg-f">
+                <label>Ancho travesaño</label>
+                <div class="iu"><input type="number" id="rp_ancho" placeholder="0" inputmode="numeric" oninput="calcReparto()"></div>
+            </div>
+        </div>
+
+        <div id="rp_resBox" style="display:none">
+            <div style="background:linear-gradient(135deg,#1a2742,#0f1929);border:1px solid var(--border);border-radius:12px;padding:12px 15px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim)">Espacio entre</span>
+                <span style="font-family:'Bebas Neue',cursive;font-size:1.8rem;letter-spacing:2px;color:var(--gold)" id="rp_espacio">—</span>
+            </div>
+            <div style="background:var(--surf2);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+                <div style="padding:8px 14px;border-bottom:1px solid var(--border);font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);display:flex;justify-content:space-between">
+                    <span>Travesaño</span><span>Eje desde origen</span>
+                </div>
+                <div id="rp_lista" style="max-height:240px;overflow-y:auto"></div>
+            </div>
+            <button class="btn-act btn-ws" style="width:100%;margin-top:12px" onclick="compartirRepartoWS()">
+                <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                Enviar por WhatsApp
+            </button>
+        </div>
+        <div id="rp_error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px 14px;color:var(--red);font-weight:700;font-size:.9rem;text-align:center">
+            ✗ El material no cabe en la longitud indicada
+        </div>
+    </div>
+
+    <!-- ── TAB ANCHO HOJA ── -->
+    <div id="rp_secHojas" style="display:none">
+        <!-- Inputs -->
+        <div class="cfg-grid" style="margin-bottom:12px">
+            <div class="cfg-f cfg-full">
+                <label>Ancho total del hueco</label>
+                <div class="iu"><input type="number" id="ah_total" placeholder="0" inputmode="numeric" oninput="calcAnchoHoja()"></div>
+            </div>
+            <div class="cfg-f">
+                <label>Nº de hojas</label>
+                <div class="iu" style="position:relative">
+                    <input type="number" id="ah_hojas" value="2" inputmode="numeric" oninput="calcAnchoHoja()" style="padding-right:32px">
+                    <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:.7rem;font-weight:700;color:var(--dim);pointer-events:none">ud</span>
+                </div>
+            </div>
+            <div class="cfg-f">
+                <label>Perfil lateral</label>
+                <div class="iu"><input type="number" id="ah_lat" value="28" inputmode="numeric" oninput="calcAnchoHoja()"></div>
+            </div>
+            <div class="cfg-f">
+                <label>Travesaño / central</label>
+                <div class="iu"><input type="number" id="ah_int" value="28" inputmode="numeric" oninput="calcAnchoHoja()"></div>
+            </div>
+            <div class="cfg-f cfg-full">
+                <label>Montante (solape)</label>
+                <div class="iu"><input type="number" id="ah_solape" value="6" inputmode="numeric" oninput="calcAnchoHoja()"></div>
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div id="ah_resBox" style="display:none">
+            <!-- Principal -->
+            <div style="background:linear-gradient(135deg,#1a2742,#0f1929);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px">
+                <div style="font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin-bottom:4px">Ancho de corte por hoja</div>
+                <div style="display:flex;align-items:baseline;justify-content:space-between">
+                    <div id="ah_medida" style="font-family:'Bebas Neue',cursive;font-size:2.4rem;letter-spacing:2px;color:var(--gold)">—</div>
+                    <div style="text-align:right">
+                        <div id="ah_desc" style="font-size:.78rem;color:var(--dim);font-weight:600"></div>
+                        <div id="ah_total_hojas" style="font-size:.72rem;color:var(--dim)"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Desglose -->
+            <div style="background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:12px" id="ah_desglose"></div>
+            <button class="btn-act btn-ws" style="width:100%" onclick="ahCompartirWS()">
+                <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                Enviar por WhatsApp
+            </button>
+        </div>
+        <div id="ah_error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px 14px;color:var(--red);font-weight:700;font-size:.9rem;text-align:center">
+            ✗ Introduce los datos correctamente
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ══ MODAL FALLEBA ══ -->
+<div class="modal-bg" id="modalFallebaBg" onclick="cerrarModalBg(event,'modalFallebaBg')">
+<div class="modal" style="padding-bottom:28px">
+    <div class="modal-hdr">
+        <div class="modal-title" style="color:#fb923c">
+            <svg viewBox="0 0 24 24" style="stroke:#fb923c"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            CALCULADORA FALLEBA
+        </div>
+        <button class="modal-close" onclick="cerrarFalleba()">✕</button>
+    </div>
+
+    <!-- TABS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px">
+        <button id="fb_t1" onclick="fbSetTab('principal')" style="padding:10px 6px;border:none;border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,#fb923c,#ea580c);color:#fff;border:1.5px solid transparent">H. Principal</button>
+        <button id="fb_t2" onclick="fbSetTab('pasiva')" style="padding:10px 6px;border:1.5px solid var(--border);border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;background:var(--surf2);color:var(--muted)">H. Pasiva</button>
+        <button id="fb_t3" onclick="fbSetTab('ancho')" style="padding:10px 6px;border:1.5px solid var(--border);border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;background:var(--surf2);color:var(--muted)">Ancho (Compás)</button>
+    </div>
+
+    <!-- SEC ALTO (principal + pasiva) -->
+    <div id="fb_secAlto">
+        <!-- Modo eje -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">
+            <button id="fb_mAuto" onclick="fbSetMode('auto')" style="padding:9px;border:none;border-radius:9px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.83rem;cursor:pointer;background:linear-gradient(135deg,#fb923c,#ea580c);color:#fff">Eje Centro</button>
+            <button id="fb_mManual" onclick="fbSetMode('manual')" style="padding:9px;border:1.5px solid var(--border);border-radius:9px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.83rem;cursor:pointer;background:var(--surf2);color:var(--muted)">Eje Manual</button>
+        </div>
+        <div class="fgroup">
+            <label class="flabel">Alto total de hoja (mm)</label>
+            <div class="iu"><input type="number" id="fb_totalAlto" placeholder="0" inputmode="numeric" oninput="fbCalcular()"></div>
+        </div>
+        <div class="fgroup" id="fb_divEje" style="display:none">
+            <label class="flabel">Altura del eje (mm)</label>
+            <div class="iu"><input type="number" id="fb_ejeManual" placeholder="0" inputmode="numeric" oninput="fbCalcular()"></div>
+        </div>
+
+        <!-- Resultados -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+            <div style="background:linear-gradient(135deg,#1a2742,#0f1929);border:1px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center">
+                <div style="font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin-bottom:4px">Falleba Inferior</div>
+                <div id="fb_resInf" style="font-family:'Bebas Neue',cursive;font-size:1.7rem;letter-spacing:1.5px;color:#fb923c">—</div>
+            </div>
+            <div style="background:linear-gradient(135deg,#1a2742,#0f1929);border:1px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center">
+                <div style="font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin-bottom:4px">Falleba Superior</div>
+                <div id="fb_resSup" style="font-family:'Bebas Neue',cursive;font-size:1.7rem;letter-spacing:1.5px;color:#fb923c">—</div>
+            </div>
+        </div>
+        <div id="fb_resEje" style="text-align:center;margin-top:8px;font-size:.82rem;color:var(--dim);font-weight:600"></div>
+    </div>
+
+    <!-- SEC ANCHO (compás) -->
+    <div id="fb_secAncho" style="display:none">
+        <div class="fgroup">
+            <label class="flabel">Ancho de hoja (mm)</label>
+            <div class="iu"><input type="number" id="fb_anchoHoja" placeholder="0" inputmode="numeric" oninput="fbCalcularAncho()"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px" id="fb_compasResultados">
+            <!-- se rellena por JS -->
+        </div>
+    </div>
+
+    <!-- WS -->
+    <button class="btn-act btn-ws" style="width:100%;margin-top:14px" onclick="fbCompartirWS()">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        Enviar por WhatsApp
+    </button>
+</div>
+</div>
+
+<!-- ══ MODAL TRABAJOS ══ -->
+<div class="modal-bg" id="modalTrabajosBg" onclick="cerrarModalBg(event,'modalTrabajosBg')">
+<div class="modal" style="padding-bottom:28px">
+    <div class="modal-hdr">
+        <div class="modal-title">
+            <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            MIS TRABAJOS
+        </div>
+        <button class="modal-close" onclick="cerrarTrabajos()">✕</button>
+    </div>
+
+    <!-- NUEVO TRABAJO -->
+    <div style="background:var(--surf2);border:1.5px solid rgba(167,139,250,.3);border-radius:12px;padding:13px;margin-bottom:14px">
+        <div style="font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Nuevo trabajo vacío</div>
+        <div style="display:flex;gap:8px">
+            <input type="text" id="nuevoTrabajNombre" placeholder="Ej: Casa Juan, Obra Sevilla…" style="flex:1;padding:10px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:600;outline:none">
+            <button onclick="crearTrabajoNuevo()" style="padding:10px 14px;border:none;border-radius:9px;background:var(--purple);color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;white-space:nowrap">+ Crear</button>
+        </div>
+    </div>
+
+    <!-- TRABAJO ACTIVO -->
+    <div id="trabajoActivoBox" style="display:none;background:rgba(6,182,212,.06);border:1.5px solid rgba(6,182,212,.25);border-radius:12px;padding:12px 13px;margin-bottom:14px">
+        <div style="font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--cyan);margin-bottom:6px">Trabajo activo</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+            <div>
+                <div id="trabajoActivoNombre" style="font-family:'Bebas Neue',cursive;font-size:1.15rem;letter-spacing:1.5px;color:var(--text)"></div>
+                <div id="trabajoActivoInfo" style="font-size:.78rem;color:var(--dim)"></div>
+            </div>
+            <button onclick="guardarTrabajoActivo()" style="padding:8px 13px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;white-space:nowrap">
+                💾 Guardar
+            </button>
+        </div>
+    </div>
+
+    <!-- LISTA TRABAJOS -->
+    <div style="font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Trabajos guardados</div>
+    <div id="trabajosLista" style="max-height:340px;overflow-y:auto"></div>
+</div>
+</div>
+
+<!-- ══ MODAL NOMBRE GUARDAR ══ -->
+<div class="modal-bg" id="modalGuardarBg" onclick="cerrarModalBg(event,'modalGuardarBg')">
+<div class="modal" style="padding-bottom:28px;border-radius:16px 16px 0 0">
+    <div class="modal-hdr">
+        <div class="modal-title">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg>
+            GUARDAR TRABAJO
+        </div>
+        <button class="modal-close" onclick="cerrarModalBg({target:{id:'modalGuardarBg'}},'modalGuardarBg')">✕</button>
+    </div>
+    <div style="margin-bottom:12px">
+        <label style="display:block;font-size:.67rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);margin-bottom:7px">Nombre del trabajo</label>
+        <input type="text" id="guardarNombre" placeholder="Ej: Casa Juan, Obra Sevilla…" style="width:100%;padding:12px 14px;background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:600;outline:none" onkeydown="if(event.key==='Enter')confirmarGuardar()">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button onclick="confirmarGuardar()" style="padding:13px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--gold),var(--goldd));color:#0f172a;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer">💾 Guardar</button>
+        <button onclick="cerrarModalBg({target:{id:'modalGuardarBg'}},'modalGuardarBg')" style="padding:13px;border:1.5px solid var(--border);border-radius:10px;background:var(--surf2);color:var(--muted);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer">Cancelar</button>
+    </div>
+</div>
+</div>
+
+<!-- ══ MODAL BARRAS ══ -->
+<div class="modal-bg" id="modalBarrasBg" onclick="cerrarModalBg(event,'modalBarrasBg')">
+<div class="modal" style="padding-bottom:28px">
+    <div class="modal-hdr">
+        <div class="modal-title">
+            <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            OPTIMIZACIÓN DE BARRAS
+        </div>
+        <button class="modal-close" onclick="cerrarBarras()">✕</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:10px 13px">
+        <span style="font-size:.75rem;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;white-space:nowrap">Longitud barra</span>
+        <div class="iu" style="flex:1"><input type="number" id="barraLongitud" value="6400" inputmode="numeric" oninput="calcBarras()"></div>
+        <span style="font-size:.8rem;font-weight:700;color:var(--text-dim);white-space:nowrap">mm</span>
+    </div>
+    <div id="barrasContenido"></div>
+    <button class="btn-act btn-ws" style="width:100%;margin-top:12px" onclick="compartirBarrasWS()">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        Enviar por WhatsApp
+    </button>
+</div>
+</div>
+
+<script>
+/* ══ SVG ICONS ══ */
+const ICONS={
+    marco:   `<svg viewBox="0 0 24 24" stroke="var(--cyan)"><rect x="3" y="3" width="18" height="18" rx="1"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>`,
+    hoja:    `<svg viewBox="0 0 24 24" stroke="var(--gold)"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="9" cy="12" r="1.3" fill="var(--gold)" stroke="none"/></svg>`,
+    ruleta:  `<svg viewBox="0 0 24 24" stroke="#a78bfa"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+    inversor:`<svg viewBox="0 0 24 24" stroke="#fb923c"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>`,
+    guia:    `<svg viewBox="0 0 24 24" stroke="#34d399"><line x1="3" y1="5" x2="3" y2="19"/><line x1="21" y1="5" x2="21" y2="19"/><line x1="3" y1="8" x2="21" y2="8"/><line x1="3" y1="16" x2="21" y2="16"/><line x1="8" y1="5" x2="8" y2="8"/><line x1="8" y1="16" x2="8" y2="19"/><line x1="16" y1="5" x2="16" y2="8"/><line x1="16" y1="16" x2="16" y2="19"/></svg>`,
+    cabezal: `<svg viewBox="0 0 24 24" stroke="#60a5fa"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M12 7v10M7 7v10M17 7v10"/></svg>`,
+    vidrio:  `<svg viewBox="0 0 24 24" stroke="#67e8f9"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke-opacity=".5"/></svg>`,
+    junquillo:`<svg viewBox="0 0 24 24" stroke="#fbbf24"><line x1="3" y1="12" x2="21" y2="12" stroke-width="3"/><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="17" x2="21" y2="17"/></svg>`,
+    zocalo:  `<svg viewBox="0 0 24 24" stroke="#a3e635"><rect x="2" y="17" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1" opacity=".4"/></svg>`,
+    pieza:   `<svg viewBox="0 0 24 24" stroke="var(--muted)"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>`,
+};
+function getIcon(n){
+    const k=n.toLowerCase();
+    if(k.includes('marco'))    return ICONS.marco;
+    if(k.includes('hoja'))     return ICONS.hoja;
+    if(k.includes('ruleta'))   return ICONS.ruleta;
+    if(k.includes('inversor')) return ICONS.inversor;
+    if(k.includes('guía')||k.includes('guia')) return ICONS.guia;
+    if(k.includes('cabezal'))  return ICONS.cabezal;
+    if(k.includes('vidrio'))   return ICONS.vidrio;
+    if(k.includes('junquillo'))return ICONS.junquillo;
+    if(k.includes('zócalo')||k.includes('zocalo')) return ICONS.zocalo;
+    return ICONS.pieza;
+}
+
+/* ══ ANCHO DE HOJA ══ */
+function calcAnchoHoja(){
+    const total  = parseFloat(document.getElementById('ah_total').value)||0;
+    const nHojas = parseInt(document.getElementById('ah_hojas').value)||0;
+    const pLat   = parseFloat(document.getElementById('ah_lat').value)||0;
+    const pInt   = parseFloat(document.getElementById('ah_int').value)||0;
+    const solape = parseFloat(document.getElementById('ah_solape').value)||0;
+    const resBox = document.getElementById('ah_resBox');
+    const errBox = document.getElementById('ah_error');
+    resBox.style.display='none'; errBox.style.display='none';
+    if(!total||!nHojas||nHojas<1){return}
+    const aireLat   = (pLat - solape) * 2;
+    const nInter    = nHojas - 1;
+    const aireInt   = (pInt - solape*2) * nInter;
+    const descTotal = aireLat + aireInt;
+    const resultado = (total - descTotal) / nHojas;
+    if(resultado<=0){errBox.style.display='block';return}
+    document.getElementById('ah_medida').textContent = resultado.toFixed(1) + ' mm';
+    document.getElementById('ah_desc').textContent   = `Desc. total: ${descTotal.toFixed(1)} mm`;
+    document.getElementById('ah_total_hojas').textContent = `${nHojas}H × ${resultado.toFixed(1)} = ${(resultado*nHojas).toFixed(1)} mm`;
+    const row=(label,val,c='var(--muted)')=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(51,65,85,.4);font-size:.85rem"><span style="color:${c}">${label}</span><span style="font-family:'Bebas Neue',cursive;font-size:1.05rem;color:var(--gold)">${val}</span></div>`;
+    document.getElementById('ah_desglose').innerHTML=
+        row('Laterales ('+pLat+'−'+solape+')×2', aireLat.toFixed(1)+' mm')+
+        (nInter>0?row('Interm. ('+pInt+'−'+solape+'×2)×'+nInter, aireInt.toFixed(1)+' mm'):'')+
+        row('Descuento total', descTotal.toFixed(1)+' mm','var(--cyan)')+
+        row('('+total+'−'+descTotal.toFixed(1)+')÷'+nHojas, resultado.toFixed(1)+' mm','var(--gold)');
+    resBox.style.display='block';
+}
+
+function ahCompartirWS(){
+    const total  = parseFloat(document.getElementById('ah_total').value)||0;
+    const nHojas = parseInt(document.getElementById('ah_hojas').value)||0;
+    const pLat   = parseFloat(document.getElementById('ah_lat').value)||0;
+    const pInt   = parseFloat(document.getElementById('ah_int').value)||0;
+    const solape = parseFloat(document.getElementById('ah_solape').value)||0;
+    const aireLat=(pLat-solape)*2;
+    const aireInt=(pInt-solape*2)*(nHojas-1);
+    const desc=aireLat+aireInt;
+    const res=(total-desc)/nHojas;
+    if(res<=0||!total){showToast('Sin datos válidos');return}
+    let t=`📐 *ANCHO DE HOJA*\nTotal: ${total} mm · ${nHojas}H · Lat:${pLat} · Cen:${pInt} · Mont:${solape}\n${'─'.repeat(22)}\nDesc: ${desc.toFixed(1)} mm\n*Corte/hoja: ${res.toFixed(1)} mm*\n`;
+    window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+}
+
+/* ══ FALLEBA CALCULADORA ══ */
+let fbTab='principal', fbMode='auto';
+
+const FB_COMPAS=[
+    {id:'micro', label:'MICRO',    min:345, max:700,  desc:309},
+    {id:'mini',  label:'MINI',     min:372, max:700,  desc:30},
+    {id:'peq',   label:'PEQUEÑO',  min:442, max:750,  desc:373},
+    {id:'gran',  label:'GRANDE',   min:570, max:1200, desc:495},
+];
+
+function abrirFalleba(){
+    document.getElementById('modalFallebaBg').classList.add('show');
+    document.body.style.overflow='hidden';
+    fbCalcular();
+}
+function cerrarFalleba(){document.getElementById('modalFallebaBg').classList.remove('show');document.body.style.overflow=''}
+
+function fbSetTab(t){
+    fbTab=t;
+    const tabs={principal:'fb_t1',pasiva:'fb_t2',ancho:'fb_t3'};
+    Object.values(tabs).forEach(id=>{
+        const el=document.getElementById(id);
+        el.style.background='var(--surf2)';el.style.color='var(--muted)';
+        el.style.borderColor='var(--border)';
+    });
+    const active=document.getElementById(tabs[t]);
+    active.style.background='linear-gradient(135deg,#fb923c,#ea580c)';
+    active.style.color='#fff';active.style.borderColor='transparent';
+    document.getElementById('fb_secAlto').style.display=t==='ancho'?'none':'block';
+    document.getElementById('fb_secAncho').style.display=t==='ancho'?'block':'none';
+    fbCalcular();
+}
+
+function fbSetMode(m){
+    fbMode=m;
+    const auto=document.getElementById('fb_mAuto');
+    const manual=document.getElementById('fb_mManual');
+    if(m==='auto'){
+        auto.style.background='linear-gradient(135deg,#fb923c,#ea580c)';auto.style.color='#fff';auto.style.borderColor='transparent';
+        manual.style.background='var(--surf2)';manual.style.color='var(--muted)';manual.style.borderColor='var(--border)';
+    } else {
+        manual.style.background='linear-gradient(135deg,#fb923c,#ea580c)';manual.style.color='#fff';manual.style.borderColor='transparent';
+        auto.style.background='var(--surf2)';auto.style.color='var(--muted)';auto.style.borderColor='var(--border)';
+    }
+    document.getElementById('fb_divEje').style.display=m==='manual'?'block':'none';
+    fbCalcular();
+}
+
+function fbCalcular(){
+    if(fbTab==='ancho'){fbCalcularAncho();return}
+    const total=parseFloat(document.getElementById('fb_totalAlto').value)||0;
+    const eje=fbMode==='auto'?total/2:(parseFloat(document.getElementById('fb_ejeManual').value)||0);
+    const inf_el=document.getElementById('fb_resInf');
+    const sup_el=document.getElementById('fb_resSup');
+    const eje_el=document.getElementById('fb_resEje');
+    if(total>0&&eje>0){
+        let inf,sup;
+        if(fbTab==='principal'){inf=eje-185;sup=(total-eje)-225;}
+        else {inf=eje+30;sup=(total-eje)-351;}
+        const color=v=>v>=0?'#fb923c':'var(--red)';
+        inf_el.textContent=inf.toFixed(1)+' mm';inf_el.style.color=color(inf);
+        sup_el.textContent=sup.toFixed(1)+' mm';sup_el.style.color=color(sup);
+        eje_el.textContent=fbMode==='auto'?`Eje centro: ${eje.toFixed(1)} mm`:`Eje manual: ${eje.toFixed(1)} mm`;
+    } else {
+        inf_el.textContent='—';sup_el.textContent='—';eje_el.textContent='';
+    }
+}
+
+function fbCalcularAncho(){
+    const a=parseFloat(document.getElementById('fb_anchoHoja').value)||0;
+    const cont=document.getElementById('fb_compasResultados');
+    if(!a){cont.innerHTML='';return}
+    cont.innerHTML=FB_COMPAS.map(c=>{
+        const ok=a>=c.min&&a<=c.max;
+        const res=ok?(a-c.desc).toFixed(1):'No apto';
+        const color=ok?'#fb923c':'var(--red)';
+        const bg=ok?'rgba(251,146,60,.08)':'rgba(239,68,68,.06)';
+        const border=ok?'rgba(251,146,60,.3)':'rgba(239,68,68,.25)';
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:${bg};border:1px solid ${border};border-radius:10px">
+            <div>
+                <div style="font-family:'Bebas Neue',cursive;font-size:.95rem;letter-spacing:1.5px;color:${color}">${c.label}</div>
+                <div style="font-size:.72rem;color:var(--dim)">${c.min}–${c.max} mm</div>
+            </div>
+            <div style="font-family:'Bebas Neue',cursive;font-size:1.5rem;letter-spacing:1px;color:${color}">${res}${ok?' mm':''}</div>
+        </div>`;
+    }).join('');
+}
+
+function fbCompartirWS(){
+    if(fbTab==='ancho'){
+        const a=parseFloat(document.getElementById('fb_anchoHoja').value)||0;
+        if(!a){showToast('Introduce el ancho de hoja');return}
+        let t=`🔒 *FALLEBA — COMPÁS*\nAncho hoja: ${a} mm\n${'─'.repeat(20)}\n`;
+        FB_COMPAS.forEach(c=>{
+            const ok=a>=c.min&&a<=c.max;
+            t+=`${ok?'✓':'✗'} ${c.label}: ${ok?(a-c.desc).toFixed(1)+' mm':'No apto'}\n`;
+        });
+        window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+    } else {
+        const total=parseFloat(document.getElementById('fb_totalAlto').value)||0;
+        const eje=fbMode==='auto'?total/2:(parseFloat(document.getElementById('fb_ejeManual').value)||0);
+        if(!total||!eje){showToast('Introduce el alto de hoja');return}
+        let inf,sup;
+        if(fbTab==='principal'){inf=eje-185;sup=(total-eje)-225;}
+        else{inf=eje+30;sup=(total-eje)-351;}
+        const tipo=fbTab==='principal'?'H. Principal':'H. Pasiva';
+        let t=`🔒 *FALLEBA — ${tipo.toUpperCase()}*\nAlto: ${total} mm · Eje: ${eje.toFixed(1)} mm\n${'─'.repeat(20)}\n`;
+        t+=`Inferior: *${inf.toFixed(1)} mm*\nSuperior: *${sup.toFixed(1)} mm*\n`;
+        window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+    }
+}
+
+/* ══ CFG ══ */
+const DEFAULTS={
+    // SAM 75 — descuento hoja (igual para todos los modelos)
+    s75_hoja_std:52,  // no tubular
+    s75_hoja_tub:62,  // tubular
+    // SAM 75 — Giralda 2H a testa
+    s75_g2h_guia:27,  s75_g2h_ruleta:6,   s75_g2h_van:89.2, s75_g2h_val:155,
+    // SAM 75 — Giralda 2H con Marco Guía
+    s75_g2htub_guia:89, s75_g2htub_ruleta:36, s75_g2htub_van:120.2, s75_g2htub_val:165,
+    // SAM 75 — Giralda 3H 3 carriles
+    s75_g3h_guia:37,  s75_g3h_ruleta_a:8.5, s75_g3h_ruleta_b:23.5, s75_g3h_van:77.3, s75_g3h_val:165,
+    // SAM 75 — Giralda 4H a testa
+    s75_g4h_guia:27,  s75_g4h_ruleta:4.2, s75_g4h_union:119, s75_g4h_van:82, s75_g4h_val:155,
+    '20_dH_cerr':43,'20_dH_ab':29,'20_dAn':43,'20_dAn2':50,'20_dAn4':50,'20_tancha':8.9,'20_inv':92,
+    '40_dH_cerr':83,'40_dH_ab':49,'40_dAn':83,'40_dAn2':90,'40_inv':132,
+    // SAMM 447 per-model params
+    mez_ab_hoja_extra:30,  // Marco abierto: descuento extra en alto de hoja
+    // Ventana 1H 47
+    mez_dH_cerr:44, mez_dAn:44, mez_jh_cerr1:137.6, mez_jv_cerr:177.6, mez_van_1h:146, mez_val:146,
+    // Ventana 2H 47/40/Ext
+    mez_dAn2:24.8, mez_dH_ab:44, mez_inv_cerr:106, mez_jh_cerr2:118.5, mez_jv_ab:177.6, mez_van_2h:128, mez_jh_ab:146,
+    // Puerta 2H 40
+    p2h40_hl:24.8, p2h40_hh:30, mez_zoc:162.5, mez_inv_ab:92, p2h40_jh:162.5, p2h40_jv:219, p2h40_van:172, p2h40_val:189,
+    // Puerta 2H Exterior 47
+    p2hext_hl:47.5, p2hext_hh:49.7, p2hext_zoc:185.2, p2hext_inv:80.7, p2hext_jh:185.2, p2hext_jv:238.5, p2hext_van:195, p2hext_val:208.5,
+    // Puerta Vaivén
+    pvai_hl:66.2, pvai_hh:67.7, pvai_jh:159.7, pvai_jv:161.1, pvai_van:170, pvai_val:171.5,
+    // Ventana Elíptica 47
+    velip_hl:27.5, velip_hh:49.4, velip_inv:120.6, velip_jh:121.1, velip_jv:183, velip_van:131.1, velip_val:153.2,
+    // Mallorquina
+    mall_hl:24.8, mall_hh:44, mall_inv:106, mall_omega:142.4, mall_lama_c:157.4, mall_lama_o:157.4, mall_lama_base:197.8, mall_lama_paso:60,
+    mez_fp_mas:30,mez_fp_men:351,mez_fpr_base:225,mez_fpr_std:153,mez_fpr_osc:185,
+    mez1_fpr_base:225,mez1_fpr_std:153,mez1_fpr_osc:185,
+    mos_dAn:20,mos_dH_peq:35,mos_dH_gran:45,mos_umbral:1450,
+    mosc_dH:67, mosc_dAn:90,
+    mob_dH:10,mob_dAn1:20,mob_dAn2:33,
+    // QSystems Q95
+    q95_ais_l:28.6, q95_ais_h:28.6, q95_desliz:80,
+    q95_hoja_l:2.3, q95_hoja_h:65.9, q95_cruce:65.9, q95_ais_cruce:65.9,
+    q95_van:118, q95_val:187,
+    // QSystems Q67
+    q67_hoja_l:24.4, q67_hoja_h:42.8, q67_inv:108.6,
+    q67_jh:116, q67_jv:178.2, q67_van:126, q67_val:144.4,
+    // Oscilobatiente compás — descuento ancho hoja por tipo
+    osc_micro_desc:309,    // Micro: ancho - 309
+    osc_cmini_desc:30,     // Compás Mini: provisional
+    osc_cpeq_desc:30,      // Compás Pequeño: provisional
+    osc_cgran_desc:495,    // Compás Grande: ancho - 495
+    // Rangos compás (min/max ancho hoja mm)
+    osc_micro_min:345,   osc_micro_max:700,
+    osc_cmini_min:372,   osc_cmini_max:700,
+    osc_cpeq_min:442,    osc_cpeq_max:750,
+    osc_cgran_min:570,   osc_cgran_max:1200,
+};
+const CFG_VERSION='v17';
+let CFG={};
+function loadCFG(){
+    const saved=localStorage.getItem('taller_cfg');
+    const ver=localStorage.getItem('taller_cfg_ver');
+    // Si la versión no coincide, forzar defaults frescos
+    if(!saved||ver!==CFG_VERSION){CFG={...DEFAULTS};saveCFG();return}
+    CFG={...DEFAULTS,...JSON.parse(saved)};
+}
+function saveCFG(){localStorage.setItem('taller_cfg',JSON.stringify(CFG));localStorage.setItem('taller_cfg_ver',CFG_VERSION)}
+function g(k){return CFG[k]??DEFAULTS[k]}
+
+/* ══ AJUSTES ══ */
+function abrirAjustes(){
+    loadCFG();
+    Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('cfg_'+k);if(el)el.value=CFG[k]});
+    document.getElementById('modalAjustesBg').classList.add('show');
+    document.body.style.overflow='hidden';
+}
+function cerrarAjustes(){document.getElementById('modalAjustesBg').classList.remove('show');document.body.style.overflow=''}
+function guardarAjustes(){
+    Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('cfg_'+k);if(el)CFG[k]=parseFloat(el.value)});
+    saveCFG();cerrarAjustes();showToast('✓ Ajustes guardados');
+}
+function resetAjustes(){
+    CFG={...DEFAULTS};
+    Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('cfg_'+k);if(el)el.value=DEFAULTS[k]});
+    saveCFG();showToast('✓ Valores por defecto restaurados');
+}
+
+function exportarAjustes(){
+    loadCFG();
+    const json=JSON.stringify(CFG,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`taller-ajustes-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('✓ Ajustes exportados');
+}
+
+function importarAjustes(e){
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+        try{
+            const data=JSON.parse(ev.target.result);
+            // Validar que tenga al menos alguna clave conocida
+            const valid=Object.keys(DEFAULTS).some(k=>k in data);
+            if(!valid){showToast('⚠ JSON no válido');return}
+            // Mezclar con DEFAULTS para no perder claves nuevas
+            CFG={...DEFAULTS,...data};
+            // Actualizar inputs del modal
+            Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('cfg_'+k);if(el)el.value=CFG[k]});
+            saveCFG();
+            showToast('✓ Ajustes importados correctamente');
+        }catch{showToast('⚠ Error al leer el archivo');}
+    };
+    reader.readAsText(file);
+    // Reset input para poder volver a importar el mismo archivo
+    e.target.value='';
+}
+
+/* ══ MINI CALC ══ */
+let c2expr='',c2lastEq=false;
+function abrirCalc2(){document.getElementById('modalCalc2Bg').classList.add('show');document.body.style.overflow='hidden'}
+function cerrarCalc2(){document.getElementById('modalCalc2Bg').classList.remove('show');document.body.style.overflow=''}
+
+/* ══ REPARTO ══ */
+let ultimoReparto=null;
+let rpTabActual='reparto';
+
+function rpSetTab(tab){
+    rpTabActual=tab;
+    const t1=document.getElementById('rp_tab1');
+    const t2=document.getElementById('rp_tab2');
+    const s1=document.getElementById('rp_secReparto');
+    const s2=document.getElementById('rp_secHojas');
+    if(tab==='reparto'){
+        t1.style.cssText='padding:10px 8px;border:none;border-radius:10px;font-family:Rajdhani,sans-serif;font-weight:700;font-size:.84rem;cursor:pointer;background:linear-gradient(135deg,#34d399,#059669);color:#fff;display:flex;align-items:center;justify-content:center;gap:6px';
+        t2.style.cssText='padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;font-family:Rajdhani,sans-serif;font-weight:700;font-size:.84rem;cursor:pointer;background:var(--surf2);color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px';
+        s1.style.display='block'; s2.style.display='none';
+    } else {
+        t2.style.cssText='padding:10px 8px;border:none;border-radius:10px;font-family:Rajdhani,sans-serif;font-weight:700;font-size:.84rem;cursor:pointer;background:linear-gradient(135deg,#34d399,#059669);color:#fff;display:flex;align-items:center;justify-content:center;gap:6px';
+        t1.style.cssText='padding:10px 8px;border:1.5px solid var(--border);border-radius:10px;font-family:Rajdhani,sans-serif;font-weight:700;font-size:.84rem;cursor:pointer;background:var(--surf2);color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px';
+        s2.style.display='block'; s1.style.display='none';
+    }
+}
+function abrirReparto(){
+    document.getElementById('modalRepartoBg').classList.add('show');
+    document.body.style.overflow='hidden';
+    calcReparto();
+}
+function cerrarReparto(){document.getElementById('modalRepartoBg').classList.remove('show');document.body.style.overflow=''}
+
+function calcReparto(){
+    const L=parseFloat(document.getElementById('rp_total').value)||0;
+    const N=parseFloat(document.getElementById('rp_num').value)||0;
+    const W=parseFloat(document.getElementById('rp_ancho').value)||0;
+    const resBox=document.getElementById('rp_resBox');
+    const errBox=document.getElementById('rp_error');
+    resBox.style.display='none'; errBox.style.display='none';
+    if(L<=0||N<=0) return;
+    const huecos=N+1;
+    const S=(L-(N*W))/huecos;
+    if(S<=0){ errBox.style.display='block'; ultimoReparto=null; return; }
+    document.getElementById('rp_espacio').textContent=S.toFixed(2)+' mm';
+    // Generar ejes
+    let html=''; const ejes=[];
+    for(let i=1;i<=N;i++){
+        const eje=(i*S)+((i-0.5)*W);
+        ejes.push({n:i,eje});
+        const isEven=i%2===0;
+        html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid rgba(51,65,85,.4);background:${isEven?'rgba(6,182,212,.03)':'transparent'}">
+            <span style="font-size:.9rem;font-weight:600;color:var(--muted)">
+                <span style="display:inline-block;width:22px;height:22px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:5px;text-align:center;line-height:22px;font-family:'Bebas Neue',cursive;color:var(--gold);font-size:.85rem;margin-right:6px">${i}</span>
+                Travesaño ${i}
+            </span>
+            <span style="font-family:'Bebas Neue',cursive;font-size:1.25rem;letter-spacing:1px;color:var(--cyan)">${eje.toFixed(2)}<small style="font-size:.6rem;color:var(--dim);margin-left:2px;font-family:'Rajdhani',sans-serif;font-weight:600">mm</small></span>
+        </div>`;
+    }
+    document.getElementById('rp_lista').innerHTML=html||'';
+    ultimoReparto={L,N,W,S,ejes};
+    resBox.style.display='block';
+}
+
+function compartirRepartoWS(){
+    if(!ultimoReparto) return;
+    const{L,N,W,S,ejes}=ultimoReparto;
+    let t=`📐 *REPARTO DE TRAVESAÑOS*\n`;
+    t+=`Total: ${L} mm  ·  ${N} ud  ·  Ancho: ${W} mm\n`;
+    t+=`Espacio entre: *${S.toFixed(2)} mm*\n${'─'.repeat(24)}\n`;
+    ejes.forEach(e=>t+=`T${e.n}: *${e.eje.toFixed(2)} mm*\n`);
+    window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+}
+function c2update(){
+    document.getElementById('c2expr').textContent=c2expr;
+    try{
+        const safe=c2expr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');
+        const v=Function('"use strict";return ('+safe+')')();
+        document.getElementById('c2res').textContent=isFinite(v)?+v.toFixed(4):'—';
+    }catch{document.getElementById('c2res').textContent=c2expr?'…':'0'}
+}
+function c2input(k){
+    if(c2lastEq&&!'÷×−+'.includes(k)){c2expr='';c2lastEq=false}
+    if(k==='±'){
+        // negate last number
+        c2expr=c2expr.replace(/([\d.]+)$/,n=>String(-parseFloat(n)));
+    } else if(k==='%'){
+        c2expr=c2expr.replace(/([\d.]+)$/,n=>String(parseFloat(n)/100));
+    } else {
+        c2expr+=k;
+    }
+    c2update();
+}
+function c2del(){c2expr=c2expr.slice(0,-1);c2lastEq=false;c2update()}
+function c2clear(){c2expr='';c2lastEq=false;c2update()}
+function c2equal(){
+    try{
+        const safe=c2expr.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');
+        const v=Function('"use strict";return ('+safe+')')();
+        c2expr=isFinite(v)?String(+v.toFixed(6)):c2expr;
+        c2lastEq=true;
+    }catch{}
+    c2update();
+}
+
+/* ══ MODAL SHARED ══ */
+function cerrarModalBg(e,id){if(e.target.id===id){document.getElementById(id).classList.remove('show');document.body.style.overflow=''}}
+
+/* ══ PWA ══ */
+let deferredPrompt=null;
+function showInstallBtn(v){
+    const b=document.getElementById('btnInstallMain');
+    if(b) b.style.display=v?'flex':'none';
+}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;showInstallBtn(true)});
+window.addEventListener('appinstalled',()=>{showInstallBtn(false);showToast('✓ App instalada')});
+async function instalarPWA(){if(!deferredPrompt)return;deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;deferredPrompt=null;if(outcome==='accepted')showInstallBtn(false)}
+
+/* ══ TOAST ══ */
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
+
+/* ══ INFO TOGGLE ══ */
+function toggleInfo(){document.getElementById('infoPanel').classList.toggle('show');document.getElementById('arrow').classList.toggle('open')}
+function buildInfo(rows){return rows.map(([k,v])=>`<div class="irow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg><b>${k}:</b><span>${v}</span></div>`).join('')}
+
+/* ══ ACTUALIZAR INTERFAZ ══ */
+function actualizarInterfaz(){
+    const s=document.getElementById('serie').value;
+    const nH=document.getElementById('numHojas').value;
+    ['divExtra','divHojas','divTubular','divCierre','divTancha','divMobHojas','divCompas','divModelo','divModeloSAM75','divModeloQSys','divMarcoTipoSAMM'].forEach(id=>document.getElementById(id).style.display='none');
+    document.getElementById('cardOpc').style.display='none';
+    document.getElementById('seccionMedidas').style.display='block';
+    document.getElementById('resultadosContenedor').style.display='none';
+    document.getElementById('infoCaja').innerHTML='';
+    document.getElementById('txtBtn').innerText='DATOS TÉCNICOS';
+    document.getElementById('opt4hojas').style.display=(s==='40x20')?'':'none';
+    if(s!=='40x20'&&nH==='4') document.getElementById('numHojas').value='1';
+
+    const tipoCierreVal=document.getElementById('tipoCierre').value;
+    const showOpc=(...ids)=>{document.getElementById('cardOpc').style.display='block';ids.forEach(id=>document.getElementById(id).style.display='block')};
+
+    if(s==='qsys'){
+        showOpc('divModeloQSys');
+        document.getElementById('txtBtn').innerText='DATOS QSYSTEMS';
+        document.getElementById('infoCaja').innerHTML=buildInfo([
+            ['Q95','Corredera inglete 2 hojas · 95201 · 95202 · 95027 · 95023'],
+            ['Q67','Ventana 2H apertura interior · 67001 · 67003 · 67005'],
+        ]);
+    }
+    if(s==='sam75'){
+        showOpc('divModeloSAM75','divTubular');
+        document.getElementById('txtBtn').innerText='DATOS SAM 75';
+        document.getElementById('infoCaja').innerHTML=buildInfo([
+            ['Marco lat.','750003 / 750120 / 750121 / 750303'],
+            ['Guía inf.','750002 / 750012 / 750302'],
+            ['Guía sup.','750001 / 750301'],
+            ['Hoja lateral','750014'],['Hoja centro','750015'],
+            ['Ruleta','750016'],['Unión 4H','750022'],
+        ]);
+    }
+    if(s==='40x20'||s==='40x40'){
+        showOpc('divHojas','divExtra');
+        document.getElementById('labelExtra').innerText='Variante de marco';
+        document.getElementById('selectExtra').innerHTML='<option value="estandar">Marco Cerrado</option><option value="abierto">Marco Abierto</option>';
+        if(s==='40x20'&&nH==='4'){document.getElementById('divTancha').style.display='block';document.getElementById('cardOpc').style.display='block'}
+        const labels={'40x20':'DATOS 40×20','40x40':'DATOS 40×40'};
+        document.getElementById('txtBtn').innerText=labels[s];
+        const infos={'40x20':[['Cerradura','Entrada 25'],['Bombín','30/30']],'40x40':[['Cerradura','Entrada 25']]};
+        document.getElementById('infoCaja').innerHTML=buildInfo(infos[s]);
+    }
+    if(s==='mezquita'){
+        showOpc('divModelo');
+        const modelo=document.getElementById('modeloSAMM').value;
+        const conCierre=['v1h47','v2h47','v2h40','v2hext47','velip47'];
+        const conMarco=['v1h47','v2h47','v2h40','v2hext47'];
+        if(conMarco.includes(modelo)){
+            document.getElementById('divMarcoTipoSAMM').style.display='block';
+            document.getElementById('cardOpc').style.display='block';
+        }
+        if(conCierre.includes(modelo)){
+            document.getElementById('divCierre').style.display='block';
+            if(tipoCierreVal==='oscilo') document.getElementById('divCompas').style.display='block';
+        }
+        document.getElementById('txtBtn').innerText='DATOS SAMM 447';
+        document.getElementById('infoCaja').innerHTML=buildInfo([['Marco','447001 / 447011 / 447111 / 447201'],['Hoja','447022 / 447322 / 447222 / 447522 / 447262 / 44102 / 447332 / 447512'],['Inversor','447003 / 447013'],['Zócalo','447008']]);
+    }
+    if(s==='mobiliario'){showOpc('divMobHojas');document.getElementById('txtBtn').innerText='DATOS MOBILIARIO';document.getElementById('infoCaja').innerHTML=buildInfo([['Escuadra','2,15 × 5,1'],['Bisagra','2,05 × 12']])}
+    else if(s==='mosquitera'){document.getElementById('txtBtn').innerText='INFO MOSQUITERA ENROLLABLE';document.getElementById('infoCaja').innerHTML=buildInfo([['Ancho','-20 mm fija'],['Alto','Cabezal auto por altura']])}
+    else if(s==='mosquitera_cor'){document.getElementById('txtBtn').innerText='INFO MOSQUITERA CORREDERA';document.getElementById('infoCaja').innerHTML=buildInfo([['Alto Marco','H − 67 mm'],['Ancho Marco','A − 90 mm']])}
+}
+
+/* ══ CALCULAR ══ */
+let ultimosCortes=[],ultimaSerieStr='';
+
+function calcular(){
+    loadCFG();
+    const serieEl=document.getElementById('serie');
+    const s=serieEl.value;
+    const A=parseFloat(document.getElementById('ancho').value)||0;
+    const H=parseFloat(document.getElementById('alto').value)||0;
+    const nHojas=document.getElementById('numHojas').value;
+    const nHojasMob=document.getElementById('numHojasMob').value;
+    const tubular=document.getElementById('marcoTubular').value;
+    const extra=document.getElementById('selectExtra')?.value||'estandar';
+    const tipoCierre=document.getElementById('tipoCierre').value;
+    const tipoT='ancha'; // 4 hojas siempre usa T Ancha
+    if(!A||!H){showToast('⚠ Introduce ancho y alto');return}
+
+    let c=[],notas='',datosCierre='';
+    ultimaSerieStr=serieEl.options[serieEl.selectedIndex].text;
+
+    /* CORREDERAS SAM 75 */
+    if(s==='sam75'){
+        const modelo=document.getElementById('modeloSAM75').value;
+        const dHoja = tubular==='si' ? g('s75_hoja_tub') : g('s75_hoja_std');
+        ultimaSerieStr='SAM 75 — '+document.getElementById('modeloSAM75').options[document.getElementById('modeloSAM75').selectedIndex].text+(tubular==='si'?' (Tubular)':'');
+
+        if(modelo==='g2h'){
+            datosCierre='750003 · 750002 · 750001 · 750014 · 750015 · 750016';
+            c.push(['2','Marco 750003',       H]);
+            c.push(['1','Guía Inf. 750002',   A-g('s75_g2h_guia')]);
+            c.push(['1','Guía Sup. 750001',   A-g('s75_g2h_guia')]);
+            c.push(['2','Hoja Lat. 750014',   H-dHoja]);
+            c.push(['2','Hoja Cen. 750015',   H-dHoja]);
+            c.push(['4','Ruleta 750016',       (A/2)-g('s75_g2h_ruleta')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('s75_g2h_van'),H-g('s75_g2h_val')]);
+        }
+        else if(modelo==='g2htub'){
+            datosCierre='750120 · 750121 · 750012 · 750001 · 750014 · 750015 · 750016';
+            c.push(['1','Marco Izq. 750120',   H]);
+            c.push(['1','Marco Der. 750121',   H]);
+            c.push(['1','Guía Inf.T 750012',   A-g('s75_g2htub_guia')]);
+            c.push(['1','Guía Sup. 750001',    A-g('s75_g2htub_guia')]);
+            c.push(['2','Hoja Lat. 750014',    H-dHoja]);
+            c.push(['2','Hoja Cen. 750015',    H-dHoja]);
+            c.push(['4','Ruleta 750016',        (A/2)-g('s75_g2htub_ruleta')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('s75_g2htub_van'),H-g('s75_g2htub_val')]);
+        }
+        else if(modelo==='g3h'){
+            datosCierre='750303 · 750302 · 750301 · 750014 · 750015 · 750016';
+            c.push(['2','Marco 750303',         H]);
+            c.push(['1','Guía Inf. 750302',     A-g('s75_g3h_guia')]);
+            c.push(['1','Guía Sup. 750301',     A-g('s75_g3h_guia')]);
+            c.push(['2','Hoja Lat. 750014',     H-dHoja]);
+            c.push(['4','Hoja Cen. 750015',     H-dHoja]);
+            c.push(['4','Ruleta A 750016',      (A/3)+g('s75_g3h_ruleta_a')]);
+            c.push(['2','Ruleta B 750016',      (A/3)+g('s75_g3h_ruleta_b')]);
+            c.push(['vid','3','Vidrio',(A/3)-g('s75_g3h_van'),H-g('s75_g3h_val')]);
+        }
+        else if(modelo==='g4h'){
+            datosCierre='750003 · 750002 · 750001 · 750014 · 750015 · 750016 · 750022';
+            c.push(['2','Marco 750003',          H]);
+            c.push(['1','Guía Inf. 750002',      A-g('s75_g4h_guia')]);
+            c.push(['1','Guía Sup. 750001',      A-g('s75_g4h_guia')]);
+            c.push(['4','Hoja Lat. 750014',      H-dHoja]);
+            c.push(['4','Hoja Cen. 750015',      H-dHoja]);
+            c.push(['8','Ruleta 750016',          (A/4)+g('s75_g4h_ruleta')]);
+            c.push(['1','Unión 750022',           H-g('s75_g4h_union')]);
+            c.push(['vid','4','Vidrio',(A/4)-g('s75_g4h_van'),H-g('s75_g4h_val')]);
+        }
+    }
+
+    /* 40x20 */
+    else if(s==='40x20'){
+        const dHm=extra==='abierto'?g('20_dH_ab'):g('20_dH_cerr');
+        datosCierre='Cerradura Ent. 25  ·  Bombín 30/30';
+        const aH=H-dHm;
+        if(nHojas==='4'){
+            const dAn4=g('20_tancha');
+            c.push(['2','Marco Lateral',H]);
+            c.push(['2','Marco Horiz.', A]);
+            c.push(['8','Hoja Vertical',aH]);
+            c.push(['8','Hoja Horiz.',  (A-dAn4)/4]);
+            c.push(['2','Inversor',     H-g('20_inv')]);
+            datosCierre+='  ·  T Ancha';
+        } else {
+            const anH=nHojas==='1'?A-g('20_dAn'):(A-g('20_dAn2'))/2;
+            c.push(['2','Marco Lateral', H]);
+            c.push([extra==='abierto'?'1':'2','Marco Horiz.',A]);
+            c.push([nHojas==='1'?'2':'4','Hoja Vertical',aH]);
+            c.push([nHojas==='1'?'2':'4','Hoja Horiz.',anH]);
+            if(nHojas==='2') c.push(['1','Inversor',H-g('20_inv')]);
+        }
+    }
+
+    /* 40x40 */
+    else if(s==='40x40'){
+        const dHm=extra==='abierto'?g('40_dH_ab'):g('40_dH_cerr');
+        const aH=H-dHm;
+        const anH=nHojas==='1'?A-g('40_dAn'):(A-g('40_dAn2'))/2;
+        datosCierre='Cerradura Ent. 25';
+        c.push(['2','Marco Lateral', H]);
+        c.push([extra==='abierto'?'1':'2','Marco Horiz.',A]);
+        c.push([nHojas==='1'?'2':'4','Hoja Vertical',aH]);
+        c.push([nHojas==='1'?'2':'4','Hoja Horiz.',anH]);
+        if(nHojas==='2') c.push(['1','Inversor',H-g('40_inv')]);
+    }
+
+    /* ABATIBLES SAMM 447 */
+    else if(s==='mezquita'){
+        const modelo = document.getElementById('modeloSAMM').value;
+        ultimaSerieStr = serieEl.options[serieEl.selectedIndex].text + ' — ' +
+            document.getElementById('modeloSAMM').options[document.getElementById('modeloSAMM').selectedIndex].text;
+
+        // Helper: compás automático sobre ancho de hoja
+        const calcCompas=(anH)=>{
+            if(tipoCierre!=='oscilo') return '';
+            const compasAll=[
+                {label:'Micro',          desc:g('osc_micro_desc'), min:g('osc_micro_min'), max:g('osc_micro_max')},
+                {label:'Compás Mini',    desc:g('osc_cmini_desc'), min:g('osc_cmini_min'), max:g('osc_cmini_max')},
+                {label:'Compás Pequeño', desc:g('osc_cpeq_desc'),  min:g('osc_cpeq_min'),  max:g('osc_cpeq_max')},
+                {label:'Compás Grande',  desc:g('osc_cgran_desc'), min:g('osc_cgran_min'), max:g('osc_cgran_max')},
+            ];
+            const ok=compasAll.filter(cd=>anH>=cd.min&&anH<=cd.max);
+            const no=compasAll.filter(cd=>!(anH>=cd.min&&anH<=cd.max));
+            let lines=ok.map(cd=>`<span style="color:#4ade80">✓ <b>${cd.label}</b> — compás: <b>${(anH-cd.desc).toFixed(1)} mm</b></span>`).join('<br>');
+            lines+=(ok.length&&no.length?'<br>':'')+no.map(cd=>`<span style="color:#f87171;opacity:.6">✗ ${cd.label} (${cd.min}–${cd.max})</span>`).join('<br>');
+            return lines;
+        };
+
+        // Helper fallebas ventanas (1H y 2H)
+        const calcFallebas=(aH,dosHojas)=>{
+            if(dosHojas){
+                const p1=(aH/2)+g('mez_fp_mas'), p2=(aH/2)-g('mez_fp_men');
+                const r1=(aH/2)-g('mez_fpr_base'), r2=tipoCierre==='oscilo'?(aH/2)-g('mez_fpr_osc'):(aH/2)-g('mez_fpr_std');
+                return `Falleba Pasiva: <b>${p1.toFixed(1)}</b> / <b>${p2.toFixed(1)}</b> mm<br>Falleba Principal: <b>${r1.toFixed(1)}</b> / <b>${r2.toFixed(1)}</b> mm`;
+            } else {
+                const r1=(aH/2)-g('mez1_fpr_base'), r2=tipoCierre==='oscilo'?(aH/2)-g('mez1_fpr_osc'):(aH/2)-g('mez1_fpr_std');
+                return `Falleba Principal: <b>${r1.toFixed(1)}</b> / <b>${r2.toFixed(1)}</b> mm`;
+            }
+        };
+
+        if(modelo==='v1h47'){
+            const marcoTipo=document.getElementById('marcoTipoSAMM').value;
+            const abierto=marcoTipo==='abierto';
+            const aH=H-(abierto?g('mez_ab_hoja_extra'):g('mez_dH_cerr'));
+            const anH=A-g('mez_dAn');
+            datosCierre='Marco 447001  ·  Hoja 447022  ·  Ent. 30  ·  Bombín 30/40'+(abierto?' · Marco Abierto':'');
+            c.push([abierto?'1':'2','Marco 447001 L', A]);
+            c.push(['2','Marco 447001 H', H]);
+            c.push([abierto?'1':'2','Hoja 447022 L',  anH]);
+            c.push(['2','Hoja 447022 H',  aH]);
+            c.push(['2','Junquillo H.',   A-g('mez_jh_cerr1')]);
+            c.push(['2','Junquillo V.',   H-g('mez_jv_cerr')]);
+            c.push(['vid','1','Vidrio',A-g('mez_van_1h'),H-g('mez_val')]);
+            notas=calcFallebas(aH,false);
+            const osc=calcCompas(anH); if(osc) notas+=(notas?'<br>':'')+osc;
+            if(tipoCierre==='oscilo') datosCierre+='  ·  Oscilobatiente';
+        }
+        else if(modelo==='v2h47'){
+            const marcoTipo=document.getElementById('marcoTipoSAMM').value;
+            const abierto=marcoTipo==='abierto';
+            const aH=H-(abierto?g('mez_ab_hoja_extra'):g('mez_dH_ab'));
+            const anH=(A/2)-g('mez_dAn2');
+            datosCierre='Marco 447001  ·  Hoja 447022  ·  Inv. 447003  ·  Ent. 30  ·  Bombín 30/40'+(abierto?' · Marco Abierto':'');
+            c.push([abierto?'1':'2','Marco 447001 L', A]);
+            c.push(['2','Marco 447001 H', H]);
+            c.push([abierto?'2':'4','Hoja 447022 L',  anH]);
+            c.push(['4','Hoja 447022 H',  aH]);
+            c.push(['1','Inversor 447003',H-g('mez_inv_cerr')]);
+            c.push(['4','Junquillo H.',   (A/2)-g('mez_jh_cerr2')]);
+            c.push(['4','Junquillo V.',   H-g('mez_jv_ab')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('mez_van_2h'),H-g('mez_jh_ab')]);
+            notas=calcFallebas(aH,true);
+            const osc=calcCompas(anH); if(osc) notas+=(notas?'<br>':'')+osc;
+            if(tipoCierre==='oscilo') datosCierre+='  ·  Oscilobatiente';
+        }
+        else if(modelo==='v2h40'){
+            const marcoTipo=document.getElementById('marcoTipoSAMM').value;
+            const abierto=marcoTipo==='abierto';
+            const aH=H-(abierto?g('mez_ab_hoja_extra'):g('mez_dH_ab'));
+            const anH=(A/2)-g('mez_dAn2');
+            datosCierre='Marco 447001  ·  Hoja 447322  ·  Inv. 447003'+(abierto?' · Marco Abierto':'');
+            c.push([abierto?'1':'2','Marco 447001 L', A]);
+            c.push(['2','Marco 447001 H', H]);
+            c.push([abierto?'2':'4','Hoja 447322 L',  anH]);
+            c.push(['4','Hoja 447322 H',  aH]);
+            c.push(['1','Inversor 447003',H-g('mez_inv_cerr')]);
+            c.push(['4','Junquillo H.',   (A/2)-g('mez_jh_cerr2')]);
+            c.push(['4','Junquillo V.',   H-g('mez_jv_ab')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('mez_van_2h'),H-g('mez_jh_ab')]);
+            notas=calcFallebas(aH,true);
+            const osc=calcCompas(anH); if(osc) notas+=(notas?'<br>':'')+osc;
+            if(tipoCierre==='oscilo') datosCierre+='  ·  Oscilobatiente';
+        }
+        else if(modelo==='v2hext47'){
+            const marcoTipo=document.getElementById('marcoTipoSAMM').value;
+            const abierto=marcoTipo==='abierto';
+            const aH=H-(abierto?g('mez_ab_hoja_extra'):g('mez_dH_ab'));
+            const anH=(A/2)-g('mez_dAn2');
+            datosCierre='Marco 447001  ·  Hoja 447222  ·  Inv. 447003'+(abierto?' · Marco Abierto':'');
+            c.push([abierto?'1':'2','Marco 447001 L', A]);
+            c.push(['2','Marco 447001 H', H]);
+            c.push([abierto?'2':'4','Hoja 447222 L',  anH]);
+            c.push(['4','Hoja 447222 H',  aH]);
+            c.push(['1','Inversor 447003',H-g('mez_inv_cerr')]);
+            c.push(['4','Junquillo H.',   (A/2)-g('mez_jh_cerr2')]);
+            c.push(['4','Junquillo V.',   H-g('mez_jv_ab')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('mez_van_2h'),H-g('mez_jh_ab')]);
+            notas=calcFallebas(aH,true);
+            const osc=calcCompas(anH); if(osc) notas+=(notas?'<br>':'')+osc;
+            if(tipoCierre==='oscilo') datosCierre+='  ·  Oscilobatiente';
+        }
+        else if(modelo==='p2h40'){
+            datosCierre='Marco 447001  ·  Hoja 447522  ·  Inv. 447003  ·  Zócalo 447008';
+            c.push(['1','Marco 447001 L', A]);
+            c.push(['2','Marco 447001 H', H]);
+            c.push(['2','Hoja 447522 L',  (A/2)-g('p2h40_hl')]);
+            c.push(['4','Hoja 447522 H',  H-g('p2h40_hh')]);
+            c.push(['2','Zócalo 447008',  (A/2)-g('mez_zoc')]);
+            c.push(['1','Inversor 447003',H-g('mez_inv_ab')]);
+            c.push(['4','Junquillo H.',   (A/2)-g('p2h40_jh')]);
+            c.push(['4','Junquillo V.',   H-g('p2h40_jv')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('p2h40_van'),H-g('p2h40_val')]);
+        }
+        else if(modelo==='p2hext47'){
+            datosCierre='Marco 447011  ·  Hoja 447262  ·  Inv. 447003  ·  Zócalo 447008';
+            c.push(['1','Marco 447011 L', A]);
+            c.push(['2','Marco 447011 H', H]);
+            c.push(['2','Hoja 447262 L',  (A/2)-g('p2hext_hl')]);
+            c.push(['4','Hoja 447262 H',  H-g('p2hext_hh')]);
+            c.push(['2','Zócalo 447008',  (A/2)-g('p2hext_zoc')]);
+            c.push(['1','Inversor 447003',H-g('p2hext_inv')]);
+            c.push(['4','Junquillo H.',   (A/2)-g('p2hext_jh')]);
+            c.push(['4','Junquillo V.',   H-g('p2hext_jv')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('p2hext_van'),H-g('p2hext_val')]);
+        }
+        else if(modelo==='pvai'){
+            datosCierre='Marco 447111  ·  Hoja 44102';
+            c.push(['1','Marco 447111 L', A]);
+            c.push(['2','Marco 447111 H', H]);
+            c.push(['4','Hoja 44102 L',   (A/2)-g('pvai_hl')]);
+            c.push(['4','Hoja 44102 H',   H-g('pvai_hh')]);
+            c.push(['4','Junquillo H.',   (A/2)-g('pvai_jh')]);
+            c.push(['4','Junquillo V.',   H-g('pvai_jv')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('pvai_van'),H-g('pvai_val')]);
+        }
+        else if(modelo==='velip47'){
+            const aH=H-g('velip_hh'), anH=(A/2)-g('velip_hl');
+            datosCierre='Marco 447201  ·  Hoja 447332  ·  Inv. 447013';
+            c.push(['2','Marco 447201 L', A]);
+            c.push(['2','Marco 447201 H', H]);
+            c.push(['4','Hoja 447332 L',  anH]);
+            c.push(['4','Hoja 447332 H',  aH]);
+            c.push(['1','Inversor 447013',H-g('velip_inv')]);
+            c.push(['4','Junquillo H.',   (A/2)-g('velip_jh')]);
+            c.push(['4','Junquillo V.',   H-g('velip_jv')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('velip_van'),H-g('velip_val')]);
+            notas=calcFallebas(aH,true);
+            const osc=calcCompas(anH); if(osc) notas+=(notas?'<br>':'')+osc;
+            if(tipoCierre==='oscilo') datosCierre+='  ·  Oscilobatiente';
+        }
+        else if(modelo==='mall'){
+            const N=Math.round((H-g('mall_lama_base'))/g('mall_lama_paso'));
+            datosCierre='Marco 447001  ·  Hoja 447512  ·  Inv. 447003  ·  Omega 447501  ·  Lama 447505/447506';
+            c.push(['2','Marco 447001 L', A]);
+            c.push(['2','Marco 447001 H', H]);
+            c.push(['4','Hoja 447512 L',  (A/2)-g('mall_hl')]);
+            c.push(['4','Hoja 447512 H',  H-g('mall_hh')]);
+            c.push(['1','Inversor 447003',H-g('mall_inv')]);
+            c.push(['4','Omega 447501',   (A/2)-g('mall_omega')]);
+            c.push(['4','Lama Comp. 447506',(A/2)-g('mall_lama_c')]);
+            c.push([String(N*4),'Lama Ori. 447505',(A/2)-g('mall_lama_o')]);
+            notas=`Lamas orientables: <b>${N} uds/hoja × 4 hojas = ${N*4} total</b><br>N = (H − ${g('mall_lama_base')}) / ${g('mall_lama_paso')} = ${((H-g('mall_lama_base'))/g('mall_lama_paso')).toFixed(2)} → ${N}`;
+        }
+    }
+
+    /* MOSQUITERA ENROLLABLE */
+    else if(s==='mosquitera'){
+        const umbral=g('mos_umbral');
+        const desc=H<umbral?g('mos_dH_peq'):g('mos_dH_gran');
+        c.push(['1','Cabezal',A-g('mos_dAn')]);
+        c.push(['2','Guías',H-desc]);
+        datosCierre=`Auto-Cabezal: ${H<umbral?'Pequeño':'Grande'}`;
+    }
+
+    /* MOSQUITERA CORREDERA */
+    else if(s==='mosquitera_cor'){
+        c.push(['2','Marco Alto',  H-g('mosc_dH')]);
+        c.push(['2','Marco Ancho', A-g('mosc_dAn')]);
+        datosCierre='Mosquitera Corredera';
+    }
+
+    /* MOBILIARIO */
+    else if(s==='mobiliario'){
+        const altoH=H-g('mob_dH');
+        if(nHojasMob==='1'){c.push(['2','Hoja Alto',altoH]);c.push(['2','Hoja Ancho',A-g('mob_dAn1')])}
+        else{c.push(['4','Hoja Alto',altoH]);c.push(['4','Hoja Ancho',(A-g('mob_dAn2'))/2])}
+        datosCierre='Escuadra: 2,15 × 5,1  ·  Bisagra: 2,05 × 12';
+    }
+
+    /* QSYSTEMS */
+    else if(s==='qsys'){
+        const modelo=document.getElementById('modeloQSys').value;
+        ultimaSerieStr='QSystems — '+document.getElementById('modeloQSys').options[document.getElementById('modeloQSys').selectedIndex].text;
+
+        if(modelo==='q95'){
+            // Q95 Corredera inglete 2 hojas a inglete
+            datosCierre='95201 · 95202 · 95027 · 95023 · P6338 · P2718 · 10202';
+            c.push(['2','Marco 95201 H',         H]);
+            c.push(['2','Marco Cond. 95202 L',   A]);
+            c.push(['2','Aislante P6338 L',      A-g('q95_ais_l')]);
+            c.push(['2','Aislante P6338 H',      H-g('q95_ais_h')]);
+            c.push(['2','Deslizador 10202',      A-g('q95_desliz')]);
+            c.push(['4','Hoja Perim. 95027 L',   (A/2)+g('q95_hoja_l')]);
+            c.push(['4','Hoja Perim. 95027 H',   H-g('q95_hoja_h')]);
+            c.push(['2','Cruce 95023',           H-g('q95_cruce')]);
+            c.push(['2','Aislante Cruce P2718',  H-g('q95_ais_cruce')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('q95_van'),H-g('q95_val')]);
+        }
+        else if(modelo==='q67'){
+            // Q67 Ventana 2 hojas apertura interior
+            datosCierre='67001 · 67003 · 67005';
+            c.push(['2','Marco 67001 L',         A]);
+            c.push(['2','Marco 67001 H',         H]);
+            c.push(['2','Hoja 67003 L',          (A/2)-g('q67_hoja_l')]);
+            c.push(['2','Hoja 67003 H',          H-g('q67_hoja_h')]);
+            c.push(['1','Inversor 67005',        H-g('q67_inv')]);
+            c.push(['4','Junquillo H.',          (A/2)-g('q67_jh')]);
+            c.push(['4','Junquillo V.',          H-g('q67_jv')]);
+            c.push(['vid','2','Vidrio',(A/2)-g('q67_van'),H-g('q67_val')]);
+        }
+    }
+
+    ultimosCortes=c;
+    document.getElementById('resultadosContenedor').style.display='block';
+    document.getElementById('resultados').innerHTML=`
+        <div class="res-hdr">
+            <span class="res-hdr-title">${ultimaSerieStr}</span>
+            <span class="res-hdr-dims">${A} × ${H} mm</span>
+        </div>
+        ${c.map(i=> i[0]==='sep' ? `
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 15px 6px;background:rgba(6,182,212,.06);border-top:1px solid rgba(6,182,212,.2);border-bottom:1px solid rgba(6,182,212,.1)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+                <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan)">${i[2]}</span>
+            </div>`
+        : i[0]==='vid' ? `
+            <div style="display:flex;align-items:center;padding:10px 15px;gap:5px;border-bottom:1px solid rgba(51,65,85,.5);background:rgba(103,232,249,.03);transition:background .15s" onmouseover="this.style.background='rgba(103,232,249,.07)'" onmouseout="this.style.background='rgba(103,232,249,.03)'">
+                <span class="qty-badge" style="background:rgba(103,232,249,.12);border-color:rgba(103,232,249,.3);color:#67e8f9">${i[1]}×</span>
+                <span class="piece-icon">${ICONS.vidrio}</span>
+                <span class="piece-name" style="flex:1">${i[2]}</span>
+                <span style="font-family:'Bebas Neue',cursive;font-size:1.1rem;letter-spacing:1px;color:#67e8f9;white-space:nowrap">
+                    ${parseFloat(i[3]).toFixed(1)}<small style="font-size:.58rem;color:var(--dim);font-family:'Rajdhani',sans-serif;font-weight:600"> mm</small>
+                    <span style="color:var(--dim);font-size:.9rem;margin:0 3px">×</span>
+                    ${parseFloat(i[4]).toFixed(1)}<small style="font-size:.58rem;color:var(--dim);font-family:'Rajdhani',sans-serif;font-weight:600"> mm</small>
+                </span>
+            </div>` : `
+            <div class="res-row">
+                <span class="qty-badge">${i[0]}×</span>
+                <span class="piece-icon">${getIcon(i[1])}</span>
+                <span class="piece-name">${i[1]}</span>
+                <span class="res-val">${parseFloat(i[2]).toFixed(1)}<small>mm</small></span>
+            </div>`).join('')}
+        ${notas?`<div class="res-nota">${notas}</div>`:''}
+        ${datosCierre?`<div class="res-cierre"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>${datosCierre}</div>`:''}
+    `;
+    showToast('✓ Cortes calculados');
+    document.getElementById('resultadosContenedor').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ══ WHATSAPP ══ */
+function compartirWS(){
+    if(!ultimosCortes.length){showToast('Primero calcula los cortes');return}
+    const A=document.getElementById('ancho').value,H=document.getElementById('alto').value;
+    let t=`🔧 *${ultimaSerieStr}*\n📐 Hueco: ${A}×${H} mm\n${'─'.repeat(24)}\n`;
+    ultimosCortes.forEach(i=>{
+        if(i[0]==='sep') t+=`\n▸ *${i[2]}*\n`;
+        else if(i[0]==='vid') t+=`${i[1]}× ${i[2]}: *${parseFloat(i[3]).toFixed(1)} × ${parseFloat(i[4]).toFixed(1)} mm*\n`;
+        else t+=`${i[0]}× ${i[1]}: *${parseFloat(i[2]).toFixed(1)} mm*\n`;
+    });
+    window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+}
+
+/* ══ MULTI VENTANA ACUMULADOR ══ */
+let ventanasAcum = []; // [{nombre, piezas:[{nombre,medida,qty}]}]
+
+function añadirVentana(){
+    if(!ultimosCortes.length){showToast('Primero calcula los cortes');return}
+    const A=document.getElementById('ancho').value, H=document.getElementById('alto').value;
+    const piezas = ultimosCortes
+        .filter(i=>i[0]!=='sep')
+        .map(i=>{
+            if(i[0]==='vid') return {nombre:i[2], medida:parseFloat(i[3]), alto:parseFloat(i[4]), qty:parseInt(i[1])||1, esVidrio:true};
+            return {nombre:i[1], medida:parseFloat(i[2]), qty:parseInt(i[0])||1, esVidrio:false};
+        });
+    ventanasAcum.push({nombre:ultimaSerieStr, dims:`${A}×${H}`, piezas});
+    renderResumen();
+    showToast(`✓ Ventana ${ventanasAcum.length} añadida`);
+}
+
+function limpiarResumen(){
+    ventanasAcum=[];
+    renderResumen();
+    showToast('✓ Resumen limpiado');
+}
+
+function renderResumen(){
+    const panel=document.getElementById('resumenPanel');
+    const lista=document.getElementById('resumenLista');
+    const count=document.getElementById('resumenCount');
+    if(!ventanasAcum.length){panel.style.display='none';return}
+    panel.style.display='block';
+    count.textContent=`${ventanasAcum.length} ventana${ventanasAcum.length>1?'s':''}`;
+    lista.innerHTML=ventanasAcum.map((v,i)=>`
+        <div style="border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:rgba(255,255,255,.03);cursor:pointer" onclick="toggleVentanaDetalle(${i})">
+                <div style="display:flex;align-items:center;gap:8px">
+                    <span style="display:inline-flex;width:22px;height:22px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:5px;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;color:var(--gold);font-size:.82rem">${i+1}</span>
+                    <div>
+                        <div style="font-size:.88rem;font-weight:700;color:var(--text);line-height:1.2">${v.nombre.split('—')[0].trim()}</div>
+                        <div style="font-size:.74rem;color:var(--dim)">${v.nombre.includes('—')?v.nombre.split('—').slice(1).join('—').trim()+' · ':''}<span style="color:var(--cyan)">${v.dims} mm</span></div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                    <span style="font-size:.7rem;color:var(--dim)">${v.piezas.filter(p=>!p.esVidrio).length} perfiles</span>
+                    <button onclick="event.stopPropagation();eliminarVentana(${i})" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:.9rem;padding:3px 5px;border-radius:5px" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--dim)'">✕</button>
+                </div>
+            </div>
+            <div id="det_${i}" style="display:none;border-top:1px solid var(--border);padding:8px 12px 10px">
+                ${v.piezas.map(p=>p.nombre?`
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(51,65,85,.3);font-size:.84rem">
+                        <span style="color:${p.esVidrio?'#67e8f9':'var(--muted)'}">
+                            <span style="display:inline-block;width:22px;font-family:'Bebas Neue',cursive;color:var(--gold);font-size:.85rem">${p.qty}×</span>
+                            ${p.nombre}
+                        </span>
+                        <span style="font-family:'Bebas Neue',cursive;font-size:${p.esVidrio?'.9rem':'1.05rem'};color:${p.esVidrio?'#67e8f9':'var(--gold)'}">
+                            ${p.esVidrio
+                                ?`${p.medida.toFixed(1)}<small style="font-size:.55rem;color:var(--dim);font-family:'Rajdhani',sans-serif"> mm</small> × ${p.alto.toFixed(1)}<small style="font-size:.55rem;color:var(--dim);font-family:'Rajdhani',sans-serif"> mm</small>`
+                                :`${p.medida.toFixed(1)}<small style="font-size:.58rem;color:var(--dim);font-family:'Rajdhani',sans-serif"> mm</small>`}
+                        </span>
+                    </div>`:'').join('')}
+            </div>
+        </div>`).join('');
+
+    // Actualizar info del trabajo activo si existe
+    if(trabajoActivo){
+        document.getElementById('trabajoActivoInfo').textContent=
+            `${ventanasAcum.length} ventana${ventanasAcum.length>1?'s':''} · modificado`;
+    }
+}
+
+function toggleVentanaDetalle(i){
+    const el=document.getElementById(`det_${i}`);
+    if(el) el.style.display=el.style.display==='none'?'block':'none';
+}
+
+/* ══ TRABAJOS ══ */
+const TRABAJOS_KEY='taller_trabajos';
+let trabajoActivo=null; // {id, nombre}
+
+function cargarTrabajosLS(){
+    try{return JSON.parse(localStorage.getItem(TRABAJOS_KEY)||'[]')}catch{return[]}
+}
+function guardarTrabajosLS(arr){localStorage.setItem(TRABAJOS_KEY,JSON.stringify(arr))}
+
+function abrirTrabajos(){
+    renderTrabajosLista();
+    actualizarTrabajoActivoBox();
+    document.getElementById('modalTrabajosBg').classList.add('show');
+    document.body.style.overflow='hidden';
+}
+function cerrarTrabajos(){document.getElementById('modalTrabajosBg').classList.remove('show');document.body.style.overflow=''}
+
+function actualizarTrabajoActivoBox(){
+    const box=document.getElementById('trabajoActivoBox');
+    if(trabajoActivo){
+        box.style.display='block';
+        document.getElementById('trabajoActivoNombre').textContent=trabajoActivo.nombre;
+        document.getElementById('trabajoActivoInfo').textContent=
+            `${ventanasAcum.length} ventana${ventanasAcum.length>1?'s':''} acumuladas`;
+    } else {
+        box.style.display='none';
+    }
+}
+
+function crearTrabajoNuevo(){
+    const nombre=document.getElementById('nuevoTrabajNombre').value.trim();
+    if(!nombre){showToast('⚠ Escribe un nombre');return}
+    const trabajos=cargarTrabajosLS();
+    const id='t_'+Date.now();
+    const nuevo={id, nombre, fecha:new Date().toLocaleDateString('es-ES'), ventanas:[], notas:''};
+    trabajos.unshift(nuevo);
+    guardarTrabajosLS(trabajos);
+    trabajoActivo={id, nombre};
+    ventanasAcum=[];
+    renderResumen();
+    document.getElementById('nuevoTrabajNombre').value='';
+    renderTrabajosLista();
+    actualizarTrabajoActivoBox();
+    cerrarTrabajos();
+    showToast(`✓ Trabajo "${nombre}" creado`);
+}
+
+function guardarTrabajoActivo(){
+    if(!trabajoActivo){showToast('Sin trabajo activo');return}
+    const trabajos=cargarTrabajosLS();
+    const idx=trabajos.findIndex(t=>t.id===trabajoActivo.id);
+    if(idx>=0){
+        trabajos[idx].ventanas=JSON.parse(JSON.stringify(ventanasAcum));
+        trabajos[idx].fechaMod=new Date().toLocaleDateString('es-ES');
+        guardarTrabajosLS(trabajos);
+        showToast(`✓ "${trabajoActivo.nombre}" guardado`);
+        renderTrabajosLista();
+        actualizarTrabajoActivoBox();
+    }
+}
+
+function pedirNombreGuardar(){
+    if(!ventanasAcum.length){showToast('Sin ventanas acumuladas');return}
+    if(trabajoActivo){
+        // Si ya hay trabajo activo, guardar directamente
+        guardarTrabajoActivo();
+        return;
+    }
+    document.getElementById('guardarNombre').value='';
+    document.getElementById('modalGuardarBg').classList.add('show');
+    document.body.style.overflow='hidden';
+    setTimeout(()=>document.getElementById('guardarNombre').focus(),300);
+}
+
+function confirmarGuardar(){
+    const nombre=document.getElementById('guardarNombre').value.trim();
+    if(!nombre){showToast('⚠ Escribe un nombre');return}
+    const trabajos=cargarTrabajosLS();
+    const id='t_'+Date.now();
+    const nuevo={id, nombre, fecha:new Date().toLocaleDateString('es-ES'), fechaMod:new Date().toLocaleDateString('es-ES'), ventanas:JSON.parse(JSON.stringify(ventanasAcum))};
+    trabajos.unshift(nuevo);
+    guardarTrabajosLS(trabajos);
+    trabajoActivo={id, nombre};
+    document.getElementById('modalGuardarBg').classList.remove('show');
+    document.body.style.overflow='';
+    showToast(`✓ Guardado como "${nombre}"`);
+    actualizarTrabajoActivoBox();
+}
+
+function cargarTrabajo(id){
+    const trabajos=cargarTrabajosLS();
+    const t=trabajos.find(x=>x.id===id);
+    if(!t) return;
+    ventanasAcum=JSON.parse(JSON.stringify(t.ventanas||[]));
+    trabajoActivo={id:t.id, nombre:t.nombre};
+    renderResumen();
+    cerrarTrabajos();
+    showToast(`✓ Cargado: "${t.nombre}"`);
+    if(ventanasAcum.length) document.getElementById('resumenPanel').style.display='block';
+}
+
+function eliminarTrabajo(id){
+    const trabajos=cargarTrabajosLS().filter(t=>t.id!==id);
+    guardarTrabajosLS(trabajos);
+    if(trabajoActivo&&trabajoActivo.id===id){trabajoActivo=null;actualizarTrabajoActivoBox();}
+    renderTrabajosLista();
+    showToast('✓ Trabajo eliminado');
+}
+
+function renderTrabajosLista(){
+    const trabajos=cargarTrabajosLS();
+    const el=document.getElementById('trabajosLista');
+    if(!trabajos.length){
+        el.innerHTML=`<div style="text-align:center;padding:24px;color:var(--dim);font-size:.9rem">Sin trabajos guardados</div>`;
+        return;
+    }
+    el.innerHTML=trabajos.map(t=>`
+        <div style="border:1px solid ${trabajoActivo&&trabajoActivo.id===t.id?'rgba(6,182,212,.4)':'var(--border)'};border-radius:11px;margin-bottom:8px;overflow:hidden;background:${trabajoActivo&&trabajoActivo.id===t.id?'rgba(6,182,212,.05)':'transparent'}">
+            <div style="padding:11px 13px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+                    <div style="font-family:'Bebas Neue',cursive;font-size:1.05rem;letter-spacing:1.5px;color:${trabajoActivo&&trabajoActivo.id===t.id?'var(--cyan)':'var(--text)'}">${t.nombre}</div>
+                    ${trabajoActivo&&trabajoActivo.id===t.id?'<span style="font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cyan);background:rgba(6,182,212,.15);padding:2px 8px;border-radius:5px">ACTIVO</span>':''}
+                </div>
+                <div style="font-size:.77rem;color:var(--dim);margin-bottom:9px">
+                    ${t.ventanas?.length||0} ventana${(t.ventanas?.length||0)!==1?'s':''} · 
+                    ${t.fechaMod?'mod. '+t.fechaMod:'creado '+t.fecha}
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                    <button onclick="cargarTrabajo('${t.id}')" style="padding:9px;border:1.5px solid rgba(6,182,212,.35);border-radius:8px;background:rgba(6,182,212,.08);color:var(--cyan);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Cargar
+                    </button>
+                    <button onclick="if(confirm('¿Eliminar trabajo?'))eliminarTrabajo('${t.id}')" style="padding:9px;border:1.5px solid rgba(239,68,68,.3);border-radius:8px;background:rgba(239,68,68,.07);color:var(--red);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+function eliminarVentana(i){
+    ventanasAcum.splice(i,1);
+    renderResumen();
+}
+
+/* ══ BARRAS ══ */
+function abrirBarras(){
+    if(!ventanasAcum.length){showToast('Añade ventanas primero');return}
+    document.getElementById('modalBarrasBg').classList.add('show');
+    document.body.style.overflow='hidden';
+    calcBarras();
+}
+function cerrarBarras(){document.getElementById('modalBarrasBg').classList.remove('show');document.body.style.overflow=''}
+
+function calcBarras(){
+    const BARRA=parseFloat(document.getElementById('barraLongitud').value)||6400;
+    // Agrupar todas las piezas por nombre (ignorar vidrios)
+    const mapa={};
+    ventanasAcum.forEach(v=>{
+        v.piezas.forEach(p=>{
+            if(p.esVidrio) return; // vidrios no van en barra
+            const key=`${p.nombre}||${p.medida.toFixed(1)}`;
+            if(!mapa[key]) mapa[key]={nombre:p.nombre, medida:p.medida, qty:0};
+            mapa[key].qty+=p.qty;
+        });
+    });
+
+    // Para cada tipo de pieza, optimizar barras (first-fit decreasing simplificado)
+    const grupos=Object.values(mapa).sort((a,b)=>b.medida-a.medida);
+    let html='';
+
+    grupos.forEach(g=>{
+        if(g.medida<=0||g.medida>BARRA){
+            html+=`<div style="padding:8px 0;border-bottom:1px solid rgba(51,65,85,.4);color:var(--red);font-size:.85rem;font-weight:600">⚠ ${g.nombre} (${g.medida.toFixed(1)} mm) — no cabe en barra</div>`;
+            return;
+        }
+        // First-fit packing
+        const barras=[];
+        const piezas=Array(g.qty).fill(g.medida);
+        piezas.forEach(p=>{
+            let colocado=false;
+            for(let b of barras){
+                if(b.resto>=p){b.cortes.push(p);b.resto-=p;colocado=true;break}
+            }
+            if(!colocado) barras.push({cortes:[p],resto:BARRA-p});
+        });
+        const totalBarras=barras.length;
+        const desperdicio=barras.reduce((s,b)=>s+b.resto,0);
+        const eficiencia=Math.round((1-desperdicio/(totalBarras*BARRA))*100);
+
+        html+=`
+        <div style="margin-bottom:12px;background:var(--surf2);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+            <div style="padding:8px 13px;background:rgba(245,158,11,.08);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:.82rem;font-weight:700;color:var(--text)">${g.nombre}</span>
+                <span style="font-size:.75rem;font-weight:700;color:var(--gold)">${g.medida.toFixed(1)} mm × ${g.qty} ud</span>
+            </div>
+            <div style="padding:8px 13px">
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px">
+                    <div style="text-align:center;background:rgba(6,182,212,.08);border-radius:7px;padding:6px 4px">
+                        <div style="font-family:'Bebas Neue',cursive;font-size:1.4rem;color:var(--cyan)">${totalBarras}</div>
+                        <div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.8px">barras</div>
+                    </div>
+                    <div style="text-align:center;background:rgba(16,185,129,.08);border-radius:7px;padding:6px 4px">
+                        <div style="font-family:'Bebas Neue',cursive;font-size:1.4rem;color:var(--green)">${eficiencia}%</div>
+                        <div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.8px">eficiencia</div>
+                    </div>
+                    <div style="text-align:center;background:rgba(100,116,139,.08);border-radius:7px;padding:6px 4px">
+                        <div style="font-family:'Bebas Neue',cursive;font-size:1.4rem;color:var(--muted)">${desperdicio.toFixed(0)}</div>
+                        <div style="font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:.8px">desperdicio</div>
+                    </div>
+                </div>
+                ${barras.map((b,i)=>`
+                    <div style="margin-bottom:5px">
+                        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                            <span style="font-size:.68rem;font-weight:700;color:var(--dim);white-space:nowrap">B${i+1}</span>
+                            <div style="flex:1;height:14px;background:rgba(51,65,85,.5);border-radius:4px;overflow:hidden;display:flex">
+                                ${b.cortes.map(c=>`<div style="height:100%;background:linear-gradient(90deg,var(--gold),var(--goldd));width:${(c/BARRA*100).toFixed(1)}%;min-width:2px;border-right:1px solid rgba(0,0,0,.3)" title="${c.toFixed(1)} mm"></div>`).join('')}
+                                <div style="height:100%;background:rgba(51,65,85,.8);flex:1" title="Resto: ${b.resto.toFixed(1)} mm"></div>
+                            </div>
+                            <span style="font-size:.65rem;color:var(--dim);white-space:nowrap">${b.cortes.length}c · +${b.resto.toFixed(0)}</span>
+                        </div>
+                    </div>`).join('')}
+            </div>
+        </div>`;
+    });
+
+    // Resumen de vidrios (solo listar, no optimizar barras)
+    const vidrios={};
+    ventanasAcum.forEach(v=>{
+        v.piezas.forEach(p=>{
+            if(!p.esVidrio) return;
+            const key=`${p.nombre}||${p.medida.toFixed(1)}x${p.alto.toFixed(1)}`;
+            if(!vidrios[key]) vidrios[key]={nombre:p.nombre, medida:p.medida, alto:p.alto, qty:0};
+            vidrios[key].qty+=p.qty;
+        });
+    });
+    if(Object.keys(vidrios).length){
+        html+=`<div style="margin-top:4px;padding:10px 13px;background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.2);border-radius:10px">
+            <div style="font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--cyan);margin-bottom:8px">Vidrios</div>
+            ${Object.values(vidrios).map(v=>`
+                <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(51,65,85,.3);font-size:.88rem">
+                    <span style="color:var(--muted)">${v.nombre}</span>
+                    <span style="font-family:'Bebas Neue',cursive;font-size:1rem;color:#67e8f9">${v.qty}× ${v.medida.toFixed(1)} × ${v.alto.toFixed(1)} mm</span>
+                </div>`).join('')}
+        </div>`;
+    }
+
+    document.getElementById('barrasContenido').innerHTML=html||'<p style="color:var(--dim);text-align:center;padding:20px">Sin piezas acumuladas</p>';
+}
+
+function compartirBarrasWS(){
+    const BARRA=parseFloat(document.getElementById('barraLongitud').value)||6400;
+    const mapa={};
+    ventanasAcum.forEach(v=>{
+        v.piezas.forEach(p=>{
+            if(p.esVidrio) return;
+            const key=`${p.nombre}||${p.medida.toFixed(1)}`;
+            if(!mapa[key]) mapa[key]={nombre:p.nombre, medida:p.medida, qty:0};
+            mapa[key].qty+=p.qty;
+        });
+    });
+    let t=`📊 *RESUMEN DE BARRAS* (${BARRA} mm)\n`;
+    t+=`${ventanasAcum.length} ventana${ventanasAcum.length>1?'s':''}\n${'─'.repeat(24)}\n`;
+    Object.values(mapa).sort((a,b)=>b.medida-a.medida).forEach(g=>{
+        if(g.medida<=0||g.medida>BARRA) return;
+        const barras=[];
+        Array(g.qty).fill(g.medida).forEach(p=>{
+            let ok=false;
+            for(let b of barras){if(b.r>=p){b.c++;b.r-=p;ok=true;break}}
+            if(!ok) barras.push({c:1,r:BARRA-p});
+        });
+        t+=`*${g.nombre}* ${g.medida.toFixed(1)} mm × ${g.qty} ud → *${barras.length} barra${barras.length>1?'s':''}*\n`;
+    });
+    // vidrios
+    const vidrios={};
+    ventanasAcum.forEach(v=>{v.piezas.forEach(p=>{
+        if(!p.esVidrio)return;
+        const k=`${p.nombre}||${p.medida.toFixed(1)}x${p.alto.toFixed(1)}`;
+        if(!vidrios[k])vidrios[k]={nombre:p.nombre,medida:p.medida,alto:p.alto,qty:0};
+        vidrios[k].qty+=p.qty;
+    })});
+    if(Object.keys(vidrios).length){
+        t+=`\n🔲 *VIDRIOS*\n`;
+        Object.values(vidrios).forEach(v=>t+=`${v.qty}× ${v.nombre}: ${v.medida.toFixed(1)} × ${v.alto.toFixed(1)} mm\n`);
+    }
+    window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+}
+
+loadCFG();
+actualizarInterfaz();
+</script>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{
+    const code=`const C='taller-v4';
+self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.add('/'))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));`;
+    navigator.serviceWorker.register(URL.createObjectURL(new Blob([code],{type:'application/javascript'}))).catch(()=>{});
+})}
+</script>
+<script>
+(()=>{
+    const m={
+        name:'Calculadora Taller',short_name:'Taller',start_url:'.',display:'standalone',
+        background_color:'#0f172a',theme_color:'#0f172a',
+        icons:[
+            {src:'https://raw.githubusercontent.com/socramtv/Perfiles_app/refs/heads/main/icon-192.png',sizes:'192x192',type:'image/png'},
+            {src:'https://raw.githubusercontent.com/socramtv/Perfiles_app/refs/heads/main/icon-512.png',sizes:'512x512',type:'image/png'}
+        ]
+    };
+    const l=document.createElement('link');
+    l.rel='manifest';
+    l.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));
+    document.head.appendChild(l);
+})();
+</script>
+</body>
+</html>
