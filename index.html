@@ -801,7 +801,7 @@ select option{background:#1e293b}
             <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Descuento ancho hoja (ancho hoja − X)</div>
             <div class="cfg-grid">
                 <div class="cfg-f"><label>Micro (fijo: −309)</label><div class="iu"><input type="number" id="cfg_osc_micro_desc" value="309"></div></div>
-                <div class="cfg-f"><label>Compás Mini</label><div class="iu"><input type="number" id="cfg_osc_cmini_desc" value="30"></div></div>
+                <div class="cfg-f"><label>Compás Mini</label><div class="iu"><input type="number" id="cfg_osc_cmini_desc" value="335"></div></div>
                 <div class="cfg-f"><label>Compás Pequeño</label><div class="iu"><input type="number" id="cfg_osc_cpeq_desc" value="373"></div></div>
                 <div class="cfg-f"><label>Compás Grande (fijo: −495)</label><div class="iu"><input type="number" id="cfg_osc_cgran_desc" value="495"></div></div>
             </div>
@@ -1250,7 +1250,7 @@ let fbTab='principal', fbMode='auto';
 
 const FB_COMPAS=[
     {id:'micro', label:'MICRO',    min:345, max:700,  desc:309},
-    {id:'mini',  label:'MINI',     min:372, max:700,  desc:30},
+    {id:'mini',  label:'MINI',     min:372, max:700,  desc:335},
     {id:'peq',   label:'PEQUEÑO',  min:442, max:750,  desc:373},
     {id:'gran',  label:'GRANDE',   min:570, max:1200, desc:495},
 ];
@@ -1420,7 +1420,7 @@ const DEFAULTS={
     q67_jh:116, q67_jv:178.2, q67_van:126, q67_val:144.4,
     // Oscilobatiente compás — descuento ancho hoja por tipo
     osc_micro_desc:309,    // Micro: ancho - 309
-    osc_cmini_desc:30,     // Compás Mini: provisional
+    osc_cmini_desc:335,    // Compás Mini
     osc_cpeq_desc:373,      // Compás Pequeño
     osc_cgran_desc:495,    // Compás Grande: ancho - 495
     // Rangos compás (min/max ancho hoja mm)
@@ -1429,7 +1429,7 @@ const DEFAULTS={
     osc_cpeq_min:442,    osc_cpeq_max:750,
     osc_cgran_min:570,   osc_cgran_max:1200,
 };
-const CFG_VERSION='v20';
+const CFG_VERSION='v21';
 let CFG={};
 function loadCFG(){
     const saved=localStorage.getItem('taller_cfg');
