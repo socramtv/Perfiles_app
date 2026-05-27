@@ -324,6 +324,7 @@ select option{background:#1e293b}
                 <option value="q95">Q95 — Corredera Inglete 2 Hojas</option>
                 <option value="q95gt">Q95 — Corredera Guía a Testa 2 Hojas</option>
                 <option value="q95tt">Q95 — Corredera Testa Estrecha 2 Hojas</option>
+                <option value="q95t3">Q95 — Tricarril 3 Hojas Testa Estrecha</option>
                 <option value="q67">Q67 — Ventana 2 Hojas Apertura Interior</option>
                 <option value="q5075">Q50/75 — Ventana Corredera 2 Hojas</option>
             </select></div>
@@ -742,6 +743,17 @@ select option{background:#1e293b}
             <div class="cfg-f"><label>Vidrio A (L/2−X)</label><div class="iu"><input type="number" id="cfg_q95_van" value="118"></div></div>
             <div class="cfg-f cfg-full"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_q95_val" value="187"></div></div>
         </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Q95 — Tricarril 3H Testa Estrecha</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Aislante L (L−X)</label><div class="iu"><input type="number" id="cfg_q95t3_ais_l" value="28.6"></div></div>
+            <div class="cfg-f"><label>Aislante H (H−X)</label><div class="iu"><input type="number" id="cfg_q95t3_ais_h" value="28.6"></div></div>
+            <div class="cfg-f"><label>Deslizador (L−X)</label><div class="iu"><input type="number" id="cfg_q95t3_desliz" value="80"></div></div>
+            <div class="cfg-f"><label>Hoja H (H−X)</label><div class="iu"><input type="number" id="cfg_q95t3_hoja_h" value="65.9"></div></div>
+            <div class="cfg-f"><label>Ruedas (L/3−X)</label><div class="iu"><input type="number" id="cfg_q95t3_ruedas" value="62.1"></div></div>
+            <div class="cfg-f"><label>Vidrio A (L/3−X)</label><div class="iu"><input type="number" id="cfg_q95t3_van" value="70"></div></div>
+            <div class="cfg-f cfg-full"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_q95t3_val" value="186"></div></div>
+        </div>
+
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Q95 — Guía a Testa 2H</div>
         <div class="cfg-grid">
             <div class="cfg-f"><label>Marco S/I (L−X)</label><div class="iu"><input type="number" id="cfg_q95gt_marco" value="110"></div></div>
@@ -1420,6 +1432,8 @@ const DEFAULTS={
     ca_p2h_hl:52,     ca_p2h_hh:35,     ca_p2h_inv:139,   ca_p2h_jl:171,   ca_p2h_jh:94,   ca_p2h_sol:136, ca_p2h_vta1:135.5, ca_p2h_vta2:49.5, ca_p2h_van1:212, ca_p2h_van2:340, ca_p2h_val:115,
     // QSystems Q95tt (testa estrecha)
     q95tt_marco:34, q95tt_ais:34, q95tt_hoja_h:66.5, q95tt_ruedas:79.7, q95tt_cruce_h:66.5, q95tt_van:88, q95tt_val:187,
+    // QSystems Q95t3 (tricarril 3 hojas testa estrecha)
+    q95t3_ais_l:28.6, q95t3_ais_h:28.6, q95t3_desliz:80, q95t3_hoja_h:65.9, q95t3_ruedas:62.1, q95t3_van:70, q95t3_val:186,
     // QSystems Q95gt (guía a testa)
     q95gt_marco:110, q95gt_ais:110, q95gt_hoja_h:66.5, q95gt_ruedas:117.7, q95gt_cruce_h:66.5,
     // QSystems Q95
@@ -2213,6 +2227,19 @@ function calcular(){
             c.push(['1','Vierteaguas L',      A]);
             c.push(['2','Vierteaguas H',      H]);
             c.push(['vid','2','Vidrio',       (A/2)-g('q5075_van'), H-g('q5075_val')]);
+        }
+        else if(modelo==='q95t3'){
+            // Q95 Tricarril 3 hojas testa estrecha
+            datosCierre='95211 · 95212 · 95051 · 95052 · 95053 · P6338 · 10202';
+            c.push(['2','Marco V. 95211',    H]);
+            c.push(['2','Marco H. 95212',    A]);
+            c.push(['4','Aislante P6338 L',  A-g('q95t3_ais_l')]);
+            c.push(['4','Aislante P6338 H',  H-g('q95t3_ais_h')]);
+            c.push(['3','Deslizador 10202',  A-g('q95t3_desliz')]);
+            c.push(['2','Hoja Lat. 95051',   H-g('q95t3_hoja_h')]);
+            c.push(['6','Hoja Ruedas 95052', (A/3)-g('q95t3_ruedas')]);
+            c.push(['4','Hoja Cruce 95053',  H-g('q95t3_hoja_h')]);
+            c.push(['vid','3','Vidrio',      (A/3)-g('q95t3_van'), H-g('q95t3_val')]);
         }
         else if(modelo==='q67'){
             // Q67 Ventana 2 hojas apertura interior
