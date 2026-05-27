@@ -325,6 +325,7 @@ select option{background:#1e293b}
                 <option value="q95gt">Q95 — Corredera Guía a Testa 2 Hojas</option>
                 <option value="q95tt">Q95 — Corredera Testa Estrecha 2 Hojas</option>
                 <option value="q67">Q67 — Ventana 2 Hojas Apertura Interior</option>
+                <option value="q5075">Q50/75 — Ventana Corredera 2 Hojas</option>
             </select></div>
         </div>
 
@@ -608,6 +609,16 @@ select option{background:#1e293b}
             <div class="cfg-f"><label>Lama Ori. ((A/2)−X)</label><div class="iu"><input type="number" id="cfg_mall_lama_o" value="157.4"></div></div>
             <div class="cfg-f cfg-full"><label>Lamas N base (H−X)/paso</label><div class="iu"><input type="number" id="cfg_mall_lama_base" value="197.8"></div></div>
             <div class="cfg-f cfg-full"><label>Paso entre lamas (mm)</label><div class="iu"><input type="number" id="cfg_mall_lama_paso" value="60"></div></div>
+        </div>
+
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--purple);margin-bottom:8px">Q50/75 — Ventana Corredera 2H</div>
+        <div class="cfg-grid">
+            <div class="cfg-f"><label>Hoja L desc. (L/2−X)</label><div class="iu"><input type="number" id="cfg_q5075_hoja_l" value="4"></div></div>
+            <div class="cfg-f"><label>Hoja H desc. (H−X)</label><div class="iu"><input type="number" id="cfg_q5075_hoja_h" value="73.6"></div></div>
+            <div class="cfg-f"><label>Deslizador (L−X)</label><div class="iu"><input type="number" id="cfg_q5075_desliz" value="91.6"></div></div>
+            <div class="cfg-f"><label>Cruce H (H−X)</label><div class="iu"><input type="number" id="cfg_q5075_cruce_h" value="73.6"></div></div>
+            <div class="cfg-f"><label>Vidrio A (L/2−X)</label><div class="iu"><input type="number" id="cfg_q5075_van" value="119"></div></div>
+            <div class="cfg-f"><label>Vidrio H (H−X)</label><div class="iu"><input type="number" id="cfg_q5075_val" value="188.6"></div></div>
         </div>
 
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(6,182,212,.15)">
@@ -1415,6 +1426,8 @@ const DEFAULTS={
     q95_ais_l:28.6, q95_ais_h:28.6, q95_desliz:80,
     q95_hoja_l:2.3, q95_hoja_h:65.9, q95_cruce:65.9, q95_ais_cruce:65.9,
     q95_van:118, q95_val:187,
+    // QSystems Q50/75
+    q5075_hoja_l:4, q5075_hoja_h:73.6, q5075_desliz:91.6, q5075_cruce_h:73.6, q5075_van:119, q5075_val:188.6,
     // QSystems Q67
     q67_hoja_l:24.4, q67_hoja_h:42.8, q67_inv:108.6,
     q67_jh:116, q67_jv:178.2, q67_van:126, q67_val:144.4,
@@ -2187,6 +2200,19 @@ function calcular(){
             c.push(['1','Hoja Cruce 95053',  H-g('q95tt_cruce_h')]);
             c.push(['1','Hoja Cruce 95054',  H-g('q95tt_cruce_h')]);
             c.push(['vid','2','Vidrio',      (A/2)-g('q95tt_van'), H-g('q95tt_val')]);
+        }
+        else if(modelo==='q5075'){
+            // Q50/75 Ventana Corredera 2 Hojas
+            datosCierre='Q50/75 · Marco perimetral · Hoja perimetral · Deslizador · Cruce · Vierteaguas';
+            c.push(['2','Marco Perim. L',     A]);
+            c.push(['2','Marco Perim. H',     H]);
+            c.push(['4','Hoja Perim. L',      (A/2)-g('q5075_hoja_l')]);
+            c.push(['4','Hoja Perim. H',      H-g('q5075_hoja_h')]);
+            c.push(['2','Deslizador',         A-g('q5075_desliz')]);
+            c.push(['2','Cruce de Hoja',      H-g('q5075_cruce_h')]);
+            c.push(['1','Vierteaguas L',      A]);
+            c.push(['2','Vierteaguas H',      H]);
+            c.push(['vid','2','Vidrio',       (A/2)-g('q5075_van'), H-g('q5075_val')]);
         }
         else if(modelo==='q67'){
             // Q67 Ventana 2 hojas apertura interior
