@@ -194,8 +194,8 @@ select option{background:#1e293b}
             </button>
         </div>
     </div>
-    <!-- Fila 2: Trabajos · Calc · Reparto · Falleba -->
-    <div class="hdr-btns" style="grid-template-columns:1fr 1fr 1fr 1fr">
+    <!-- Fila 2: Trabajos · Calc -->
+    <div class="hdr-btns" style="grid-template-columns:1fr 1fr;margin-bottom:7px">
         <button class="hdr-btn" onclick="abrirTrabajos()" style="background:rgba(167,139,250,.12);border:1.5px solid rgba(167,139,250,.4);color:var(--purple)">
             <svg viewBox="0 0 24 24" style="stroke:var(--purple)"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
             Trabajos
@@ -204,6 +204,9 @@ select option{background:#1e293b}
             <svg viewBox="0 0 24 24" style="stroke:var(--muted)"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/></svg>
             Calc
         </button>
+    </div>
+    <!-- Fila 3: Reparto · Falleba · Ángulo -->
+    <div class="hdr-btns" style="grid-template-columns:1fr 1fr 1fr">
         <button id="btnReparto" class="hdr-btn" onclick="abrirReparto()" style="background:rgba(52,211,153,.1);border:1.5px solid rgba(52,211,153,.4);color:#34d399">
             <svg viewBox="0 0 24 24" style="stroke:#34d399"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             Reparto
@@ -211,6 +214,10 @@ select option{background:#1e293b}
         <button class="hdr-btn" onclick="abrirFalleba()" style="background:rgba(251,146,60,.1);border:1.5px solid rgba(251,146,60,.4);color:#fb923c">
             <svg viewBox="0 0 24 24" style="stroke:#fb923c"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Falleba
+        </button>
+        <button class="hdr-btn" onclick="abrirAngulo()" style="background:rgba(251,191,36,.1);border:1.5px solid rgba(251,191,36,.4);color:#fbbf24">
+            <svg viewBox="0 0 24 24" style="stroke:#fbbf24"><path d="M3 20h18"/><path d="M3 20L12 4l9 16"/><line x1="3" y1="20" x2="12" y2="4"/></svg>
+            Ángulo
         </button>
     </div>
 </div>
@@ -1265,6 +1272,148 @@ function ahCompartirWS(){
     const res=(total-desc)/nHojas;
     if(res<=0||!total){showToast('Sin datos válidos');return}
     let t=`📐 *ANCHO DE HOJA*\nTotal: ${total} mm · ${nHojas}H · Lat:${pLat} · Cen:${pInt} · Mont:${solape}\n${'─'.repeat(22)}\nDesc: ${desc.toFixed(1)} mm\n*Corte/hoja: ${res.toFixed(1)} mm*\n`;
+    window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
+}
+
+
+/* ══ ÁNGULO ══ */
+let agSwapState=false;
+
+function abrirAngulo(){
+    document.getElementById('modalAnguloBg').classList.add('show');
+    document.body.style.overflow='hidden';
+    calcAngulo();
+}
+function cerrarAngulo(){document.getElementById('modalAnguloBg').classList.remove('show');document.body.style.overflow='';}
+
+function agSwap(){
+    agSwapState=!agSwapState;
+    const sl=document.getElementById('ag_swapLabel');
+    const lM=document.getElementById('ag_labelMayor');
+    const lm=document.getElementById('ag_labelMenor');
+    if(agSwapState){
+        lM.textContent='Altura Derecha (mayor)';
+        lm.textContent='Altura Izquierda (menor)';
+        sl.textContent='Mayor a la DERECHA · Menor a la IZQUIERDA — Invertir';
+    } else {
+        lM.textContent='Altura Izquierda (mayor)';
+        lm.textContent='Altura Derecha (menor)';
+        sl.textContent='Mayor a la IZQUIERDA · Menor a la DERECHA — Invertir';
+    }
+    calcAngulo();
+}
+
+function calcAngulo(){
+    const hM=parseFloat(document.getElementById('ag_hMayor').value)||0;
+    const hm=parseFloat(document.getElementById('ag_hMenor').value)||0;
+    const b=parseFloat(document.getElementById('ag_base').value)||0;
+    const err=document.getElementById('ag_error');
+    const res=document.getElementById('ag_results');
+    const vis=document.getElementById('ag_visual');
+    err.style.display='none'; res.style.display='none'; vis.style.display='none';
+    if(!hM||!hm||!b||hM<=hm||b<=0){if(hM||hm||b) err.style.display='block'; return;}
+
+    const diff=hM-hm;
+    const alphaDeg=Math.atan(diff/b)*(180/Math.PI);
+    const longInc=Math.sqrt(b*b+diff*diff);
+
+    // Lado mayor siempre tiene ángulo agudo (90-alpha), lado menor obtuso (90+alpha)
+    const angMayor=90-alphaDeg;
+    const angMenor=90+alphaDeg;
+    // Según swap asignamos izq/der
+    const angIzq = agSwapState ? angMenor : angMayor;
+    const angDer  = agSwapState ? angMayor : angMenor;
+    const mitadIzq=angIzq/2, mitadDer=angDer/2;
+    const maqIzq=90-mitadIzq, maqDer=90-mitadDer;
+
+    document.getElementById('ag_alpha').textContent=alphaDeg.toFixed(2)+'°';
+    document.getElementById('ag_angIzq').textContent=angIzq.toFixed(2)+'°';
+    document.getElementById('ag_mitadIzq').textContent=mitadIzq.toFixed(2)+'°';
+    document.getElementById('ag_maqIzq').textContent=maqIzq.toFixed(2)+'°';
+    document.getElementById('ag_angDer').textContent=angDer.toFixed(2)+'°';
+    document.getElementById('ag_mitadDer').textContent=mitadDer.toFixed(2)+'°';
+    document.getElementById('ag_maqDer').textContent=maqDer.toFixed(2)+'°';
+    document.getElementById('ag_longInc').textContent=longInc.toFixed(1)+' mm';
+    const izqSub=agSwapState?'Altura menor':'Altura mayor';
+    const derSub=agSwapState?'Altura mayor':'Altura menor';
+    document.getElementById('ag_rowIzqSub').textContent=izqSub;
+    document.getElementById('ag_rowDerSub').textContent=derSub;
+
+    // ── CANVAS centrado ──
+    vis.style.display='block';
+    const cv=document.getElementById('ag_canvas');
+    const ctx=cv.getContext('2d');
+    const CW=cv.width, CH=cv.height;
+    ctx.clearRect(0,0,CW,CH);
+
+    const padL=48, padR=48, padT=22, padB=26;
+    const drawW=CW-padL-padR, drawH=CH-padT-padB;
+    const scale=Math.min(drawH/hM, drawW/b)*0.88;
+    const bW=b*scale, hMpx=hM*scale, hmpx=hm*scale;
+    // Centrar horizontalmente
+    const x0=padL+(drawW-bW)/2, x1=x0+bW;
+    const yBase=CH-padB;
+
+    // Swap determina qué lado dibujamos alto/bajo en izq
+    const yTopL = agSwapState ? yBase-hmpx : yBase-hMpx;
+    const yTopR = agSwapState ? yBase-hMpx : yBase-hmpx;
+    const hL    = agSwapState ? hm : hM;
+    const hR    = agSwapState ? hM : hm;
+
+    // Relleno trapecio
+    ctx.beginPath();
+    ctx.moveTo(x0,yBase); ctx.lineTo(x0,yTopL);
+    ctx.lineTo(x1,yTopR); ctx.lineTo(x1,yBase);
+    ctx.closePath();
+    ctx.fillStyle='rgba(251,191,36,.1)'; ctx.fill();
+    ctx.strokeStyle='#fbbf24'; ctx.lineWidth=1.8; ctx.setLineDash([]); ctx.stroke();
+
+    // Línea referencia horizontal (nivel menor)
+    const yRef=Math.max(yTopL,yTopR);
+    ctx.setLineDash([4,3]); ctx.strokeStyle='rgba(100,116,139,.4)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x0,yRef); ctx.lineTo(x1,yRef); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Labels alturas
+    ctx.font='bold 10px Rajdhani,sans-serif'; ctx.fillStyle='#94a3b8';
+    ctx.textAlign='right';
+    ctx.fillText(hL+' mm', x0-4, (yBase+yTopL)/2+4);
+    ctx.textAlign='left';
+    ctx.fillText(hR+' mm', x1+4, (yBase+yTopR)/2+4);
+
+    // Label base
+    ctx.textAlign='center'; ctx.fillStyle='#64748b';
+    ctx.fillText(b+' mm', (x0+x1)/2, yBase+16);
+
+    // Label alpha
+    ctx.fillStyle='#fbbf24'; ctx.font='bold 11px Rajdhani,sans-serif';
+    ctx.fillText('α='+alphaDeg.toFixed(1)+'°', (x0+x1)/2, Math.min(yTopL,yTopR)-7);
+
+    // IZQ / DER tags
+    ctx.fillStyle='rgba(251,191,36,.8)'; ctx.font='bold 9px Rajdhani,sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('IZQ', x0, yTopL-5);
+    ctx.fillText('DER', x1, yTopR-5);
+
+    res.style.display='block';
+}
+
+function agCompartirWS(){
+    const hM=document.getElementById('ag_hMayor').value;
+    const hm=document.getElementById('ag_hMenor').value;
+    const b=document.getElementById('ag_base').value;
+    const alpha=document.getElementById('ag_alpha').textContent;
+    const maqIzq=document.getElementById('ag_maqIzq').textContent;
+    const maqDer=document.getElementById('ag_maqDer').textContent;
+    const long=document.getElementById('ag_longInc').textContent;
+    const lado=agSwapState?'Mayor=DER · Menor=IZQ':'Mayor=IZQ · Menor=DER';
+    let t='📐 *CÁLCULO DE ÁNGULOS*\n'+lado+'\n';
+    t+='Mayor: '+hM+'mm · Menor: '+hm+'mm · Base: '+b+'mm\n';
+    t+='────────────────────────\n';
+    t+='Inclinación α: *'+alpha+'*\n';
+    t+='Sup. Izq — Máquina: *'+maqIzq+'*\n';
+    t+='Sup. Der — Máquina: *'+maqDer+'*\n';
+    t+='Longitud inclinada: *'+long+'*\n';
     window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
 }
 
@@ -2704,6 +2853,98 @@ function compartirBarrasWS(){
 loadCFG();
 actualizarInterfaz();
 </script>
+
+
+<!-- ══ MODAL ÁNGULO ══ -->
+<div class="modal-bg" id="modalAnguloBg" onclick="cerrarModalBg(event,'modalAnguloBg')">
+<div class="modal" style="padding-bottom:28px">
+    <div class="modal-hdr">
+        <div class="modal-title" style="color:#fbbf24">
+            <svg viewBox="0 0 24 24" style="stroke:#fbbf24"><path d="M3 20h18"/><path d="M3 20L12 4l9 16"/><line x1="3" y1="20" x2="12" y2="4"/></svg>
+            CALCULADORA DE ÁNGULOS
+        </div>
+        <button class="modal-close" onclick="cerrarAngulo()">✕</button>
+    </div>
+
+    <!-- INPUTS -->
+    <div style="margin-bottom:10px">
+        <div class="cfg-grid" style="margin-bottom:8px">
+            <div class="cfg-f">
+                <label id="ag_labelMayor">Altura Izquierda (mayor)</label>
+                <div class="iu"><input type="number" id="ag_hMayor" placeholder="0" inputmode="numeric" oninput="calcAngulo()"></div>
+            </div>
+            <div class="cfg-f">
+                <label id="ag_labelMenor">Altura Derecha (menor)</label>
+                <div class="iu"><input type="number" id="ag_hMenor" placeholder="0" inputmode="numeric" oninput="calcAngulo()"></div>
+            </div>
+            <div class="cfg-f cfg-full">
+                <label>Longitud de la base</label>
+                <div class="iu"><input type="number" id="ag_base" placeholder="0" inputmode="numeric" oninput="calcAngulo()"></div>
+            </div>
+        </div>
+        <!-- SWAP BUTTON -->
+        <button onclick="agSwap()" style="width:100%;padding:10px;border:1.5px solid rgba(251,191,36,.4);border-radius:10px;background:rgba(251,191,36,.08);color:#fbbf24;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s" onmouseover="this.style.background='rgba(251,191,36,.18)'" onmouseout="this.style.background='rgba(251,191,36,.08)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+            <span id="ag_swapLabel">Mayor a la IZQUIERDA · Menor a la DERECHA — Invertir</span>
+        </button>
+    </div>
+
+    <!-- VISUAL TRAPECIO -->
+    <div id="ag_visual" style="display:none;margin-bottom:14px;text-align:center">
+        <canvas id="ag_canvas" width="320" height="130" style="max-width:100%;border-radius:10px;background:var(--surf2);border:1px solid var(--border);display:inline-block"></canvas>
+    </div>
+
+    <!-- ERROR -->
+    <div id="ag_error" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:10px 14px;color:var(--red);font-weight:700;font-size:.88rem;margin-bottom:12px;text-align:center">
+        ✗ La altura izquierda debe ser mayor que la derecha y la base &gt; 0
+    </div>
+
+    <!-- RESULTADOS -->
+    <div id="ag_results" style="display:none">
+        <!-- Ángulo inclinación -->
+        <div style="background:linear-gradient(135deg,#1a2742,#0f1929);border:1px solid var(--border);border-radius:12px;padding:12px 15px;margin-bottom:10px;text-align:center">
+            <div style="font-size:.65rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim);margin-bottom:4px">Ángulo de inclinación (α)</div>
+            <div id="ag_alpha" style="font-family:'Bebas Neue',cursive;font-size:2rem;letter-spacing:2px;color:#fbbf24">—</div>
+        </div>
+        <!-- Tabla esquinas -->
+        <div style="background:var(--surf2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:7px 12px;border-bottom:1px solid var(--border);font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim)">
+                <span>Esquina</span><span style="text-align:center">Ángulo real</span><span style="text-align:center">Mitad</span><span style="text-align:center">Máquina</span>
+            </div>
+            <!-- Izquierda -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:11px 12px;border-bottom:1px solid rgba(51,65,85,.5);align-items:center">
+                <div>
+                    <div id="ag_rowIzqLabel" style="font-size:.7rem;font-weight:700;color:var(--muted)">Sup. Izq.</div>
+                    <div id="ag_rowIzqSub" style="font-size:.65rem;color:var(--dim)">Altura mayor</div>
+                </div>
+                <div id="ag_angIzq" style="text-align:center;font-family:'Bebas Neue',cursive;font-size:1.1rem;color:var(--cyan)">—</div>
+                <div id="ag_mitadIzq" style="text-align:center;font-family:'Bebas Neue',cursive;font-size:1.1rem;color:var(--muted)">—</div>
+                <div id="ag_maqIzq" style="text-align:center;font-family:'Bebas Neue',cursive;font-size:1.3rem;color:#fbbf24">—</div>
+            </div>
+            <!-- Derecha -->
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:11px 12px;align-items:center">
+                <div>
+                    <div id="ag_rowDerLabel" style="font-size:.7rem;font-weight:700;color:var(--muted)">Sup. Der.</div>
+                    <div id="ag_rowDerSub" style="font-size:.65rem;color:var(--dim)">Altura menor</div>
+                </div>
+                <div id="ag_angDer" style="text-align:center;font-family:'Bebas Neue',cursive;font-size:1.1rem;color:var(--cyan)">—</div>
+                <div id="ag_mitadDer" style="text-align:center;font-family:'Bebas Neue',cursive;font-size:1.1rem;color:var(--muted)">—</div>
+                <div id="ag_maqDer" style="text-align:center;font-family:'Bebas Neue',cursive;font-size:1.3rem;color:#fbbf24">—</div>
+            </div>
+        </div>
+        <!-- Longitud inclinada -->
+        <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span style="font-size:.78rem;font-weight:700;color:var(--dim)">Longitud inclinada real</span>
+            <span id="ag_longInc" style="font-family:'Bebas Neue',cursive;font-size:1.3rem;color:#fbbf24">— mm</span>
+        </div>
+        <!-- WS -->
+        <button class="btn-act btn-ws" style="width:100%" onclick="agCompartirWS()">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            Enviar por WhatsApp
+        </button>
+    </div>
+</div>
+</div>
 
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{
