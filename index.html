@@ -1864,7 +1864,16 @@ function actualizarInterfaz(){
         const labels={'40x20':'DATOS 40×20','40x40':'DATOS 40×40'};
         document.getElementById('txtBtn').innerText=labels[s];
         const infos={'40x20':[['Cerradura','Entrada 25'],['Bombín','30/30']],'40x40':[['Cerradura','Entrada 25']]};
-        document.getElementById('infoCaja').innerHTML=buildInfo(infos[s]);
+        document.getElementById('infoCaja').innerHTML=buildInfo(infos[s])+(s==='40x20'?`
+<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(6,182,212,.2)">
+  <div style="font-size:.62rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--purple);margin-bottom:6px">Junquillos 40×20 — hueco libre vidrio</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--gold)">40209</b> 27mm → 9mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--gold)">40214</b> 23mm → 14mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--gold)">40220</b> Climalit 15,5mm → 21mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0"><b style="color:var(--gold)">40226</b> 8,5mm → 26mm</div>
+  </div>
+</div>`:'');
     }
     if(s==='mezquita'){
         showOpc('divModelo');
@@ -1880,7 +1889,20 @@ function actualizarInterfaz(){
             if(tipoCierreVal==='oscilo') document.getElementById('divCompas').style.display='block';
         }
         document.getElementById('txtBtn').innerText='DATOS SAMM 447';
-        document.getElementById('infoCaja').innerHTML=buildInfo([['Marco','447001 / 447011 / 447111 / 447201'],['Hoja','447022 / 447322 / 447222 / 447522 / 447262 / 44102 / 447332 / 447512'],['Inversor','447003 / 447013'],['Zócalo','447008']]);
+        document.getElementById('infoCaja').innerHTML=buildInfo([['Marco','447001 / 447011 / 447111 / 447201'],['Hoja','447022 / 447322 / 447222 / 447522 / 447262 / 44102 / 447332 / 447512'],['Inversor','447003 / 447013'],['Zócalo','447008']])+`
+<div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(6,182,212,.2)">
+  <div style="font-size:.62rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--purple);margin-bottom:6px">Junquillos SAM 447 — hueco libre vidrio</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--cyan)">447907</b> 7mm → 29,2mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--cyan)">447910</b> 10mm → 25,9mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--cyan)">447914</b> 14mm → 22,4mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--cyan)">447917</b> 17mm → 18,9mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--cyan)">447921</b> 21mm → 15,4mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--cyan)">447924</b> 24mm → 11,9mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0;border-bottom:1px solid rgba(51,65,85,.3)"><b style="color:var(--cyan)">447927</b> 27mm → 8,9mm</div>
+    <div style="font-size:.75rem;color:var(--muted);padding:3px 0"><b style="color:var(--cyan)">447931</b> 31mm → 4,95mm</div>
+  </div>
+</div>`;
     }
     if(s==='mobiliario'){showOpc('divMobHojas');document.getElementById('txtBtn').innerText='DATOS MOBILIARIO';document.getElementById('infoCaja').innerHTML=buildInfo([['Escuadra','2,15 × 5,1'],['Bisagra','2,05 × 12']])}
     else if(s==='mosquitera'){document.getElementById('txtBtn').innerText='INFO MOSQUITERA ENROLLABLE';document.getElementById('infoCaja').innerHTML=buildInfo([['Ancho','-20 mm fija'],['Alto','Cabezal auto por altura']])}
