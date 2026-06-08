@@ -1780,13 +1780,16 @@ function dibujarViz(){
     const mMH=findCorte(['marco','l'])||findCorte(['marco','hor'])||findCorte(['marco','sup'])||A;
     const mMV=findCorte(['marco','h'])||findCorte(['marco','lat'])||findCorte(['marco','ver'])||H;
     // Hoja: buscar pieza con 'hoja' que termine en L/H (word boundary asegura no confundir)
-    const mHH=findCorte(['hoja','l'])||findCorte(['hoja','hor'])||findCorte(['hoja','ruedas'])||findCorte(['hoja','ruleta']);
-    const mHV=findCorte(['hoja','h'])||findCorte(['hoja','ver'])||findCorte(['hoja','alt'])||findCorte(['hoja','lat']);
+    // SAM75: hoja ancho viene de 'ruleta', alto de 'hoja lat.' o 'hoja cen.'
+    const mHH=findCorte(['hoja','l'])||findCorte(['hoja','hor'])||findCorte(['hoja','ruedas'])||findCorte(['hoja','ruleta'])||findCorte(['ruleta']);
+    const mHV=findCorte(['hoja','h'])||findCorte(['hoja','ver'])||findCorte(['hoja','alt'])||findCorte(['hoja','lat'])||findCorte(['hoja','cen']);
 
     // ── geometría ──
+    // H = alto ventana (sin compacto); total = H + altoComp
     const W=320,padX=44,padY=26;
-    const altoVent=H-altoComp;
-    const sc=Math.min((W-padX*2)/A,(W*0.68-padY*2)/H,0.36);
+    const altoVent=H; // H es solo la ventana
+    const altoTotal=H+altoComp;
+    const sc=Math.min((W-padX*2)/A,(W*0.68-padY*2)/altoTotal,0.36);
     const dW=A*sc,dH=altoVent*sc,dC=altoComp*sc;
     const gM=Math.max(7,Math.min(13,dW*0.05));
     const SVG_H=dH+dC+padY*2+18;
@@ -1920,14 +1923,21 @@ function dibujarViz(){
 
     // cotas
     const cY=yV+dH+11;
+    // Cota ancho abajo
     svg+=`<line x1="${x0}" y1="${cY}" x2="${x0+dW}" y2="${cY}" stroke="#475569" stroke-width="1" marker-start="url(#ma)" marker-end="url(#ma)"/>
 <text x="${x0+dW/2}" y="${cY-3}" text-anchor="middle" fill="#94a3b8" font-size="7.5" font-family="Rajdhani,sans-serif" font-weight="700">${A}mm</text>`;
+    // Cota izquierda: ventana
     const cX=x0-15;
     svg+=`<line x1="${cX}" y1="${yV}" x2="${cX}" y2="${yV+dH}" stroke="#475569" stroke-width="1" marker-start="url(#ma)" marker-end="url(#ma)"/>
-<text x="${cX-4}" y="${yV+dH/2}" text-anchor="middle" transform="rotate(-90,${cX-4},${yV+dH/2})" fill="#94a3b8" font-size="7" font-family="Rajdhani,sans-serif" font-weight="700">${altoVent}mm</text>`;
+<text x="${cX-4}" y="${yV+dH/2}" text-anchor="middle" transform="rotate(-90,${cX-4},${yV+dH/2})" fill="#94a3b8" font-size="7" font-family="Rajdhani,sans-serif" font-weight="700">${H}mm</text>`;
     if(compacto&&dC>0){
+        // Cota cajón
         svg+=`<line x1="${cX}" y1="${y0}" x2="${cX}" y2="${y0+dC}" stroke="#64748b" stroke-width="0.8" marker-start="url(#ma)" marker-end="url(#ma)"/>
 <text x="${cX-4}" y="${y0+dC/2}" text-anchor="middle" transform="rotate(-90,${cX-4},${y0+dC/2})" fill="#64748b" font-size="6.5" font-family="Rajdhani,sans-serif">${altoComp}mm</text>`;
+        // Cota total derecha
+        const cXR=x0+dW+14;
+        svg+=`<line x1="${cXR}" y1="${y0}" x2="${cXR}" y2="${yV+dH}" stroke="#f59e0b" stroke-width="1" marker-start="url(#ma)" marker-end="url(#ma)"/>
+<text x="${cXR+4}" y="${(y0+yV+dH)/2}" text-anchor="middle" transform="rotate(90,${cXR+4},${(y0+yV+dH)/2})" fill="#f59e0b" font-size="7" font-family="Rajdhani,sans-serif" font-weight="700">TOT:${altoTotal}mm</text>`;
     }
     svg+=`</svg>`;
     box.innerHTML=svg;
