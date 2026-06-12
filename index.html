@@ -1386,6 +1386,9 @@ let nivelOffBeta=0, nivelOffGamma=0;
 const NIVEL_LERP=0.12;
 
 function abrirNivel(){
+    if(nivelRAF){cancelAnimationFrame(nivelRAF);nivelRAF=null;}
+    nivelActive=false;
+    nivelBetaSmooth=0;nivelGammaSmooth=0;
     document.getElementById('modalNivelBg').classList.add('show');
     document.body.style.overflow='hidden';
     nivelIniciar();
@@ -1395,30 +1398,27 @@ function cerrarNivel(){
     document.body.style.overflow='';
     nivelDetener();
 }
-
 function nivelIniciar(){
     const handler=()=>{
-        window.addEventListener('deviceorientation', nivelOnOrient, true);
+        window.addEventListener('deviceorientation',nivelOnOrient,true);
         nivelActive=true;
-        nivelStatus('ok','✓ Conectado. Apoya el teléfono en el perfil.');
+        nivelStatus('ok','\u2713 Conectado. Apoya el tel\u00e9fono en el perfil.');
         if(!nivelRAF) nivelRAF=requestAnimationFrame(nivelLoop);
     };
-    // iOS 13+ needs permission
-    if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
+    if(typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function'){
         DeviceOrientationEvent.requestPermission().then(state=>{
             if(state==='granted') handler();
-            else nivelStatus('err','✗ Permiso denegado. Habilita en Ajustes.');
-        }).catch(()=>nivelStatus('err','✗ Error de permiso.'));
+            else nivelStatus('err','\u2717 Permiso denegado. Habilita en Ajustes.');
+        }).catch(()=>nivelStatus('err','\u2717 Error de permiso.'));
     } else if(typeof DeviceOrientationEvent!=='undefined'){
         handler();
     } else {
-        nivelStatus('err','✗ Sensor no disponible en este dispositivo.');
-        // Demo mode - animate
+        nivelStatus('err','\u2717 Sensor no disponible.');
         nivelDemoMode();
     }
 }
 function nivelDetener(){
-    window.removeEventListener('deviceorientation', nivelOnOrient, true);
+    window.removeEventListener('deviceorientation',nivelOnOrient,true);
     nivelActive=false;
     if(nivelRAF){cancelAnimationFrame(nivelRAF);nivelRAF=null;}
 }
@@ -1427,8 +1427,9 @@ function nivelOnOrient(e){
     nivelGammaRaw=e.gamma||0;
 }
 function nivelDemoMode(){
-    // Animate bubble for demo
     let t=0;
+    nivelStatus('warn','\u26a0 Modo demo \u2014 sensor no disponible');
+    nivelActive=false;
     function demo(){
         if(nivelActive) return;
         t+=0.02;
@@ -1436,8 +1437,6 @@ function nivelDemoMode(){
         nivelGammaRaw=Math.cos(t*0.7)*10;
         nivelRAF=requestAnimationFrame(demo);
     }
-    nivelStatus('warn','⚠ Modo demo — sensor no disponible');
-    nivelActive=false;
     nivelRAF=requestAnimationFrame(demo);
 }
 function nivelStatus(type,txt){
@@ -1451,133 +1450,88 @@ function nivelStatus(type,txt){
 function nivelCalibrar(){
     nivelOffBeta=nivelBetaSmooth+nivelOffBeta;
     nivelOffGamma=nivelGammaSmooth+nivelOffGamma;
-    showToast('✓ Referencia fijada a 0°');
+    showToast('\u2713 Referencia fijada a 0\u00b0');
 }
-
 function nivelLoop(){
-    // Smooth lerp
     const rawB=nivelBetaRaw-nivelOffBeta;
     const rawG=nivelGammaRaw-nivelOffGamma;
     nivelBetaSmooth+=(rawB-nivelBetaSmooth)*NIVEL_LERP;
     nivelGammaSmooth+=(rawG-nivelGammaSmooth)*NIVEL_LERP;
-
-    // Update readouts
     const bEl=document.getElementById('nivelBetaVal');
     const gEl=document.getElementById('nivelGammaVal');
-    if(bEl) bEl.textContent=(nivelBetaSmooth>=0?'+':'')+nivelBetaSmooth.toFixed(1)+'°';
-    if(gEl) gEl.textContent=(nivelGammaSmooth>=0?'+':'')+nivelGammaSmooth.toFixed(1)+'°';
-
-    // Color when near 0
+    if(bEl) bEl.textContent=(nivelBetaSmooth>=0?'+':'')+nivelBetaSmooth.toFixed(1)+'\u00b0';
+    if(gEl) gEl.textContent=(nivelGammaSmooth>=0?'+':'')+nivelGammaSmooth.toFixed(1)+'\u00b0';
     const nearZero=Math.abs(nivelBetaSmooth)<1.5&&Math.abs(nivelGammaSmooth)<1.5;
     if(bEl) bEl.style.color=nearZero?'#22c55e':'#f59e0b';
     if(gEl) gEl.style.color=nearZero?'#22c55e':'var(--cyan)';
-
-    nivelDibujar(nivelBetaSmooth, nivelGammaSmooth);
+    nivelDibujar(nivelBetaSmooth,nivelGammaSmooth);
     nivelRAF=requestAnimationFrame(nivelLoop);
 }
-
-function nivelDibujar(beta, gamma){
+function nivelDibujar(beta,gamma){
     const cv=document.getElementById('nivelCanvas');
     if(!cv) return;
     const ctx=cv.getContext('2d');
-    const W=cv.width, H=cv.height;
-    const cx=W/2, cy=H/2;
-    const R=W*0.42;
-    const bR=18; // bubble radius
-
+    const W=cv.width,H=cv.height,cx=W/2,cy=H/2,R=W*0.42,bR=18;
     ctx.clearRect(0,0,W,H);
-
-    // Outer glow ring
     const outerGrad=ctx.createRadialGradient(cx,cy,R-4,cx,cy,R+6);
-    outerGrad.addColorStop(0,'rgba(6,182,212,.15)');
-    outerGrad.addColorStop(1,'transparent');
-    ctx.beginPath(); ctx.arc(cx,cy,R+6,0,Math.PI*2);
-    ctx.fillStyle=outerGrad; ctx.fill();
-
-    // Background circle
+    outerGrad.addColorStop(0,'rgba(6,182,212,.15)');outerGrad.addColorStop(1,'transparent');
+    ctx.beginPath();ctx.arc(cx,cy,R+6,0,Math.PI*2);ctx.fillStyle=outerGrad;ctx.fill();
     const bgGrad=ctx.createRadialGradient(cx,cy-R*0.2,R*0.1,cx,cy,R);
-    bgGrad.addColorStop(0,'#1e293b');
-    bgGrad.addColorStop(1,'#0f172a');
-    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2);
-    ctx.fillStyle=bgGrad; ctx.fill();
-    ctx.strokeStyle='#334155'; ctx.lineWidth=2; ctx.stroke();
-
-    // Crosshairs
-    ctx.save(); ctx.globalAlpha=0.45;
-    ctx.strokeStyle='#64748b'; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx,cy-R); ctx.lineTo(cx,cy+R); ctx.stroke();
-    // Diagonal guides
-    ctx.strokeStyle='#334155'; ctx.lineWidth=0.8;
-    ctx.beginPath(); ctx.moveTo(cx-R*0.7,cy-R*0.7); ctx.lineTo(cx+R*0.7,cy+R*0.7); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx+R*0.7,cy-R*0.7); ctx.lineTo(cx-R*0.7,cy+R*0.7); ctx.stroke();
+    bgGrad.addColorStop(0,'#1e293b');bgGrad.addColorStop(1,'#0f172a');
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=bgGrad;ctx.fill();
+    ctx.strokeStyle='#334155';ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.globalAlpha=0.45;ctx.strokeStyle='#64748b';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx-R,cy);ctx.lineTo(cx+R,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,cy-R);ctx.lineTo(cx,cy+R);ctx.stroke();
+    ctx.strokeStyle='#334155';ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.moveTo(cx-R*0.7,cy-R*0.7);ctx.lineTo(cx+R*0.7,cy+R*0.7);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+R*0.7,cy-R*0.7);ctx.lineTo(cx-R*0.7,cy+R*0.7);ctx.stroke();
     ctx.restore();
-
-    // Target rings
-    [0.2, 0.45].forEach((ratio,i)=>{
-        ctx.beginPath(); ctx.arc(cx,cy,R*ratio,0,Math.PI*2);
+    [0.2,0.45].forEach((ratio,i)=>{
+        ctx.beginPath();ctx.arc(cx,cy,R*ratio,0,Math.PI*2);
         ctx.strokeStyle=i===0?'rgba(6,182,212,.6)':'rgba(6,182,212,.25)';
-        ctx.setLineDash([i===0?4:6,i===0?4:5]);
-        ctx.lineWidth=1; ctx.stroke(); ctx.setLineDash([]);
+        ctx.setLineDash([i===0?4:6,i===0?4:5]);ctx.lineWidth=1;ctx.stroke();ctx.setLineDash([]);
     });
-
-    // Center cross
-    ctx.strokeStyle='rgba(6,182,212,.5)'; ctx.lineWidth=1.5;
+    ctx.strokeStyle='rgba(6,182,212,.5)';ctx.lineWidth=1.5;
     [[-6,0,6,0],[0,-6,0,6]].forEach(([x1,y1,x2,y2])=>{
-        ctx.beginPath(); ctx.moveTo(cx+x1,cy+y1); ctx.lineTo(cx+x2,cy+y2); ctx.stroke();
+        ctx.beginPath();ctx.moveTo(cx+x1,cy+y1);ctx.lineTo(cx+x2,cy+y2);ctx.stroke();
     });
-
-    // Calculate bubble position (clamp inside circle)
     const maxAngle=25;
     const clamp=(v,mn,mx)=>Math.max(mn,Math.min(mx,v));
     let bx=clamp(gamma/maxAngle,-1,1)*(R-bR-3);
     let by=clamp(beta/maxAngle,-1,1)*(R-bR-3);
-    // Clamp to circle boundary
     const dist=Math.sqrt(bx*bx+by*by);
     const maxDist=R-bR-3;
-    if(dist>maxDist){bx=bx/dist*maxDist; by=by/dist*maxDist;}
-    const bubX=cx+bx, bubY=cy+by;
-
+    if(dist>0&&dist>maxDist){bx=bx/dist*maxDist;by=by/dist*maxDist;}
+    const bubX=cx+bx,bubY=cy+by;
     const nearZero=Math.abs(beta)<1.5&&Math.abs(gamma)<1.5;
     const bubColor=nearZero?'#22c55e':'#f59e0b';
     const glowAlpha=nearZero?'rgba(34,197,94,.35)':'rgba(245,158,11,.35)';
-
-    // Bubble glow
-    const bubGlow=ctx.createRadialGradient(bubX,bubY,0,bubX,bubY,bR*2.2);
-    bubGlow.addColorStop(0,glowAlpha); bubGlow.addColorStop(1,'transparent');
-    ctx.beginPath(); ctx.arc(bubX,bubY,bR*2.2,0,Math.PI*2);
-    ctx.fillStyle=bubGlow; ctx.fill();
-
-    // Bubble body
-    const bubGrad=ctx.createRadialGradient(bubX-bR*0.25,bubY-bR*0.25,0,bubX,bubY,bR);
-    bubGrad.addColorStop(0,nearZero?'#4ade80':' #fbbf24');
+    const bubGlow=ctx.createRadialGradient(bubX,bubY,1,bubX,bubY,bR*2.2);
+    bubGlow.addColorStop(0,glowAlpha);bubGlow.addColorStop(1,'transparent');
+    ctx.beginPath();ctx.arc(bubX,bubY,bR*2.2,0,Math.PI*2);ctx.fillStyle=bubGlow;ctx.fill();
+    const bubGrad=ctx.createRadialGradient(bubX-bR*0.25,bubY-bR*0.25,1,bubX,bubY,bR);
+    bubGrad.addColorStop(0,nearZero?'#4ade80':'#fbbf24');
     bubGrad.addColorStop(0.6,bubColor);
     bubGrad.addColorStop(1,nearZero?'#16a34a':'#d97706');
-    ctx.beginPath(); ctx.arc(bubX,bubY,bR,0,Math.PI*2);
-    ctx.fillStyle=bubGrad; ctx.fill();
-    // Bubble glare
-    ctx.beginPath(); ctx.arc(bubX-bR*0.3,bubY-bR*0.32,bR*0.38,0,Math.PI*2);
-    ctx.fillStyle='rgba(255,255,255,0.28)'; ctx.fill();
-
-    // "NIVEL" text when centered
+    ctx.beginPath();ctx.arc(bubX,bubY,bR,0,Math.PI*2);ctx.fillStyle=bubGrad;ctx.fill();
+    ctx.beginPath();ctx.arc(bubX-bR*0.3,bubY-bR*0.32,bR*0.38,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,0.28)';ctx.fill();
     if(nearZero){
         ctx.font='bold 11px Rajdhani,sans-serif';
-        ctx.fillStyle='#22c55e'; ctx.textAlign='center';
+        ctx.fillStyle='#22c55e';ctx.textAlign='center';
         ctx.fillText('NIVELADO',cx,cy+R*0.75);
     }
 }
-
 function nivelCompartirWS(){
-    const b=nivelBetaSmooth.toFixed(1);
-    const g=nivelGammaSmooth.toFixed(1);
-    let t=`📐 *NIVEL DE PRECISIÓN*\n`;
-    t+=`Plomo Frontal: *${b>=0?'+':''}${b}°*\n`;
-    t+=`Nivel Lateral: *${g>=0?'+':''}${g}°*\n`;
+    const b=nivelBetaSmooth.toFixed(1),g=nivelGammaSmooth.toFixed(1);
     const nearZero=Math.abs(nivelBetaSmooth)<1.5&&Math.abs(nivelGammaSmooth)<1.5;
-    if(nearZero) t+=`✅ *NIVELADO*\n`;
+    let t='\ud83d\udcd0 *NIVEL DE PRECISI\u00d3N*\n';
+    t+='Plomo Frontal: *'+(nivelBetaSmooth>=0?'+':'')+b+'\u00b0*\n';
+    t+='Nivel Lateral: *'+(nivelGammaSmooth>=0?'+':'')+g+'\u00b0*\n';
+    if(nearZero) t+='\u2705 *NIVELADO*\n';
     window.open('https://api.whatsapp.com/send?text='+encodeURIComponent(t),'_blank');
 }
-
 
 /* ══ ÁNGULO ══ */
 let agSwapState=false;
@@ -1699,6 +1653,104 @@ function calcAngulo(){
     ctx.fillText('DER', x1, yTopR-5);
 
     res.style.display='block';
+}
+
+async function agGenerarPDF(){
+    if(typeof jspdf==='undefined'){showToast('\u26a0 Librer\u00eda PDF no cargada');return;}
+    const{jsPDF}=jspdf;
+    const hM=document.getElementById('ag_hMayor').value;
+    const hm=document.getElementById('ag_hMenor').value;
+    const b=document.getElementById('ag_base').value;
+    if(!hM||!hm||!b){showToast('Calcula primero');return;}
+    const alpha=document.getElementById('ag_alpha').textContent;
+    const angIzq=document.getElementById('ag_angIzq').textContent;
+    const mitadIzq=document.getElementById('ag_mitadIzq').textContent;
+    const maqIzq=document.getElementById('ag_maqIzq').textContent;
+    const angDer=document.getElementById('ag_angDer').textContent;
+    const mitadDer=document.getElementById('ag_mitadDer').textContent;
+    const maqDer=document.getElementById('ag_maqDer').textContent;
+    const longInc=document.getElementById('ag_longInc').textContent;
+    const lado=agSwapState?'Mayor=DER / Menor=IZQ':'Mayor=IZQ / Menor=DER';
+    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a5'});
+    const W=148,margin=12;
+    // Cabecera
+    doc.setFillColor(15,23,42);doc.rect(0,0,W,18,'F');
+    doc.setTextColor(245,158,11);doc.setFontSize(13);doc.setFont('helvetica','bold');
+    doc.text('C\u00c1LCULO DE \u00c1NGULOS',margin,11);
+    doc.setFontSize(8);doc.setTextColor(148,163,184);
+    doc.text(new Date().toLocaleDateString('es-ES'),W-margin,11,{align:'right'});
+    let y=24;
+    // Datos
+    doc.setFillColor(241,245,249);doc.roundedRect(margin,y,W-margin*2,18,2,2,'F');
+    doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(100,116,139);
+    doc.text('CONFIGURACI\u00d3N',margin+3,y+5);
+    doc.setTextColor(15,23,42);doc.setFontSize(10);
+    doc.text('Alt. Mayor: '+hM+' mm',margin+3,y+12);
+    doc.text('Alt. Menor: '+hm+' mm',(W/2),y+12);
+    doc.text('Base: '+b+' mm',margin+3,y+17);
+    doc.text(lado,(W/2),y+17);
+    y+=24;
+    // Alpha
+    doc.setFillColor(245,158,11,30);doc.roundedRect(margin,y,W-margin*2,14,2,2,'F');
+    doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(146,98,0);
+    doc.text('\u00c1ngulo de inclinaci\u00f3n \u03b1:',margin+3,y+6);
+    doc.setFontSize(14);doc.setTextColor(180,100,0);
+    doc.text(alpha,W-margin-3,y+10,{align:'right'});
+    y+=20;
+    // Tabla
+    doc.autoTable({
+        startY:y,
+        head:[['Esquina','\u00c1ngulo real','Mitad','M\u00e1quina']],
+        body:[
+            ['Sup. Izq.',angIzq,mitadIzq,maqIzq],
+            ['Sup. Der.',angDer,mitadDer,maqDer],
+        ],
+        margin:{left:margin,right:margin},
+        headStyles:{fillColor:[15,23,42],textColor:[245,158,11],fontStyle:'bold',fontSize:9},
+        bodyStyles:{fontSize:10,textColor:[15,23,42],fontStyle:'bold'},
+        alternateRowStyles:{fillColor:[248,250,252]},
+        columnStyles:{0:{cellWidth:24},3:{halign:'right',textColor:[245,158,11]}},
+        theme:'plain',tableLineColor:[226,232,240],tableLineWidth:0.1,
+    });
+    y=doc.lastAutoTable.finalY+8;
+    // Longitud inclinada
+    doc.setFillColor(6,182,212,20);doc.roundedRect(margin,y,W-margin*2,12,2,2,'F');
+    doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(100,116,139);
+    doc.text('Longitud inclinada real:',margin+3,y+5);
+    doc.setFontSize(12);doc.setTextColor(6,182,212);
+    doc.text(longInc,W-margin-3,y+9,{align:'right'});
+    // Canvas SVG
+    const svgBox=document.getElementById('ag_visual');
+    if(svgBox&&svgBox.style.display!=='none'){
+        const svgEl=svgBox.querySelector('svg');
+        if(svgEl){
+            const blob=new Blob([new XMLSerializer().serializeToString(svgEl)],{type:'image/svg+xml'});
+            const url=URL.createObjectURL(blob);
+            await new Promise(res=>{
+                const img=new Image();
+                img.onload=()=>{
+                    const cv2=document.createElement('canvas');
+                    cv2.width=600;cv2.height=Math.round(600*(svgEl.viewBox.baseVal.height/svgEl.viewBox.baseVal.width));
+                    const ctx2=cv2.getContext('2d');
+                    ctx2.fillStyle='#0f172a';ctx2.fillRect(0,0,cv2.width,cv2.height);
+                    ctx2.drawImage(img,0,0,cv2.width,cv2.height);
+                    URL.revokeObjectURL(url);
+                    y+=16;
+                    const imgH=45;
+                    doc.addImage(cv2.toDataURL('image/png'),'PNG',margin,y,W-margin*2,imgH);
+                    res();
+                };
+                img.onerror=()=>{URL.revokeObjectURL(url);res();};
+                img.src=url;
+            });
+        }
+    }
+    // Footer
+    doc.setFillColor(15,23,42);doc.rect(0,205,W,5,'F');
+    doc.setFontSize(6);doc.setTextColor(100,116,139);
+    doc.text('Taller — Calculadora de Cortes',margin,208);
+    doc.save('angulos-'+hM+'x'+hm+'x'+b+'.pdf');
+    showToast('\u2713 PDF generado');
 }
 
 function agCompartirWS(){
@@ -3901,11 +3953,17 @@ actualizarInterfaz();
             <span style="font-size:.78rem;font-weight:700;color:var(--dim)">Longitud inclinada real</span>
             <span id="ag_longInc" style="font-family:'Bebas Neue',cursive;font-size:1.3rem;color:#fbbf24">— mm</span>
         </div>
-        <!-- WS -->
-        <button class="btn-act btn-ws" style="width:100%" onclick="agCompartirWS()">
-            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-            Enviar por WhatsApp
-        </button>
+        <!-- Botones WS + PDF -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="btn-act btn-ws" onclick="agCompartirWS()" style="margin:0;padding:12px">
+                <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                WhatsApp
+            </button>
+            <button onclick="agGenerarPDF()" style="padding:12px;border:none;border-radius:12px;background:rgba(239,68,68,.15);border:1.5px solid rgba(239,68,68,.35);color:var(--red);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                PDF
+            </button>
+        </div>
     </div>
 </div>
 </div>
